@@ -1,0 +1,2905 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>YouTube 트렌드 분석기 - Pro V6.18 Final</title>
+  
+  <!-- Chart.js 라이브러리 -->
+  <script src="https://cdn.jsdelivr.net/npm/chart.js@4.4.0/dist/chart.umd.min.js"></script>
+  
+  <style>
+    * {
+      margin: 0;
+      padding: 0;
+      box-sizing: border-box;
+    }
+
+    :root {
+      --primary: #1a73e8;
+      --primary-dark: #1557b0;
+      --success: #34a853;
+      --warning: #fbbc04;
+      --danger: #ea4335;
+      --gold: #f9ab00;
+      --bg-start: #5533cc;
+      --bg-end: #4422aa;
+      --card-bg: #ffffff;
+      --gray-50: #f8f9fa;
+      --gray-200: #e8eaed;
+      --gray-300: #dadce0;
+      --gray-700: #5f6368;
+      --gray-900: #202124;
+      --radius: 12px;
+      --radius-sm: 8px;
+      
+      --cat-color-1: linear-gradient(135deg, #1a73e8 0%, #1557b0 100%);
+      --cat-color-2: linear-gradient(135deg, #f9ab00 0%, #e37400 100%);
+      --cat-color-3: linear-gradient(135deg, #34a853 0%, #2d8e47 100%);
+    }
+
+    body { padding: 0; margin: 0; background: #f5f5f5; line-height: 1.5; position: relative; overflow-x: hidden; }
+
+    body::before {
+      content: '';
+      position: fixed;
+      top: 0;
+      left: 0;
+      width: 100%;
+      height: 100%;
+      background-image: 
+        radial-gradient(circle at 20% 30%, rgba(255,255,255,.08) 0%, transparent 50%),
+        radial-gradient(circle at 80% 70%, rgba(255,255,255,.06) 0%, transparent 50%);
+      pointer-events: none;
+      z-index: 0;
+    }
+
+    .container {
+      max-width: 1400px;
+      margin: 0 auto;
+      background: var(--card-bg);
+      border-radius: var(--radius);
+      box-shadow: 0 20px 60px rgba(0,0,0,.3);
+      overflow: hidden;
+      position: relative;
+      z-index: 1;
+      padding: 0;}
+
+    .header {
+      background: linear-gradient(135deg, #1a73e8 0%, #1557b0 100%);
+      color: #fff;
+      padding: 14px 24px;
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      gap: 20px;
+      box-shadow: 0 4px 12px rgba(0,0,0,.2);
+    }
+
+    .header-left {
+      display: flex;
+      align-items: center;
+      gap: 24px;
+    }
+
+    .logo {
+      font-size: 20px;
+      font-weight: 800;
+      white-space: nowrap;
+    }
+
+    .mode-badge {
+      padding: 4px 12px;
+      background: rgba(255,255,255,.25);
+      border-radius: 12px;
+      font-size: 11px;
+      font-weight: 700;
+      border: 1px solid rgba(255,255,255,.4);
+    }
+
+    .tabs {
+      display: flex;
+      gap: 4px;
+    }
+
+    .tab {
+      padding: 8px 18px;
+      background: rgba(255,255,255,.15);
+      border: none;
+      border-radius: 20px;
+      color: rgba(255,255,255,.85);
+      font-size: 14px;
+      font-weight: 700;
+      cursor: pointer;
+      transition: all 0.2s;
+      white-space: nowrap;
+    }
+
+    .tab:hover {
+      background: rgba(255,255,255,.25);
+      color: #fff;
+    }
+
+    .tab.active {
+      background: #fff;
+      color: var(--primary);
+    }
+
+    .header-right {
+      display: flex;
+      align-items: center;
+      gap: 8px;
+    }
+
+    .api-counter {
+      background: rgba(255,255,255,.2);
+      padding: 6px 14px;
+      border-radius: 20px;
+      font-size: 12px;
+      font-weight: 700;
+      backdrop-filter: blur(10px);
+      border: 1px solid rgba(255,255,255,.3);
+      white-space: nowrap;
+    }
+
+    .api-counter.warning {
+      background: var(--danger);
+      animation: pulse 1.5s infinite;
+    }
+
+    @keyframes pulse {
+      0%, 100% { opacity: 1; }
+      50% { opacity: 0.7; }
+    }
+
+    .header-btn {
+      padding: 6px 12px;
+      background: rgba(255,255,255,.2);
+      border: 1px solid rgba(255,255,255,.3);
+      border-radius: 18px;
+      color: #fff;
+      font-size: 12px;
+      font-weight: 700;
+      cursor: pointer;
+      transition: all 0.2s;
+      white-space: nowrap;
+    }
+
+    .header-btn:hover {
+      background: rgba(255,255,255,.35);
+      transform: translateY(-1px);
+    }
+
+    .settings-btn {
+      width: 36px;
+      height: 36px;
+      background: rgba(255,255,255,.2);
+      border: 1px solid rgba(255,255,255,.3);
+      border-radius: 50%;
+      color: #fff;
+      font-size: 18px;
+      cursor: pointer;
+      transition: all 0.2s;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+    }
+
+    .settings-btn:hover {
+      background: rgba(255,255,255,.35);
+      transform: rotate(90deg);
+    }
+
+    .content {
+      display: none;
+      padding: 16px 24px;
+      animation: fadeIn 0.3s ease;
+      background: #fafbfc;
+    }
+
+    .content.active {
+      display: block;
+    }
+
+    @keyframes fadeIn {
+      from { opacity: 0; transform: translateY(8px); }
+      to { opacity: 1; transform: translateY(0); }
+    }
+
+    .section {
+      margin-bottom: 12px;
+      padding: 14px;
+      background: #fff;
+      border-radius: var(--radius);
+      box-shadow: 0 2px 8px rgba(0,0,0,.08);
+    }
+
+    .section-title {
+      font-size: 13px;
+      font-weight: 800;
+      color: var(--gray-900);
+      margin-bottom: 10px;
+      display: flex;
+      align-items: center;
+      gap: 6px;
+    }
+
+    .special-buttons {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 12px;
+      margin-bottom: 14px;
+    }
+
+    .global-hot-btn {
+      padding: 18px 24px;
+      border: none;
+      border-radius: var(--radius);
+      font-size: 17px;
+      font-weight: 800;
+      color: #fff;
+      cursor: pointer;
+      transition: all 0.3s;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      gap: 8px;
+      box-shadow: 0 4px 16px rgba(0,0,0,.2);
+      background: linear-gradient(135deg, 
+        #ff0000 0%, 
+        #ff7f00 16.66%, 
+        #ffff00 33.33%, 
+        #00ff00 50%, 
+        #0000ff 66.66%, 
+        #8b00ff 83.33%, 
+        #ff0000 100%);
+      background-size: 200% 200%;
+      animation: rainbow-shimmer 3s ease infinite;
+      position: relative;
+      overflow: hidden;
+    }
+
+    .global-hot-btn::before {
+      content: '';
+      position: absolute;
+      top: -50%;
+      left: -50%;
+      width: 200%;
+      height: 200%;
+      background: linear-gradient(
+        45deg,
+        transparent 30%,
+        rgba(255,255,255,.3) 50%,
+        transparent 70%
+      );
+      animation: shimmer 2s infinite;
+    }
+
+    @keyframes rainbow-shimmer {
+      0%, 100% { background-position: 0% 50%; }
+      50% { background-position: 100% 50%; }
+    }
+
+    @keyframes shimmer {
+      0% { transform: translate(-100%, -100%) rotate(45deg); }
+      100% { transform: translate(100%, 100%) rotate(45deg); }
+    }
+
+    .global-hot-btn:hover {
+      transform: translateY(-3px) scale(1.03);
+      box-shadow: 0 8px 24px rgba(0,0,0,.3);
+    }
+
+    .global-hot-btn span {
+      position: relative;
+      z-index: 1;
+    }
+
+    .trending-btn {
+      padding: 18px 24px;
+      border: none;
+      border-radius: var(--radius);
+      font-size: 17px;
+      font-weight: 800;
+      color: #fff;
+      cursor: pointer;
+      transition: all 0.3s;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      gap: 8px;
+      box-shadow: 0 4px 16px rgba(0,0,0,.2);
+      background: linear-gradient(135deg, #ff4444 0%, #ff8800 100%);
+      animation: pulse-glow 2s ease-in-out infinite;
+      position: relative;
+    }
+
+    .trending-btn::after {
+      content: '🔥';
+      position: absolute;
+      right: 20px;
+      font-size: 24px;
+      animation: fire-flicker 1s ease-in-out infinite;
+    }
+
+    @keyframes pulse-glow {
+      0%, 100% {
+        box-shadow: 0 4px 16px rgba(255, 68, 68, 0.4);
+        transform: translateY(0);
+      }
+      50% {
+        box-shadow: 0 8px 24px rgba(255, 68, 68, 0.6);
+        transform: translateY(-2px);
+      }
+    }
+
+    @keyframes fire-flicker {
+      0%, 100% { opacity: 1; transform: scale(1); }
+      50% { opacity: 0.8; transform: scale(1.1); }
+    }
+
+    .trending-btn:hover {
+      transform: translateY(-3px) scale(1.03);
+      box-shadow: 0 8px 24px rgba(255, 68, 68, 0.5);
+    }
+
+    .btn-grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(130px, 1fr));
+      gap: 8px;
+    }
+
+    .cat-btn {
+      padding: 12px 16px;
+      border: none;
+      border-radius: var(--radius-sm);
+      font-size: 15px;
+      font-weight: 700;
+      color: #fff;
+      cursor: pointer;
+      transition: all 0.2s;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      gap: 5px;
+      box-shadow: 0 2px 6px rgba(0,0,0,.15);
+    }
+
+    .cat-btn[data-keyword*="정치"] { background: var(--cat-color-1); }
+    .cat-btn[data-keyword*="경제"] { background: var(--cat-color-2); }
+    .cat-btn[data-keyword*="부동산"] { background: var(--cat-color-3); }
+    .cat-btn[data-keyword*="드론"] { background: var(--cat-color-1); }
+    .cat-btn[data-keyword*="반려동물"] { background: var(--cat-color-2); }
+    .cat-btn[data-keyword*="사회"] { background: var(--cat-color-3); }
+    .cat-btn[data-keyword*="IT"] { background: var(--cat-color-1); }
+    .cat-btn[data-keyword*="트렌드"] { background: var(--cat-color-2); }
+    .cat-btn[data-keyword*="사건"] { background: var(--cat-color-3); }
+
+    .cat-btn:hover {
+      transform: translateY(-2px);
+      box-shadow: 0 4px 12px rgba(0,0,0,.25);
+    }
+
+    .country-btn {
+      padding: 12px 16px;
+      background-size: cover;
+      background-position: center;
+      background-repeat: no-repeat;
+      border: 3px solid #fff;
+      border-radius: var(--radius-sm);
+      font-size: 14px;
+      font-weight: 800;
+      color: #fff;
+      cursor: pointer;
+      transition: all 0.2s;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      gap: 5px;
+      box-shadow: 0 2px 8px rgba(0,0,0,.2);
+      text-shadow: 
+        -1px -1px 0 #000,
+        1px -1px 0 #000,
+        -1px 1px 0 #000,
+        1px 1px 0 #000,
+        0 0 4px rgba(0,0,0,.8);
+      position: relative;
+    }
+
+    .country-btn::before {
+      content: '';
+      position: absolute;
+      inset: 0;
+      background: rgba(0,0,0,.2);
+      border-radius: calc(var(--radius-sm) - 3px);
+      transition: all 0.2s;
+    }
+
+    .country-btn:hover::before {
+      background: rgba(0,0,0,.05);
+    }
+
+    .country-btn.active::before {
+      background: rgba(255,255,255,.3);
+    }
+
+    .country-btn span {
+      position: relative;
+      z-index: 1;
+    }
+
+    .country-btn[data-region="KR"] { background-image: url('data:image/svg+xml,<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 900 600"><rect fill="%23fff" width="900" height="600"/><circle cx="450" cy="300" r="120" fill="%23c60c30"/><circle cx="450" cy="300" r="80" fill="%23003478"/></svg>'); }
+    .country-btn[data-region="US"] { background-image: url('data:image/svg+xml,<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 7410 3900"><rect width="7410" height="3900" fill="%23b22234"/><path d="M0,450H7410m0,600H0m0,600H7410m0,600H0m0,600H7410m0,600H0" stroke="%23fff" stroke-width="300"/><rect width="2964" height="2100" fill="%233c3b6e"/></svg>'); }
+    .country-btn[data-region="JP"] { background-image: url('data:image/svg+xml,<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 900 600"><rect fill="%23fff" width="900" height="600"/><circle cx="450" cy="300" r="180" fill="%23bc002d"/></svg>'); }
+    .country-btn[data-region="CN"] { background-image: url('data:image/svg+xml,<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 900 600"><rect fill="%23de2910" width="900" height="600"/><polygon fill="%23ffde00" points="180,120 200,180 260,180 210,220 230,280 180,240 130,280 150,220 100,180 160,180"/></svg>'); }
+    .country-btn[data-region="GB"] { background-image: url('data:image/svg+xml,<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 60 30"><rect width="60" height="30" fill="%23012169"/><path d="M0,0 L60,30 M60,0 L0,30" stroke="%23fff" stroke-width="6"/><path d="M0,0 L60,30 M60,0 L0,30" stroke="%23C8102E" stroke-width="4"/><path d="M30,0 V30 M0,15 H60" stroke="%23fff" stroke-width="10"/><path d="M30,0 V30 M0,15 H60" stroke="%23C8102E" stroke-width="6"/></svg>'); }
+    .country-btn[data-region="FR"] { background-image: url('data:image/svg+xml,<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 900 600"><rect width="300" height="600" fill="%23002395"/><rect x="300" width="300" height="600" fill="%23fff"/><rect x="600" width="300" height="600" fill="%23ED2939"/></svg>'); }
+    .country-btn[data-region="DE"] { background-image: url('data:image/svg+xml,<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 900 600"><rect width="900" height="200" fill="%23000"/><rect y="200" width="900" height="200" fill="%23D00"/><rect y="400" width="900" height="200" fill="%23FFCE00"/></svg>'); }
+    .country-btn[data-region="TH"] { background-image: url('data:image/svg+xml,<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 900 600"><rect width="900" height="100" fill="%23ED1C24"/><rect y="100" width="900" height="100" fill="%23fff"/><rect y="200" width="900" height="200" fill="%232D2A4A"/><rect y="400" width="900" height="100" fill="%23fff"/><rect y="500" width="900" height="100" fill="%23ED1C24"/></svg>'); }
+    .country-btn[data-region="VN"] { background-image: url('data:image/svg+xml,<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 900 600"><rect width="900" height="600" fill="%23da251d"/><polygon fill="%23ff0" points="450,150 480,250 580,250 500,310 530,410 450,350 370,410 400,310 320,250 420,250"/></svg>'); }
+    .country-btn[data-region="SG"] { background-image: url('data:image/svg+xml,<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 900 600"><rect width="900" height="300" fill="%23ED2939"/><rect y="300" width="900" height="300" fill="%23fff"/></svg>'); }
+    .country-btn[data-region="AU"] { background-image: url('data:image/svg+xml,<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 1280 640"><rect width="1280" height="640" fill="%2300008B"/><path fill="%23fff" d="M0,0 L640,320 M640,0 L0,320" stroke="%23fff" stroke-width="80"/><path fill="%23C8102E" d="M0,0 L640,320 M640,0 L0,320" stroke="%23C8102E" stroke-width="48"/><path fill="%23fff" d="M320,0 V320 M0,160 H640" stroke="%23fff" stroke-width="160"/><path fill="%23C8102E" d="M320,0 V320 M0,160 H640" stroke="%23C8102E" stroke-width="96"/></svg>'); }
+
+    .country-btn:hover {
+      transform: translateY(-2px) scale(1.02);
+      box-shadow: 0 4px 12px rgba(0,0,0,.35);
+      border-color: #ffd700;
+    }
+
+    .country-btn.active {
+      border-color: #ffd700;
+      box-shadow: 0 4px 16px rgba(255, 215, 0, 0.5);
+      transform: scale(1.05);
+    }
+
+    .date-filters {
+      display: flex;
+      gap: 12px;
+      justify-content: flex-end;
+      align-items: center;
+      padding: 14px;
+      background: #fff;
+      border-radius: var(--radius);
+      box-shadow: 0 2px 8px rgba(0,0,0,.08);
+    }
+
+    .filter-label {
+      font-size: 13px;
+      font-weight: 700;
+      color: var(--gray-900);
+    }
+
+    .date-input {
+      padding: 10px 14px;
+      border: 2px solid #dadce0;
+      border-radius: var(--radius-sm);
+      font-size: 14px;
+      font-weight: 600;
+      background: #fff;
+      cursor: pointer;
+      transition: all 0.2s;
+      min-width: 160px;
+    }
+
+    .date-input:focus {
+      outline: none;
+      border-color: var(--primary);
+      box-shadow: 0 0 0 3px rgba(26, 115, 232, 0.1);
+    }
+
+    .date-quick {
+      display: flex;
+      gap: 6px;
+      flex-wrap: wrap;
+    }
+
+    .quick-date-btn {
+      padding: 8px 14px;
+      background: linear-gradient(135deg, #e8f5e9 0%, #c8e6c9 100%);
+      border: 2px solid #66bb6a;
+      border-radius: 18px;
+      font-size: 12px;
+      font-weight: 700;
+      color: #2e7d32;
+      cursor: pointer;
+      transition: all 0.2s;
+    }
+
+    .quick-date-btn:hover {
+      background: linear-gradient(135deg, #66bb6a 0%, #4caf50 100%);
+      color: #fff;
+      transform: translateY(-2px);
+      box-shadow: 0 3px 10px rgba(102, 187, 106, 0.3);
+    }
+
+    .quick-date-btn.active {
+      background: linear-gradient(135deg, #66bb6a 0%, #4caf50 100%);
+      color: #fff;
+      border-color: #4caf50;
+    }
+
+    .translate-toggle {
+      display: flex;
+      align-items: center;
+      gap: 8px;
+      padding: 8px 14px;
+      background: linear-gradient(135deg, #fff9e6 0%, #fff3cc 100%);
+      border: 2px solid #f9ab00;
+      border-radius: 18px;
+      font-size: 12px;
+      font-weight: 700;
+      color: #885100;
+      cursor: pointer;
+      transition: all 0.2s;
+      user-select: none;
+    }
+
+    .translate-toggle:hover {
+      background: linear-gradient(135deg, #f9ab00 0%, #e37400 100%);
+      color: #fff;
+      transform: translateY(-1px);
+    }
+
+    .translate-toggle.active {
+      background: linear-gradient(135deg, #34a853 0%, #2d8e47 100%);
+      color: #fff;
+      border-color: #34a853;
+    }
+
+    .translate-toggle input[type="checkbox"] {
+      width: 16px;
+      height: 16px;
+      cursor: pointer;
+    }
+
+    .search-bar-row {
+      display: flex;
+      gap: 12px;
+      align-items: center;
+      padding: 14px;
+      background: #fff;
+      border-radius: var(--radius);
+      box-shadow: 0 2px 8px rgba(0,0,0,.08);
+      flex-wrap: wrap;
+    }
+
+    .filter-group {
+      display: flex;
+      gap: 10px;
+      align-items: center;
+    }
+
+    .filter-input {
+      width: 130px;
+      padding: 10px 12px;
+      border: 2px solid #dadce0;
+      border-radius: var(--radius-sm);
+      font-size: 13px;
+      background: #fff;
+      transition: all 0.2s;
+    }
+
+    .filter-input:focus {
+      outline: none;
+      border-color: var(--primary);
+      box-shadow: 0 0 0 3px rgba(26, 115, 232, 0.1);
+    }
+
+    .search-input {
+      flex: 1;
+      min-width: 200px;
+      padding: 11px 16px;
+      border: 2px solid #dadce0;
+      border-radius: var(--radius-sm);
+      font-size: 14px;
+      transition: all 0.2s;
+      background: #fff;
+    }
+
+    .search-input:focus {
+      outline: none;
+      border-color: var(--primary);
+      box-shadow: 0 0 0 3px rgba(26, 115, 232, 0.1);
+    }
+
+    select {
+      padding: 11px 14px;
+      border: 2px solid #dadce0;
+      border-radius: var(--radius-sm);
+      font-size: 13px;
+      font-weight: 600;
+      background: #fff;
+      cursor: pointer;
+      transition: all 0.2s;
+    }
+
+    select:focus {
+      outline: none;
+      border-color: var(--primary);
+    }
+
+    .btn {
+      padding: 11px 22px;
+      border: none;
+      border-radius: var(--radius-sm);
+      font-size: 13px;
+      font-weight: 700;
+      cursor: pointer;
+      transition: all 0.2s;
+      display: inline-flex;
+      align-items: center;
+      gap: 6px;
+      white-space: nowrap;
+    }
+
+    .btn-primary {
+      background: linear-gradient(135deg, var(--primary) 0%, var(--primary-dark) 100%);
+      color: #fff;
+      box-shadow: 0 3px 10px rgba(26, 115, 232, 0.3);
+    }
+
+    .btn-primary:hover {
+      transform: translateY(-2px);
+      box-shadow: 0 5px 16px rgba(26, 115, 232, 0.4);
+    }
+
+    .btn-secondary {
+      background: linear-gradient(135deg, #f1f3f4 0%, #e8eaed 100%);
+      color: var(--gray-900);
+      border: 2px solid #dadce0;
+    }
+
+    .btn-secondary:hover {
+      background: linear-gradient(135deg, #e8eaed 0%, #dadce0 100%);
+      transform: translateY(-2px);
+    }
+
+    .btn:disabled {
+      opacity: 0.5;
+      cursor: not-allowed;
+      transform: none !important;
+    }
+
+    .results-header {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      margin-bottom: 14px;
+      padding: 12px 16px;
+      background: #fff;
+      border-radius: var(--radius-sm);
+      box-shadow: 0 2px 8px rgba(0,0,0,.08);
+    }
+
+    .results-count {
+      font-size: 14px;
+      font-weight: 700;
+      color: var(--gray-900);
+    }
+
+    .results-grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fill, minmax(340px, 1fr));
+      gap: 16px;
+    }
+
+    .video-card {
+      background: #fff;
+      border-radius: var(--radius);
+      overflow: hidden;
+      transition: all 0.3s;
+      cursor: pointer;
+      box-shadow: 0 2px 8px rgba(0,0,0,.1);
+      border: 2px solid transparent;
+    }
+
+    .video-card:hover {
+      transform: translateY(-5px);
+      box-shadow: 0 10px 20px rgba(0,0,0,.18);
+      border-color: var(--primary);
+    }
+
+    .video-thumb {
+      width: 100%;
+      height: 190px;
+      object-fit: cover;
+      background: var(--gray-200);
+    }
+
+    .video-info {
+      padding: 14px;
+    }
+
+    .video-title {
+      font-size: 14px;
+      font-weight: 700;
+      color: var(--gray-900);
+      margin-bottom: 8px;
+      line-height: 1.4;
+      display: -webkit-box;
+      -webkit-line-clamp: 2;
+      -webkit-box-orient: vertical;
+      overflow: hidden;
+    }
+
+    .video-meta {
+      display: flex;
+      gap: 12px;
+      font-size: 12px;
+      color: var(--gray-700);
+      margin-bottom: 10px;
+      flex-wrap: wrap;
+    }
+
+    .meta-item {
+      display: flex;
+      align-items: center;
+      gap: 3px;
+    }
+
+    .video-channel {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      padding-top: 10px;
+      border-top: 2px solid var(--gray-200);
+    }
+
+    .channel-name {
+      font-size: 12px;
+      font-weight: 700;
+      color: var(--primary);
+    }
+
+    .action-btns {
+      display: flex;
+      gap: 5px;
+    }
+
+    .icon-btn {
+      padding: 6px 10px;
+      border: 2px solid #dadce0;
+      border-radius: 6px;
+      background: #fff;
+      font-size: 15px;
+      cursor: pointer;
+      transition: all 0.2s;
+    }
+
+    .icon-btn:hover {
+      background: var(--primary);
+      color: #fff;
+      border-color: var(--primary);
+      transform: scale(1.08);
+    }
+
+    .icon-btn.fav {
+      color: var(--warning);
+    }
+
+    .icon-btn.fav.active {
+      background: var(--warning);
+      color: #fff;
+      border-color: var(--warning);
+    }
+
+    /* ✨ 전문 분석 패널 스타일 */
+    .drawer {
+      position: fixed;
+      top: 0;
+      right: -750px;
+      width: 720px;
+      height: 100vh;
+      background: #fff;
+      box-shadow: -10px 0 40px rgba(0,0,0,.3);
+      transition: right 0.3s ease;
+      z-index: 1000;
+      display: flex;
+      flex-direction: column;
+    }
+
+    .drawer.open {
+      right: 0;
+    }
+
+    .drawer-header {
+      padding: 16px 20px;
+      background: linear-gradient(135deg, var(--primary) 0%, var(--primary-dark) 100%);
+      color: #fff;
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+    }
+
+    .drawer-title {
+      font-size: 16px;
+      font-weight: 700;
+    }
+
+    .close-btn {
+      width: 32px;
+      height: 32px;
+      border: none;
+      border-radius: 50%;
+      background: rgba(255,255,255,.2);
+      color: #fff;
+      font-size: 18px;
+      cursor: pointer;
+      transition: all 0.2s;
+    }
+
+    .close-btn:hover {
+      background: rgba(255,255,255,.35);
+      transform: rotate(90deg);
+    }
+
+    .drawer-body {
+      flex: 1;
+      overflow-y: auto;
+      padding: 20px;
+    }
+
+    /* 종합 점수 카드 */
+    .score-card {
+      background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+      color: #fff;
+      padding: 20px;
+      border-radius: var(--radius);
+      margin-bottom: 20px;
+      text-align: center;
+      box-shadow: 0 4px 16px rgba(102, 126, 234, 0.3);
+    }
+
+    .score-card h2 {
+      font-size: 48px;
+      font-weight: 800;
+      margin-bottom: 8px;
+    }
+
+    .score-grade {
+      font-size: 24px;
+      font-weight: 700;
+      margin-bottom: 4px;
+    }
+
+    .score-stars {
+      font-size: 28px;
+      letter-spacing: 4px;
+    }
+
+    /* 분석 섹션 */
+    .analysis-section {
+      margin-bottom: 20px;
+      padding: 16px;
+      background: #f8f9fa;
+      border-radius: var(--radius-sm);
+      border-left: 4px solid var(--primary);
+    }
+
+    .analysis-section h3 {
+      font-size: 14px;
+      font-weight: 800;
+      color: var(--gray-900);
+      margin-bottom: 12px;
+      display: flex;
+      align-items: center;
+      gap: 6px;
+    }
+
+    .analysis-item {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      margin-bottom: 10px;
+      padding: 10px;
+      background: #fff;
+      border-radius: 6px;
+    }
+
+    .analysis-label {
+      font-size: 13px;
+      color: var(--gray-700);
+      font-weight: 600;
+    }
+
+    .analysis-value {
+      font-size: 14px;
+      font-weight: 700;
+      color: var(--gray-900);
+    }
+
+    .analysis-badge {
+      padding: 4px 10px;
+      border-radius: 12px;
+      font-size: 11px;
+      font-weight: 700;
+    }
+
+    .badge-excellent {
+      background: #e8f5e9;
+      color: #2e7d32;
+      border: 1px solid #81c784;
+    }
+
+    .badge-good {
+      background: #e3f2fd;
+      color: #1976d2;
+      border: 1px solid #90caf9;
+    }
+
+    .badge-average {
+      background: #fff9e6;
+      color: #f57c00;
+      border: 1px solid #ffb74d;
+    }
+
+    .badge-poor {
+      background: #ffebee;
+      color: #c62828;
+      border: 1px solid #ef5350;
+    }
+
+    /* ✨ 차트 컨테이너 */
+    .chart-container {
+      margin-bottom: 20px;
+      padding: 16px;
+      background: #fff;
+      border-radius: var(--radius-sm);
+      box-shadow: 0 2px 8px rgba(0,0,0,.08);
+    }
+
+    .chart-title {
+      font-size: 13px;
+      font-weight: 700;
+      color: var(--gray-900);
+      margin-bottom: 12px;
+    }
+
+    .chart-wrapper {
+      position: relative;
+      height: 250px;
+    }
+
+    .chart-wrapper.small {
+      height: 180px;
+    }
+
+    /* 전문가 의견 */
+    .expert-opinion {
+      padding: 16px;
+      background: linear-gradient(135deg, #fff9e6 0%, #fff3cc 100%);
+      border-radius: var(--radius-sm);
+      border: 2px solid #ffc107;
+      margin-bottom: 20px;
+    }
+
+    .expert-opinion h3 {
+      font-size: 14px;
+      font-weight: 800;
+      color: var(--gray-900);
+      margin-bottom: 10px;
+      display: flex;
+      align-items: center;
+      gap: 6px;
+    }
+
+    .expert-opinion p {
+      font-size: 13px;
+      line-height: 1.7;
+      color: var(--gray-700);
+    }
+
+    .channel-header {
+      display: flex;
+      gap: 14px;
+      margin-bottom: 20px;
+      padding-bottom: 16px;
+      border-bottom: 2px solid var(--gray-200);
+    }
+
+    .channel-avatar {
+      width: 70px;
+      height: 70px;
+      border-radius: 50%;
+      object-fit: cover;
+      border: 3px solid var(--gray-200);
+    }
+
+    .channel-info h3 {
+      font-size: 16px;
+      font-weight: 700;
+      color: var(--gray-900);
+      margin-bottom: 5px;
+    }
+
+    .channel-url {
+      font-size: 11px;
+      color: var(--gray-700);
+      word-break: break-all;
+    }
+
+    .drawer-actions {
+      display: flex;
+      gap: 8px;
+      margin-bottom: 20px;
+    }
+
+    .backdrop {
+      position: fixed;
+      inset: 0;
+      background: rgba(0,0,0,.6);
+      backdrop-filter: blur(4px);
+      z-index: 999;
+      display: none;
+    }
+
+    .backdrop.show {
+      display: block;
+    }
+
+    .status {
+      padding: 12px 16px;
+      border-radius: var(--radius-sm);
+      font-size: 13px;
+      font-weight: 600;
+      margin-bottom: 14px;
+      display: inline-flex;
+      align-items: center;
+      gap: 8px;
+    }
+
+    .status.loading {
+      background: #e3f2fd;
+      color: #1976d2;
+      border: 2px solid #90caf9;
+    }
+
+    .status.success {
+      background: #e8f5e9;
+      color: #2e7d32;
+      border: 2px solid #81c784;
+    }
+
+    .status.error {
+      background: #ffebee;
+      color: #c62828;
+      border: 2px solid #ef5350;
+    }
+
+    .spinner {
+      width: 16px;
+      height: 16px;
+      border: 2px solid currentColor;
+      border-right-color: transparent;
+      border-radius: 50%;
+      animation: spin 0.6s linear infinite;
+    }
+
+    @keyframes spin {
+      to { transform: rotate(360deg); }
+    }
+
+    .settings-modal {
+      position: fixed;
+      top: 50%;
+      left: 50%;
+      transform: translate(-50%, -50%) scale(0.9);
+      width: 90%;
+      max-width: 500px;
+      background: #fff;
+      border-radius: var(--radius);
+      box-shadow: 0 20px 60px rgba(0,0,0,.4);
+      z-index: 2000;
+      padding: 24px;
+      opacity: 0;
+      pointer-events: none;
+      transition: all 0.3s ease;
+    }
+
+    .settings-modal.show {
+      opacity: 1;
+      transform: translate(-50%, -50%) scale(1);
+      pointer-events: auto;
+    }
+
+    .modal-header {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      margin-bottom: 20px;
+      padding-bottom: 14px;
+      border-bottom: 2px solid var(--gray-200);
+    }
+
+    .modal-title {
+      font-size: 18px;
+      font-weight: 800;
+      color: var(--gray-900);
+    }
+
+    .modal-body label {
+      display: block;
+      margin-bottom: 8px;
+      font-weight: 700;
+      font-size: 13px;
+      color: var(--gray-900);
+    }
+
+    .modal-body input {
+      width: 100%;
+      padding: 12px 16px;
+      border: 2px solid #dadce0;
+      border-radius: var(--radius-sm);
+      font-size: 14px;
+      margin-bottom: 16px;
+    }
+
+    .modal-footer {
+      display: flex;
+      gap: 10px;
+      justify-content: flex-end;
+    }
+
+    .info-box {
+      margin-top: 20px;
+      padding: 16px;
+      background: #fff3cd;
+      border-radius: var(--radius-sm);
+      font-size: 13px;
+      line-height: 1.6;
+      border: 2px solid #ffc107;
+    }
+
+    @media (max-width: 768px) {
+      .drawer {
+        width: 100%;
+        right: -100%;
+      }
+
+      .special-buttons {
+        grid-template-columns: 1fr;
+      }
+    }
+  
+    /* V6.3: 컴팩트 드로어 */
+    .drawer {
+      max-width: 850px !important;
+    }
+    
+    .chart-with-text {
+      display: grid;
+      grid-template-columns: 300px 1fr;
+      gap: 16px;
+      margin-bottom: 20px;
+      padding: 16px;
+      background: var(--gray-50);
+      border-radius: var(--radius);
+    }
+    
+    .chart-col {
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+    }
+    
+    .text-col {
+      display: flex;
+      flex-direction: column;
+      justify-content: center;
+      gap: 8px;
+    }
+    
+    .text-row {
+      display: flex;
+      justify-content: space-between;
+      padding: 6px 0;
+      border-bottom: 1px solid var(--gray-200);
+      font-size: 13px;
+    }
+    
+    .text-row:last-child {
+      border-bottom: none;
+    }
+    
+    .text-label {
+      font-weight: 600;
+      color: var(--gray-700);
+    }
+    
+    .text-value {
+      font-weight: 700;
+      color: var(--gray-900);
+    }
+    
+    .status-badge {
+      display: inline-block;
+      padding: 2px 8px;
+      border-radius: 12px;
+      font-size: 11px;
+      font-weight: 700;
+      margin-left: 6px;
+    }
+    
+    .status-excellent {
+      background: rgba(52,168,83,.15);
+      color: var(--success);
+    }
+    
+    .status-good {
+      background: rgba(251,188,4,.15);
+      color: #e37400;
+    }
+    
+    .status-normal {
+      background: rgba(26,115,232,.15);
+      color: var(--primary);
+    }
+    
+    .status-poor {
+      background: rgba(234,67,53,.15);
+      color: var(--danger);
+    }
+
+  /* 홈 하단 트렌드 뉴스 */
+    .home-footer {
+      margin-top: 40px;
+      padding: 24px;
+      background: var(--gray-50);
+      border-radius: var(--radius);
+    }
+
+    .home-footer-title {
+      font-size: 20px;
+      font-weight: 800;
+      color: var(--gray-900);
+      margin-bottom: 20px;
+      display: flex;
+      align-items: center;
+      gap: 12px;
+    }
+
+    .trend-grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+      gap: 20px;
+      margin-bottom: 24px;
+    }
+
+    .trend-card {
+      background: #fff;
+      padding: 20px;
+      border-radius: var(--radius);
+      box-shadow: 0 4px 12px rgba(0,0,0,.08);
+    }
+
+    .trend-card-header {
+      font-size: 16px;
+      font-weight: 700;
+      color: var(--gray-900);
+      margin-bottom: 12px;
+      display: flex;
+      align-items: center;
+      gap: 8px;
+    }
+
+    .trend-tags {
+      display: flex;
+      gap: 8px;
+      flex-wrap: wrap;
+      margin-bottom: 16px;
+    }
+
+    .trend-tag {
+      padding: 6px 12px;
+      background: linear-gradient(135deg, var(--primary) 0%, var(--primary-dark) 100%);
+      color: #fff;
+      border-radius: 20px;
+      font-size: 13px;
+      font-weight: 600;
+    }
+
+    .trend-items {
+      display: flex;
+      flex-direction: column;
+      gap: 10px;
+    }
+
+    .trend-item {
+      display: flex;
+      align-items: center;
+      gap: 12px;
+      padding: 10px;
+      background: var(--gray-50);
+      border-radius: var(--radius-sm);
+    }
+
+    .trend-rank {
+      font-size: 18px;
+      font-weight: 800;
+      color: var(--primary);
+      min-width: 30px;
+    }
+
+    .trend-text {
+      font-size: 14px;
+      color: var(--gray-900);
+      flex: 1;
+    }
+
+    .trend-badge {
+      padding: 4px 8px;
+      background: var(--danger);
+      color: #fff;
+      border-radius: 12px;
+      font-size: 11px;
+      font-weight: 700;
+    }
+
+    
+  
+    /* V6.5: 여백 최소화 */
+    body {
+      padding: 0 !important;
+      margin: 0 !important;
+    }
+    
+    .container {
+      max-width: 100% !important;
+      margin: 0 !important;
+      border-radius: 0 !important;
+    }
+    
+    .tab-content {
+      padding: 16px !important;
+    }
+    
+    .special-buttons {
+      margin-bottom: 16px !important;
+    }
+    
+    .cat-buttons {
+      margin-bottom: 16px !important;
+      gap: 8px !important;
+    }
+    
+    .cat-btn {
+      padding: 8px 16px !important;
+      font-size: 13px !important;
+    }
+    
+    .country-buttons {
+      margin-bottom: 16px !important;
+      gap: 6px !important;
+    }
+    
+    .country-btn {
+      padding: 6px 12px !important;
+    }
+    
+    .search-section {
+      padding: 16px !important;
+      margin-bottom: 16px !important;
+    }
+    
+    .search-row {
+      margin-bottom: 12px !important;
+    }
+
+  /* 홈 하단 트렌드 뉴스 */
+    .home-footer {
+      margin-top: 40px;
+      padding: 24px;
+      background: var(--gray-50);
+      border-radius: var(--radius);
+    }
+
+    .home-footer-title {
+      font-size: 20px;
+      font-weight: 800;
+      color: var(--gray-900);
+      margin-bottom: 20px;
+      display: flex;
+      align-items: center;
+      gap: 12px;
+    }
+
+    .trend-grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+      gap: 20px;
+      margin-bottom: 24px;
+    }
+
+    .trend-card {
+      background: #fff;
+      padding: 20px;
+      border-radius: var(--radius);
+      box-shadow: 0 4px 12px rgba(0,0,0,.08);
+    }
+
+    .trend-card-header {
+      font-size: 16px;
+      font-weight: 700;
+      color: var(--gray-900);
+      margin-bottom: 12px;
+      display: flex;
+      align-items: center;
+      gap: 8px;
+    }
+
+    .trend-tags {
+      display: flex;
+      gap: 8px;
+      flex-wrap: wrap;
+      margin-bottom: 16px;
+    }
+
+    .trend-tag {
+      padding: 6px 12px;
+      background: linear-gradient(135deg, var(--primary) 0%, var(--primary-dark) 100%);
+      color: #fff;
+      border-radius: 20px;
+      font-size: 13px;
+      font-weight: 600;
+    }
+
+    .trend-items {
+      display: flex;
+      flex-direction: column;
+      gap: 10px;
+    }
+
+    .trend-item {
+      display: flex;
+      align-items: center;
+      gap: 12px;
+      padding: 10px;
+      background: var(--gray-50);
+      border-radius: var(--radius-sm);
+    }
+
+    .trend-rank {
+      font-size: 18px;
+      font-weight: 800;
+      color: var(--primary);
+      min-width: 30px;
+    }
+
+    .trend-text {
+      font-size: 14px;
+      color: var(--gray-900);
+      flex: 1;
+    }
+
+    .trend-badge {
+      padding: 4px 8px;
+      background: var(--danger);
+      color: #fff;
+      border-radius: 12px;
+      font-size: 11px;
+      font-weight: 700;
+    }
+
+    
+  
+    
+    .home-footer {
+      margin-top: 20px !important;
+      padding: 20px !important;
+      background: var(--gray-50);
+      border-radius: var(--radius);
+    }
+
+  
+    /* 메인 레이아웃 - 좌우 분할 */
+    
+    
+    .main-layout {
+      display: flex;
+      flex-direction: column;
+      gap: 12px;
+      padding: 12px;
+      background: #f5f5f5;
+      min-height: auto;
+      padding-bottom: 30px;
+    }
+    
+    
+    
+    .main-content-wrapper {
+      flex: 1;
+      min-width: 0;
+      width: 100%;
+      background: white;
+      border-radius: 8px;
+      padding: 12px;
+    }
+    
+    
+    .sidebar {
+      width: 100%;
+      margin: 0;
+      padding: 0;
+    }
+    
+    .sidebar-card {
+      background: white;
+      border: 1px solid #e0e0e0;
+      border-radius: 8px;
+      padding: 16px;
+      margin-bottom: 16px;
+      box-shadow: 0 2px 4px rgba(0,0,0,0.05);
+    }
+    
+    .sidebar-card h3 {
+      font-size: 16px;
+      font-weight: 700;
+      margin: 0 0 12px 0;
+      color: #1a1a1a;
+      display: flex;
+      align-items: center;
+      gap: 8px;
+    }
+    
+    .sidebar-card ul {
+      list-style: none;
+      padding: 0;
+      margin: 0;
+    }
+    
+    .sidebar-card li {
+      padding: 8px 0;
+      font-size: 14px;
+      color: #555;
+      border-bottom: 1px solid #f5f5f5;
+    }
+    
+    .sidebar-card li:last-child {
+      border-bottom: none;
+    }
+    
+    .sidebar-card li strong {
+      color: #1a73e8;
+      font-weight: 600;
+    }
+    
+    .trend-badge {
+      display: inline-block;
+      padding: 2px 8px;
+      background: linear-gradient(135deg, #ff4757, #ff6b81);
+      color: white;
+      border-radius: 12px;
+      font-size: 11px;
+      font-weight: 600;
+      margin-left: 6px;
+      box-shadow: 0 2px 4px rgba(255,71,87,0.3);
+    }
+    
+    @media (max-width: 1400px) {
+      
+    
+    .main-layout {
+      display: flex;
+      flex-direction: column;
+      gap: 12px;
+      padding: 12px;
+      background: #f5f5f5;
+      min-height: auto;
+      padding-bottom: 30px;
+    }
+      
+    .sidebar {
+      width: 100%;
+      margin: 0;
+      padding: 0;
+    }
+    }
+
+    .sidebar-card {
+      transition: all 0.3s ease;
+    }
+    
+    .sidebar-card:hover {
+      transform: translateY(-4px);
+      box-shadow: 0 6px 12px rgba(0,0,0,0.15);
+      border-color: #1a73e8;
+    }
+
+    
+    /* ✨ V6.18: 하단 가로 카드 레이아웃 - 글씨 간격 축소 */
+    
+    .sidebar {
+      width: 100%;
+      margin: 0;
+      padding: 0;
+    }
+    
+    
+    .info-cards-grid {
+      display: grid;
+      grid-template-columns: repeat(3, 1fr);
+      gap: 10px;
+      margin: 0;
+      padding: 0;
+    }
+    
+    @media (max-width: 1200px) {
+      
+    .info-cards-grid {
+      display: grid;
+      grid-template-columns: repeat(3, 1fr);
+      gap: 10px;
+      margin: 0;
+      padding: 0;
+    }
+    }
+    
+    @media (max-width: 768px) {
+      
+    .info-cards-grid {
+      display: grid;
+      grid-template-columns: repeat(3, 1fr);
+      gap: 10px;
+      margin: 0;
+      padding: 0;
+    }
+    }
+    
+    
+    .info-card {
+      background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+      border: none;
+      border-radius: 12px;
+      padding: 14px;
+      box-shadow: 0 4px 12px rgba(102, 126, 234, 0.3);
+      color: white;
+      transition: all 0.3s ease;
+    }
+    
+    .info-card:hover {
+      transform: translateY(-4px);
+      box-shadow: 0 8px 20px rgba(102, 126, 234, 0.4);
+    }
+    
+    .info-card h3 {
+      font-size: 16px;
+      font-weight: 800;
+      margin: 0 0 10px 0;
+      color: #ffd700;
+      display: flex;
+      align-items: center;
+      gap: 8px;
+      text-shadow: 0 2px 4px rgba(0,0,0,0.2);
+      text-transform: uppercase;
+      letter-spacing: 0.5px;
+    }
+    
+    .info-card ul {
+      list-style: none;
+      padding: 0;
+      margin: 0;
+    }
+    
+    .info-card li {
+      padding: 6px 0;
+      font-size: 13px;
+      color: rgba(255,255,255,0.95);
+      border-bottom: 1px solid rgba(255,255,255,0.15);
+      line-height: 1.3;
+      display: flex;
+      align-items: flex-start;
+      gap: 6px;
+    }
+    
+    .info-card li:last-child {
+      border-bottom: none;
+    }
+    
+    .info-card li strong {
+      color: #ffd700;
+      font-weight: 700;
+    }
+    
+    .icon-card {
+      font-size: 16px;
+      flex-shrink: 0;
+      filter: drop-shadow(0 2px 4px rgba(0,0,0,0.2));
+    }
+    
+    .section-title-sidebar {
+      display: none;
+    }
+
+    /* ✨ V6.18: 상단 우측 버튼 - 최소화 제거 */
+    .top-actions {
+      display: flex;
+      gap: 8px;
+      align-items: center;
+    }
+    
+    .action-btn {
+      padding: 8px 16px;
+      border: none;
+      border-radius: 8px;
+      font-size: 14px;
+      font-weight: 600;
+      cursor: pointer;
+      transition: all 0.3s ease;
+      display: flex;
+      align-items: center;
+      gap: 6px;
+    }
+    
+    .btn-login {
+      background: white;
+      color: #1a73e8;
+      border: 2px solid white;
+    }
+    
+    .btn-login:hover {
+      background: rgba(255,255,255,0.9);
+      transform: translateY(-2px);
+    }
+    
+    .btn-close {
+      background: #ea4335;
+      color: white;
+      border: 2px solid #ea4335;
+    }
+    
+    .btn-close:hover {
+      background: #c62828;
+      border-color: #c62828;
+      transform: translateY(-2px);
+    }
+</style>
+</head>
+<body>
+  <div class="container">
+    <div class="header">
+      <div class="header-left">
+        <div class="logo">
+          🎬 YouTube 트렌드 분석기
+          <span class="mode-badge">📊 크리에이터 Pro v6.18</span>
+        </div>
+        
+        <div class="tabs">
+          <button class="tab active" data-tab="search">
+            <span class="icon">🔍</span> 영상 검색
+          </button>
+          <button class="tab" data-tab="favorites">
+            <span class="icon">⭐</span> 즐겨찾기
+          </button>
+        </div>
+      </div>
+
+      <div class="header-right">
+      <div class="top-actions">
+        <button class="action-btn btn-login" onclick="handleLogin()">
+          <span>👤</span> 로그인
+        </button>
+        <button class="action-btn btn-close" onclick="handleClose()" title="닫기">
+          <span>✖️</span> 닫기
+        </button>
+      </div>
+      
+        <div class="api-counter" id="apiCounter">API 호출: 0회</div>
+        <button class="header-btn" id="headerExportBtn">📥 CSV</button>
+        <button class="settings-btn" id="settingsBtn" title="설정">⚙️</button>
+      </div>
+    </div>
+
+    <div class="content active" id="tab-search">
+    <div class="main-layout">
+      <div class="main-content-wrapper">
+
+      <div class="special-buttons">
+        <button class="global-hot-btn" id="globalHotBtn">
+          <span>🌍 ✨ 글로벌 핫 영상 ✨</span>
+        </button>
+        <button class="trending-btn" id="trendingBtn">
+          <span>🚀 📈 급상승 영상 📈</span>
+        </button>
+      </div>
+
+      <div class="section">
+        <div class="section-title"><span>⚡</span> 원클릭 카테고리</div>
+        <div class="btn-grid">
+          <button class="cat-btn" data-keyword="정치">🏛️ 정치</button>
+          <button class="cat-btn" data-keyword="경제">💰 경제</button>
+          <button class="cat-btn" data-keyword="부동산">🏠 부동산</button>
+          <button class="cat-btn" data-keyword="드론">🚁 드론</button>
+          <button class="cat-btn" data-keyword="강아지 OR 고양이 OR 반려동물">🐶 PET</button>
+          <button class="cat-btn" data-keyword="사회">📰 사회</button>
+          <button class="cat-btn" data-keyword="IT 기술">💻 IT·기술</button>
+          <button class="cat-btn" data-keyword="트렌드">🔥 트렌드</button>
+          <button class="cat-btn" data-keyword="사건 사고">⚠️ 사건 사고</button>
+        </div>
+      </div>
+
+      <div class="section">
+        <div class="section-title"><span>🌍</span> 국가별 검색</div>
+        <div class="btn-grid">
+          <button class="country-btn active" data-region="KR" data-lang="ko"><span>한국</span></button>
+          <button class="country-btn" data-region="US" data-lang="en"><span>미국</span></button>
+          <button class="country-btn" data-region="JP" data-lang="ja"><span>일본</span></button>
+          <button class="country-btn" data-region="CN" data-lang="zh-CN"><span>중국</span></button>
+          <button class="country-btn" data-region="GB" data-lang="en"><span>영국</span></button>
+          <button class="country-btn" data-region="FR" data-lang="fr"><span>프랑스</span></button>
+          <button class="country-btn" data-region="DE" data-lang="de"><span>독일</span></button>
+          <button class="country-btn" data-region="TH" data-lang="th"><span>태국</span></button>
+          <button class="country-btn" data-region="VN" data-lang="vi"><span>베트남</span></button>
+          <button class="country-btn" data-region="SG" data-lang="en"><span>싱가포르</span></button>
+          <button class="country-btn" data-region="AU" data-lang="en"><span>호주</span></button>
+        </div>
+      </div>
+
+      <div class="date-filters">
+        <span class="filter-label">📅 검색 기간:</span>
+        <input type="date" id="startDate" class="date-input">
+        <span class="filter-label">~</span>
+        <input type="date" id="endDate" class="date-input">
+        
+        <div class="date-quick">
+          <button class="quick-date-btn" data-days="7">최근 7일</button>
+          <button class="quick-date-btn active" data-days="30">최근 30일</button>
+          <button class="quick-date-btn" data-days="60">최근 60일</button>
+          <button class="quick-date-btn" data-days="90">최근 90일</button>
+          <button class="quick-date-btn" data-days="0">전체기간</button>
+        </div>
+
+        <label class="translate-toggle" id="translateToggle">
+          <input type="checkbox" id="autoTranslate" checked>
+          <span>🌐 자동 번역</span>
+        </label>
+      </div>
+
+      <div class="search-bar-row">
+        <div class="filter-group">
+          <span class="filter-label">👁️</span>
+          <input type="number" id="minViews" class="filter-input" placeholder="최소 조회수">
+          
+          <span class="filter-label">👥</span>
+          <input type="number" id="minSubs" class="filter-input" placeholder="최소 구독자">
+        </div>
+
+        <input type="text" id="searchInput" class="search-input" placeholder="검색어 입력 (예: 드론 촬영 기법)">
+        
+        <select id="orderSelect">
+          <option value="relevance">관련도순</option>
+          <option value="date">최신순</option>
+          <option value="viewCount">조회수순</option>
+          <option value="rating">평점순</option>
+        </select>
+        
+        <select id="maxResults">
+          <option value="12">12개</option>
+          <option value="24" selected>24개</option>
+          <option value="36">36개</option>
+        </select>
+        
+        <button class="btn btn-primary" id="searchBtn">
+          <span>🔍</span> 검색
+        </button>
+      </div>
+
+      <div id="statusMsg"></div>
+
+      <div id="resultsContainer" style="display:none;">
+        <div class="results-header">
+          <div class="results-count" id="resultsCount"></div>
+        </div>
+
+      </div> <!-- main-content-wrapper -->
+      
+      <aside class="sidebar">
+        <div class="info-cards-grid">
+          <!-- 카드 1: 핵심 기능 -->
+          <div class="info-card">
+            <h3>💡 핵심 기능</h3>
+            <ul>
+              <li>
+                <span class="icon-card">🎯</span>
+                <span><strong>전문 분석:</strong> 11가지 지표</span>
+              </li>
+              <li>
+                <span class="icon-card">🌍</span>
+                <span><strong>글로벌:</strong> 11개국 지원</span>
+              </li>
+              <li>
+                <span class="icon-card">📊</span>
+                <span><strong>차트:</strong> 실시간 분석</span>
+              </li>
+              <li>
+                <span class="icon-card">💰</span>
+                <span><strong>수익 예측:</strong> CPM 기반</span>
+              </li>
+            </ul>
+          </div>
+          
+          <!-- 카드 2: 활용 방안 -->
+          <div class="info-card">
+            <h3>✨ 활용 방안</h3>
+            <ul>
+              <li>
+                <span class="icon-card">📈</span>
+                <span><strong>경쟁 분석:</strong> 채널 전략</span>
+              </li>
+              <li>
+                <span class="icon-card">🎬</span>
+                <span><strong>콘텐츠 기획:</strong> 트렌드</span>
+              </li>
+              <li>
+                <span class="icon-card">💼</span>
+                <span><strong>협업 발굴:</strong> 추천도</span>
+              </li>
+              <li>
+                <span class="icon-card">📱</span>
+                <span><strong>시장 조사:</strong> 글로벌</span>
+              </li>
+            </ul>
+          </div>
+          
+          <!-- 카드 3: 주요 장점 -->
+          <div class="info-card">
+            <h3>🏆 주요 장점</h3>
+            <ul>
+              <li>
+                <span class="icon-card">⚡</span>
+                <span><strong>빠른 분석:</strong> 즉시 제공</span>
+              </li>
+              <li>
+                <span class="icon-card">🎓</span>
+                <span><strong>전문가 의견:</strong> AI 평가</span>
+              </li>
+              <li>
+                <span class="icon-card">🆓</span>
+                <span><strong>무료 사용:</strong> API만</span>
+              </li>
+              <li>
+                <span class="icon-card">🚀</span>
+                <span><strong>Pro 버전:</strong> 최신 기술</span>
+              </li>
+            </ul>
+          </div>
+        </div>
+      </aside>
+    </div> <!-- main-layout -->
+
+
+        <div class="results-grid" id="resultsGrid"></div>
+      </div>
+    </div>
+
+    <div class="content" id="tab-favorites">
+      <div class="section">
+        <div class="section-title"><span>⭐</span> 저장된 즐겨찾기</div>
+        <div id="favList" style="text-align: center; padding: 40px; color: var(--gray-700);">
+          즐겨찾기가 비어있습니다.<br>
+          영상 검색 후 ⭐ 버튼을 눌러 저장하세요!
+        </div>
+      </div>
+      <button class="btn btn-primary" id="exportFavBtn">
+        <span>📥</span> 즐겨찾기 CSV
+      </button>
+    </div>
+  </div>
+
+  <div class="backdrop" id="backdrop"></div>
+  
+  <div class="settings-modal" id="settingsModal">
+    <div class="modal-header">
+      <div class="modal-title">⚙️ API 설정</div>
+      <button class="close-btn" id="closeSettings">✕</button>
+    </div>
+    <div class="modal-body">
+      <label>YouTube API Key:</label>
+      <input type="text" id="apiKeyInput" placeholder="여기에 API 키를 붙여넣으세요">
+      
+      <div class="info-box">
+        <strong>⚠️ 중요:</strong><br>
+        • API 키는 브라우저에 안전하게 저장됩니다.<br>
+        • YouTube Data API v3 키가 필요합니다.<br>
+        • <a href="https://console.cloud.google.com/" target="_blank" style="color: #1a73e8; font-weight: 700;">Google Cloud Console에서 발급 →</a>
+      </div>
+    </div>
+    <div class="modal-footer">
+      <button class="btn btn-secondary" id="closeSettings2">취소</button>
+      <button class="btn btn-primary" id="saveApiKey">💾 저장</button>
+    </div>
+  </div>
+
+  <!-- ✨ 전문 분석 Drawer (차트 포함) -->
+  <div class="drawer" id="drawer">
+    <div class="drawer-header">
+      <div class="drawer-title">📊 전문 채널 분석 (차트 포함 Pro v6.18)</div>
+      <button class="close-btn" id="closeDrawer">✕</button>
+    </div>
+    <div class="drawer-body" id="drawerBody">
+      <div style="text-align: center; padding: 40px; color: var(--gray-700);">
+        채널을 선택하여 전문 분석을 확인하세요
+      </div>
+    </div>
+  </div>
+
+  <script>
+    const API_KEY_STORAGE = 'yt_api_key';
+    const FAV_STORAGE = 'yt_favorites';
+    const TRANSLATE_STORAGE = 'yt_auto_translate';
+    
+    let API_KEY = localStorage.getItem(API_KEY_STORAGE) || '';
+    let apiCallCount = 0;
+    let currentRegion = 'KR';
+    let currentLang = 'ko';
+    let searchResults = [];
+    let favorites = JSON.parse(localStorage.getItem(FAV_STORAGE) || '{"videos":{},"channels":{}}');
+    let selectedDays = 30;
+    let autoTranslate = localStorage.getItem(TRANSLATE_STORAGE) !== 'false';
+    let searchMode = 'normal';
+
+    // Chart.js 인스턴스 저장
+    let charts = {};
+
+    const $ = (id) => document.getElementById(id);
+    const fmtNum = (n) => Number(n || 0).toLocaleString();
+    const toDate = (iso) => iso ? iso.slice(0, 10) : '';
+
+    function initDates() {
+      const now = new Date();
+      const past30 = new Date(now.getTime() - 30 * 24 * 60 * 60 * 1000);
+      $('endDate').valueAsDate = now;
+      $('startDate').valueAsDate = past30;
+    }
+
+    function initTranslateToggle() {
+      const checkbox = $('autoTranslate');
+      const toggle = $('translateToggle');
+      
+      checkbox.checked = autoTranslate;
+      if (autoTranslate) toggle.classList.add('active');
+      
+      checkbox.addEventListener('change', () => {
+        autoTranslate = checkbox.checked;
+        localStorage.setItem(TRANSLATE_STORAGE, autoTranslate);
+        toggle.classList.toggle('active', autoTranslate);
+      });
+    }
+
+    $('globalHotBtn').addEventListener('click', () => {
+      searchMode = 'global';
+      $('searchInput').value = 'trending viral popular';
+      performSearch();
+    });
+
+    $('trendingBtn').addEventListener('click', () => {
+      searchMode = 'trending';
+      const now = new Date();
+      const past7 = new Date(now.getTime() - 7 * 24 * 60 * 60 * 1000);
+      $('endDate').valueAsDate = now;
+      $('startDate').valueAsDate = past7;
+      $('orderSelect').value = 'viewCount';
+      $('searchInput').value = 'viral trending';
+      performSearch();
+    });
+
+    async function translateText(text, targetLang) {
+      if (!targetLang || targetLang === 'ko') return text;
+      try {
+        const url = `https://translate.googleapis.com/translate_a/single?client=gtx&sl=ko&tl=${targetLang}&dt=t&q=${encodeURIComponent(text)}`;
+        const response = await fetch(url);
+        const data = await response.json();
+        if (data && data[0] && data[0][0] && data[0][0][0]) {
+          return data[0][0][0];
+        }
+        return text;
+      } catch (error) {
+        return text;
+      }
+    }
+
+    function updateApiCounter() {
+      $('apiCounter').textContent = `API 호출: ${apiCallCount}회`;
+      if (apiCallCount > 50) $('apiCounter').classList.add('warning');
+    }
+
+    async function ytFetch(url) {
+      try {
+        const res = await fetch(url);
+        const data = await res.json();
+        apiCallCount++;
+        updateApiCounter();
+
+        if (!res.ok || data.error) {
+          const msg = data?.error?.message || `API 오류 (${res.status})`;
+          if (msg.toLowerCase().includes('quota')) {
+            throw new Error('⚠️ API 할당량 초과! 내일 다시 시도하세요.');
+          }
+          throw new Error(msg);
+        }
+
+        await new Promise(r => setTimeout(r, 1000));
+        return data;
+      } catch (err) {
+        throw err;
+      }
+    }
+
+    function showStatus(msg, type = 'loading') {
+      const status = $('statusMsg');
+      const icon = type === 'loading' ? '<div class="spinner"></div>' : type === 'success' ? '✅' : '❌';
+      status.innerHTML = `<div class="status ${type}">${icon} ${msg}</div>`;
+      if (type !== 'loading') setTimeout(() => status.innerHTML = '', 5000);
+    }
+
+    document.querySelectorAll('.tab').forEach(tab => {
+      tab.addEventListener('click', () => {
+        const targetTab = tab.dataset.tab;
+        document.querySelectorAll('.tab').forEach(t => t.classList.remove('active'));
+        document.querySelectorAll('.content').forEach(c => c.classList.remove('active'));
+        tab.classList.add('active');
+        $(`tab-${targetTab}`).classList.add('active');
+      });
+    });
+
+    $('settingsBtn').addEventListener('click', () => {
+      $('settingsModal').classList.add('show');
+      $('backdrop').classList.add('show');
+    });
+
+    function closeSettingsModal() {
+      $('settingsModal').classList.remove('show');
+      $('backdrop').classList.remove('show');
+    }
+
+    $('closeSettings').addEventListener('click', closeSettingsModal);
+    $('closeSettings2').addEventListener('click', closeSettingsModal);
+    $('backdrop').addEventListener('click', (e) => {
+      if (e.target === $('backdrop')) {
+        closeSettingsModal();
+        closeDrawer();
+      }
+    });
+
+    document.querySelectorAll('.country-btn').forEach(btn => {
+      btn.addEventListener('click', () => {
+        document.querySelectorAll('.country-btn').forEach(b => b.classList.remove('active'));
+        btn.classList.add('active');
+        currentRegion = btn.dataset.region;
+        currentLang = btn.dataset.lang;
+      });
+    });
+
+    document.querySelectorAll('.quick-date-btn').forEach(btn => {
+      btn.addEventListener('click', () => {
+        document.querySelectorAll('.quick-date-btn').forEach(b => b.classList.remove('active'));
+        btn.classList.add('active');
+        selectedDays = Number(btn.dataset.days);
+        
+        const now = new Date();
+        $('endDate').valueAsDate = now;
+        if (selectedDays > 0) {
+          const past = new Date(now.getTime() - selectedDays * 24 * 60 * 60 * 1000);
+          $('startDate').valueAsDate = past;
+        } else {
+          $('startDate').value = '';
+        }
+      });
+    });
+
+    document.querySelectorAll('.cat-btn').forEach(btn => {
+      btn.addEventListener('click', () => {
+        searchMode = 'normal';
+        $('searchInput').value = btn.dataset.keyword;
+        performSearch();
+      });
+    });
+
+    $('searchBtn').addEventListener('click', () => {
+      searchMode = 'normal';
+      performSearch();
+    });
+    
+    $('searchInput').addEventListener('keypress', (e) => {
+      if (e.key === 'Enter') {
+        searchMode = 'normal';
+        performSearch();
+      }
+    });
+
+    async function performSearch() {
+      let query = $('searchInput').value.trim();
+      if (!query) return alert('검색어를 입력하세요!');
+      if (!API_KEY) return alert('⚠️ 설정에서 API 키를 먼저 입력하세요!');
+
+      let originalQuery = query;
+      
+      if (searchMode !== 'global' && searchMode !== 'trending' && autoTranslate && currentLang && currentLang !== 'ko') {
+        showStatus('검색어 번역 중...', 'loading');
+        query = await translateText(query, currentLang);
+      }
+
+      showStatus('검색 중...', 'loading');
+      $('resultsGrid').innerHTML = '';
+
+      try {
+        const searchUrl = new URL('https://www.googleapis.com/youtube/v3/search');
+        searchUrl.searchParams.set('part', 'snippet');
+        searchUrl.searchParams.set('type', 'video');
+        searchUrl.searchParams.set('q', query);
+        searchUrl.searchParams.set('order', $('orderSelect').value);
+        searchUrl.searchParams.set('maxResults', $('maxResults').value);
+        searchUrl.searchParams.set('key', API_KEY);
+        
+        if (searchMode !== 'global') {
+          if (currentRegion) searchUrl.searchParams.set('regionCode', currentRegion);
+          if (currentLang) searchUrl.searchParams.set('relevanceLanguage', currentLang);
+        }
+
+        const startDate = $('startDate').value;
+        const endDate = $('endDate').value;
+        
+        if (startDate) {
+          searchUrl.searchParams.set('publishedAfter', new Date(startDate).toISOString());
+        }
+        if (endDate) {
+          const end = new Date(endDate);
+          end.setHours(23, 59, 59, 999);
+          searchUrl.searchParams.set('publishedBefore', end.toISOString());
+        }
+
+        const searchData = await ytFetch(searchUrl.toString());
+        const videoIds = (searchData.items || []).map(x => x?.id?.videoId).filter(Boolean);
+
+        if (!videoIds.length) {
+          showStatus('검색 결과가 없습니다.', 'error');
+          return;
+        }
+
+        const videosUrl = new URL('https://www.googleapis.com/youtube/v3/videos');
+        videosUrl.searchParams.set('part', 'snippet,statistics');
+        videosUrl.searchParams.set('id', videoIds.join(','));
+        videosUrl.searchParams.set('key', API_KEY);
+
+        const videosData = await ytFetch(videosUrl.toString());
+
+        const channelIds = [...new Set((videosData.items || []).map(v => v.snippet?.channelId).filter(Boolean))];
+
+        const channelsUrl = new URL('https://www.googleapis.com/youtube/v3/channels');
+        channelsUrl.searchParams.set('part', 'snippet,statistics');
+        channelsUrl.searchParams.set('id', channelIds.join(','));
+        channelsUrl.searchParams.set('key', API_KEY);
+
+        const channelsData = await ytFetch(channelsUrl.toString());
+        const channelMap = new Map((channelsData.items || []).map(c => [c.id, c]));
+
+        searchResults = (videosData.items || []).map(video => {
+          const sn = video.snippet || {};
+          const st = video.statistics || {};
+          const ch = channelMap.get(sn.channelId) || {};
+
+          return {
+            videoId: video.id,
+            title: sn.title || '',
+            thumb: sn.thumbnails?.medium?.url || '',
+            publishedAt: sn.publishedAt || '',
+            viewCount: Number(st.viewCount || 0),
+            likeCount: Number(st.likeCount || 0),
+            commentCount: Number(st.commentCount || 0),
+            channelId: sn.channelId || '',
+            channelTitle: sn.channelTitle || '',
+            subscribers: Number(ch.statistics?.subscriberCount || 0),
+            channelData: ch
+          };
+        });
+
+        const minViews = Number($('minViews').value || 0);
+        const minSubs = Number($('minSubs').value || 0);
+        searchResults = searchResults.filter(r => r.viewCount >= minViews && r.subscribers >= minSubs);
+
+        renderResults();
+        
+        let statusMsg = `${searchResults.length}개 결과 표시`;
+        if (searchMode === 'global') statusMsg += ` (🌍 글로벌 트렌드)`;
+        else if (searchMode === 'trending') statusMsg += ` (🚀 급상승 영상)`;
+        else if (autoTranslate && originalQuery !== query) statusMsg += ` (검색어: "${originalQuery}" → "${query}")`;
+        
+        showStatus(statusMsg, 'success');
+        $('resultsContainer').style.display = 'block';
+
+      } catch (err) {
+        showStatus(err.message, 'error');
+        console.error(err);
+      }
+    }
+
+    function renderResults() {
+      const grid = $('resultsGrid');
+      grid.innerHTML = '';
+      $('resultsCount').textContent = `총 ${searchResults.length}개 영상`;
+
+      for (const r of searchResults) {
+        const isFav = !!favorites.videos[r.videoId];
+        const card = document.createElement('div');
+        card.className = 'video-card';
+        card.innerHTML = `
+          <img class="video-thumb" src="${r.thumb}" alt="">
+          <div class="video-info">
+            <div class="video-title">${escapeHtml(r.title)}</div>
+            <div class="video-meta">
+              <div class="meta-item"><span>👁️</span> ${fmtNum(r.viewCount)}</div>
+              <div class="meta-item"><span>👥</span> ${fmtNum(r.subscribers)}</div>
+              <div class="meta-item"><span>📅</span> ${toDate(r.publishedAt)}</div>
+            </div>
+            <div class="video-channel">
+              <div class="channel-name">${escapeHtml(r.channelTitle)}</div>
+              <div class="action-btns">
+                <button class="icon-btn fav ${isFav ? 'active' : ''}" data-video-id="${r.videoId}">
+                  ${isFav ? '⭐' : '☆'}
+                </button>
+                <button class="icon-btn" data-channel-id="${r.channelId}" title="전문 분석 (차트 포함)">📊</button>
+              </div>
+            </div>
+          </div>
+        `;
+
+        card.querySelector('.video-thumb').addEventListener('click', () => {
+          window.open(`https://www.youtube.com/watch?v=${r.videoId}`, '_blank');
+        });
+
+        card.querySelector('.fav').addEventListener('click', (e) => {
+          e.stopPropagation();
+          toggleFavorite(r);
+        });
+
+        card.querySelector('[data-channel-id]').addEventListener('click', async (e) => {
+          e.stopPropagation();
+          await loadChannelAnalysis(r.channelId, r.channelData);
+        });
+
+        grid.appendChild(card);
+      }
+    }
+
+    function escapeHtml(str) {
+      const div = document.createElement('div');
+      div.textContent = str || '';
+      return div.innerHTML;
+    }
+
+    function toggleFavorite(video) {
+      if (favorites.videos[video.videoId]) {
+        delete favorites.videos[video.videoId];
+      } else {
+        favorites.videos[video.videoId] = { ...video, savedAt: new Date().toISOString() };
+      }
+      localStorage.setItem(FAV_STORAGE, JSON.stringify(favorites));
+      renderResults();
+    }
+
+    // ✨ 기존 차트 모두 파괴
+    function destroyAllCharts() {
+      Object.values(charts).forEach(chart => {
+        if (chart) chart.destroy();
+      });
+      charts = {};
+    }
+
+    // ✨ 전문 채널 분석 로드 (차트 포함)
+    async function loadChannelAnalysis(channelId, cachedData) {
+      destroyAllCharts(); // 기존 차트 정리
+      openDrawer();
+      $('drawerBody').innerHTML = '<div style="text-align: center; padding: 40px;"><div class="spinner" style="margin: 0 auto;"></div><p style="margin-top: 12px;">전문 분석 및 차트 생성 중...</p></div>';
+
+      try {
+        let channelData = cachedData;
+        
+        if (!channelData) {
+          const url = new URL('https://www.googleapis.com/youtube/v3/channels');
+          url.searchParams.set('part', 'snippet,statistics');
+          url.searchParams.set('id', channelId);
+          url.searchParams.set('key', API_KEY);
+          const data = await ytFetch(url.toString());
+          channelData = data.items?.[0];
+        }
+
+        if (!channelData) throw new Error('채널 정보를 찾을 수 없습니다.');
+
+        const sn = channelData.snippet || {};
+        const st = channelData.statistics || {};
+
+        // 분석 데이터 계산
+        const subscribers = Number(st.subscriberCount || 0);
+        const totalViews = Number(st.viewCount || 0);
+        const videoCount = Number(st.videoCount || 0);
+        const channelCreated = new Date(sn.publishedAt);
+        const channelAgeMonths = Math.max(1, Math.floor((Date.now() - channelCreated) / (1000 * 60 * 60 * 24 * 30)));
+        
+        const avgViews = videoCount > 0 ? Math.floor(totalViews / videoCount) : 0;
+        const monthlySubGrowth = Math.floor(subscribers / channelAgeMonths);
+        const engagementRate = subscribers > 0 ? (avgViews / subscribers) * 100 : 0;
+        const uploadsPerMonth = channelAgeMonths > 0 ? (videoCount / channelAgeMonths) : 0;
+        const consistencyScore = Math.min(100, Math.floor(uploadsPerMonth * 10));
+        
+        // 종합 점수
+        const subScore = Math.min(30, Math.floor(subscribers / 10000));
+        const viewScore = Math.min(30, Math.floor(totalViews / 1000000));
+        const engageScore = Math.min(20, Math.floor(engagementRate * 2));
+        const consistScore = Math.min(20, consistencyScore / 5);
+        const totalScore = Math.min(100, Math.floor(subScore + viewScore + engageScore + consistScore));
+        
+        let grade = 'C';
+        if (totalScore >= 90) grade = 'S';
+        else if (totalScore >= 75) grade = 'A';
+        else if (totalScore >= 60) grade = 'B';
+        else if (totalScore >= 40) grade = 'C';
+        else grade = 'D';
+
+        let stars = '★★★☆☆';
+        if (totalScore >= 85) stars = '★★★★★';
+        else if (totalScore >= 70) stars = '★★★★☆';
+        else if (totalScore >= 50) stars = '★★★☆☆';
+        else if (totalScore >= 30) stars = '★★☆☆☆';
+        else stars = '★☆☆☆☆';
+
+        let expertOpinion = '';
+        if (totalScore >= 80) {
+          expertOpinion = '이 채널은 빠른 성장세와 높은 참여율을 보이는 우수한 채널입니다. 콘텐츠 품질이 뛰어나며 구독자 충성도가 높습니다. 지금 구독을 강력히 추천합니다!';
+        } else if (totalScore >= 60) {
+          expertOpinion = '안정적인 성장세를 보이는 양질의 채널입니다. 꾸준한 콘텐츠 업로드와 적절한 참여율을 유지하고 있습니다. 구독을 권장합니다.';
+        } else if (totalScore >= 40) {
+          expertOpinion = '평균적인 수준의 채널입니다. 성장 속도와 참여율이 보통 수준이며, 콘텐츠 개선이 필요할 수 있습니다. 관심 분야라면 구독해보세요.';
+        } else {
+          expertOpinion = '성장이 더딘 채널입니다. 참여율이 낮거나 업로드가 불규칙할 수 있습니다. 구독 전 신중히 고려하세요.';
+        }
+
+        // 성장 추세 데이터 (예상)
+        const growthMonths = Math.min(12, channelAgeMonths);
+        const growthLabels = [];
+        const growthData = [];
+        for (let i = growthMonths; i > 0; i--) {
+          growthLabels.push(`${i}개월 전`);
+          const projectedSubs = Math.max(0, subscribers - (monthlySubGrowth * i) + (Math.random() * monthlySubGrowth * 0.3));
+          growthData.push(Math.floor(projectedSubs));
+        }
+        growthLabels.push('현재');
+        growthData.push(subscribers);
+
+        // HTML 렌더링
+        $('drawerBody').innerHTML = `
+          <div class="score-card">
+            <div class="score-grade">${grade}등급</div>
+            <h2>${totalScore}<span style="font-size: 24px;">/100</span></h2>
+            <div class="score-stars">${stars}</div>
+          </div>
+
+          <div class="channel-header">
+            <img class="channel-avatar" src="${sn.thumbnails?.default?.url || ''}" alt="">
+            <div class="channel-info">
+              <h3>${sn.title || ''}</h3>
+              <div class="channel-url">youtube.com/channel/${channelId}</div>
+            </div>
+          </div>
+
+          <!-- ✨ 1. 도넛 차트 + 설명 -->
+          <div class="chart-with-text">
+            <div class="chart-col">
+              <div class="chart-title">🍩 종합 점수 분포</div>
+              <div class="chart-wrapper small">
+                <canvas id="scoreChart"></canvas>
+              </div>
+            </div>
+            <div class="text-col">
+              <div class="text-row">
+                <span class="text-label">구독자 점수</span>
+                <span class="text-value">${subScore}/30점</span>
+              </div>
+              <div class="text-row">
+                <span class="text-label">조회수 점수</span>
+                <span class="text-value">${viewScore}/30점</span>
+              </div>
+              <div class="text-row">
+                <span class="text-label">참여율 점수</span>
+                <span class="text-value">${engageScore}/20점</span>
+              </div>
+              <div class="text-row">
+                <span class="text-label">일관성 점수</span>
+                <span class="text-value">${Math.floor(consistScore)}/20점</span>
+              </div>
+              <div class="text-row">
+                <span class="text-label">종합 평가</span>
+                <span class="text-value">${grade}등급 (${totalScore}/100)</span>
+              </div>
+            </div>
+          </div>
+
+          <!-- ✨ 2. 레이더 차트 + 설명 -->
+          <div class="chart-with-text">
+            <div class="chart-col">
+              <div class="chart-title">📡 5개 지표 레이더</div>
+              <div class="chart-wrapper">
+                <canvas id="radarChart"></canvas>
+              </div>
+            </div>
+            <div class="text-col">
+              <div class="text-row">
+                <span class="text-label">성장성</span>
+                <span class="text-value">
+                  ${monthlySubGrowth >= 5000 ? '매우 빠름 🔥' : monthlySubGrowth >= 1000 ? '빠름 ⚡' : monthlySubGrowth >= 100 ? '보통 📊' : '느림 ⚠️'}
+                </span>
+              </div>
+              <div class="text-row">
+                <span class="text-label">콘텐츠 퀄리티</span>
+                <span class="text-value">
+                  ${engagementRate >= 20 ? '매우 우수 ✅' : engagementRate >= 10 ? '우수 📈' : engagementRate >= 5 ? '보통 📊' : '개선 필요 ⚠️'}
+                </span>
+              </div>
+              <div class="text-row">
+                <span class="text-label">업로드 꾸준함</span>
+                <span class="text-value">
+                  ${consistencyScore >= 80 ? '매우 일관적 ✅' : consistencyScore >= 60 ? '일관적 📊' : consistencyScore >= 40 ? '보통 ⚠️' : '불규칙 ❌'}
+                </span>
+              </div>
+              <div class="text-row">
+                <span class="text-label">구독자 참여율</span>
+                <span class="text-value">${engagementRate.toFixed(1)}%</span>
+              </div>
+              <div class="text-row">
+                <span class="text-label">채널 영향력</span>
+                <span class="text-value">${fmtNum(subscribers)} 구독자</span>
+              </div>
+            </div>
+          </div>
+
+          <!-- ✨ 3. 성장 추세 차트 + 설명 -->
+          <div class="chart-with-text">
+            <div class="chart-col">
+              <div class="chart-title">📊 구독자 성장 추세</div>
+              <div class="chart-wrapper">
+                <canvas id="growthChart"></canvas>
+              </div>
+            </div>
+            <div class="text-col">
+              <div class="text-row">
+                <span class="text-label">채널 나이</span>
+                <span class="text-value">${Math.floor(channelAgeMonths / 12)}년 ${channelAgeMonths % 12}개월</span>
+              </div>
+              <div class="text-row">
+                <span class="text-label">월평균 증가</span>
+                <span class="text-value">+${fmtNum(monthlySubGrowth)}명/월</span>
+              </div>
+              <div class="text-row">
+                <span class="text-label">연간 성장률</span>
+                <span class="text-value">${((monthlySubGrowth * 12 / subscribers) * 100).toFixed(1)}%</span>
+              </div>
+              <div class="text-row">
+                <span class="text-label">총 영상 수</span>
+                <span class="text-value">${fmtNum(videoCount)}개</span>
+              </div>
+              <div class="text-row">
+                <span class="text-label">월평균 업로드</span>
+                <span class="text-value">${uploadsPerMonth.toFixed(1)}개/월</span>
+              </div>
+            </div>
+          </div>
+
+          <!-- ✨ 4. 참여율 게이지 + 설명 -->
+          <div class="chart-with-text">
+            <div class="chart-col">
+              <div class="chart-title">🎯 참여율 게이지</div>
+              <div class="chart-wrapper small">
+                <canvas id="gaugeChart"></canvas>
+              </div>
+            </div>
+            <div class="text-col">
+              <div class="text-row">
+                <span class="text-label">구독자 참여율</span>
+                <span class="text-value">${engagementRate.toFixed(1)}%</span>
+              </div>
+              <div class="text-row">
+                <span class="text-label">평균 조회수</span>
+                <span class="text-value">${fmtNum(avgViews)}회</span>
+              </div>
+              <div class="text-row">
+                <span class="text-label">총 조회수</span>
+                <span class="text-value">${fmtNum(totalViews)}회</span>
+              </div>
+              <div class="text-row">
+                <span class="text-label">참여도 평가</span>
+                <span class="text-value">
+                  <span class="status-badge ${engagementRate >= 15 ? 'status-excellent' : engagementRate >= 5 ? 'status-good' : 'status-normal'}">
+                    ${engagementRate >= 15 ? '매우 우수 ✅' : engagementRate >= 5 ? '우수 📈' : '보통 📊'}
+                  </span>
+                </span>
+              </div>
+            </div>
+          </div>
+
+          <!-- ✨ 5. 수익성 분석 (신규 추가!) -->
+          <div class="analysis-section">
+            <h3>💰 수익성 분석</h3>
+            <div class="analysis-item">
+              <span class="analysis-label">예상 월 수익</span>
+              <span class="analysis-value">
+                $${fmtNum(Math.floor(avgViews * uploadsPerMonth * 0.001))} ~ $${fmtNum(Math.floor(avgViews * uploadsPerMonth * 0.005))}
+              </span>
+            </div>
+            <div class="analysis-item">
+              <span class="analysis-label">월 예상 조회수</span>
+              <span class="analysis-value">${fmtNum(Math.floor(avgViews * uploadsPerMonth))}회</span>
+            </div>
+            <div class="analysis-item">
+              <span class="analysis-label">수익화 가능성</span>
+              <span class="analysis-value">
+                ${subscribers >= 1000 && totalViews >= 4000 ? '✅ 활성화 가능' : '⚠️ 조건 미달'}
+              </span>
+            </div>
+            <div class="analysis-item">
+              <span class="analysis-label">CPM 기준</span>
+              <span class="analysis-value">$1.00 ~ $5.00 (평균)</span>
+            </div>
+          </div>
+
+          <!-- ✨ 6. 전문가 종합 분석 (신규 추가!) -->
+          <div class="expert-opinion">
+            <h3>💡 전문가 종합 분석</h3>
+            <p>${expertOpinion}</p>
+            <div style="margin-top: 12px; padding-top: 12px; border-top: 1px solid rgba(0,0,0,.1);">
+              <strong>주요 강점:</strong><br>
+              ${monthlySubGrowth >= 1000 ? '✅ 빠른 구독자 성장세<br>' : ''}
+              ${engagementRate >= 10 ? '✅ 높은 구독자 참여율<br>' : ''}
+              ${consistencyScore >= 70 ? '✅ 꾸준한 콘텐츠 업로드<br>' : ''}
+              ${subscribers >= 100000 ? '✅ 대형 채널 영향력<br>' : ''}
+            </div>
+            <div style="margin-top: 8px;">
+              <strong>구독 추천도:</strong>
+              <span style="font-size: 24px; margin-left: 8px;">${stars}</span>
+            </div>
+          </div>
+
+          <div class="drawer-actions">
+            <button class="btn btn-primary" onclick="window.open('https://www.youtube.com/channel/${channelId}', '_blank')">
+              <span>🔗</span> 채널 열기
+            </button>
+            <button class="btn btn-secondary" onclick="alert('⭐ 즐겨찾기 기능은 추후 추가됩니다')">
+              <span>⭐</span> 즐겨찾기
+            </button>
+          </div>
+        `;
+
+        // ✨ 차트 생성
+        setTimeout(() => {
+          // 1. 도넛 차트: 종합 점수
+          const scoreCtx = document.getElementById('scoreChart');
+          if (scoreCtx) {
+            charts.score = new Chart(scoreCtx, {
+              type: 'doughnut',
+              data: {
+                labels: ['구독자', '조회수', '참여율', '일관성'],
+                datasets: [{
+                  data: [subScore, viewScore, engageScore, consistScore],
+                  backgroundColor: [
+                    'rgba(26, 115, 232, 0.8)',
+                    'rgba(52, 168, 83, 0.8)',
+                    'rgba(251, 188, 4, 0.8)',
+                    'rgba(234, 67, 53, 0.8)'
+                  ],
+                  borderWidth: 2,
+                  borderColor: '#fff'
+                }]
+              },
+              options: {
+                responsive: true,
+                maintainAspectRatio: false,
+                plugins: {
+                  legend: {
+                    position: 'bottom',
+                    labels: { font: { size: 11 } }
+                  },
+                  title: {
+                    display: true,
+                    text: `총점: ${totalScore}/100 (${grade}등급)`,
+                    font: { size: 14, weight: 'bold' }
+                  }
+                }
+              }
+            });
+          }
+
+          // 2. 레이더 차트: 5개 지표
+          const radarCtx = document.getElementById('radarChart');
+          if (radarCtx) {
+            charts.radar = new Chart(radarCtx, {
+              type: 'radar',
+              data: {
+                labels: ['성장성', '콘텐츠 퀄리티', '꾸준함', '참여율', '영향력'],
+                datasets: [{
+                  label: '채널 분석',
+                  data: [
+                    Math.min(100, monthlySubGrowth / 50),
+                    Math.min(100, engagementRate * 5),
+                    consistencyScore,
+                    Math.min(100, engagementRate * 3),
+                    Math.min(100, totalScore)
+                  ],
+                  backgroundColor: 'rgba(26, 115, 232, 0.2)',
+                  borderColor: 'rgba(26, 115, 232, 1)',
+                  borderWidth: 2,
+                  pointBackgroundColor: 'rgba(26, 115, 232, 1)',
+                  pointRadius: 4
+                }]
+              },
+              options: {
+                responsive: true,
+                maintainAspectRatio: false,
+                scales: {
+                  r: {
+                    beginAtZero: true,
+                    max: 100,
+                    ticks: {
+                      stepSize: 20,
+                      font: { size: 10 }
+                    }
+                  }
+                },
+                plugins: {
+                  legend: { display: false }
+                }
+              }
+            });
+          }
+
+          // 3. 바 차트: 성장 추세
+          const growthCtx = document.getElementById('growthChart');
+          if (growthCtx) {
+            charts.growth = new Chart(growthCtx, {
+              type: 'bar',
+              data: {
+                labels: growthLabels,
+                datasets: [{
+                  label: '구독자 수',
+                  data: growthData,
+                  backgroundColor: 'rgba(52, 168, 83, 0.6)',
+                  borderColor: 'rgba(52, 168, 83, 1)',
+                  borderWidth: 2
+                }]
+              },
+              options: {
+                responsive: true,
+                maintainAspectRatio: false,
+                plugins: {
+                  legend: { display: false },
+                  title: {
+                    display: true,
+                    text: `월평균 +${fmtNum(monthlySubGrowth)}명 증가`,
+                    font: { size: 12 }
+                  }
+                },
+                scales: {
+                  y: {
+                    beginAtZero: true,
+                    ticks: {
+                      callback: function(value) {
+                        return fmtNum(value);
+                      },
+                      font: { size: 10 }
+                    }
+                  },
+                  x: {
+                    ticks: { font: { size: 10 } }
+                  }
+                }
+              }
+            });
+          }
+
+          // 4. 게이지 차트 (도넛 차트로 구현)
+          const gaugeCtx = document.getElementById('gaugeChart');
+          if (gaugeCtx) {
+            const maxEngagement = 30;
+            const normalizedEngagement = Math.min(maxEngagement, engagementRate);
+            const remaining = maxEngagement - normalizedEngagement;
+
+            let color = 'rgba(234, 67, 53, 0.8)'; // 빨강 (낮음)
+            if (engagementRate > 15) color = 'rgba(52, 168, 83, 0.8)'; // 초록 (높음)
+            else if (engagementRate > 8) color = 'rgba(251, 188, 4, 0.8)'; // 노랑 (중간)
+
+            charts.gauge = new Chart(gaugeCtx, {
+              type: 'doughnut',
+              data: {
+                datasets: [{
+                  data: [normalizedEngagement, remaining],
+                  backgroundColor: [color, 'rgba(220, 220, 220, 0.3)'],
+                  borderWidth: 0
+                }]
+              },
+              options: {
+                responsive: true,
+                maintainAspectRatio: false,
+                rotation: -90,
+                circumference: 180,
+                cutout: '75%',
+                plugins: {
+                  legend: { display: false },
+                  tooltip: { enabled: false },
+                  title: {
+                    display: true,
+                    text: `${engagementRate.toFixed(1)}% 참여율`,
+                    font: { size: 16, weight: 'bold' }
+                  }
+                }
+              }
+            });
+          }
+        }, 100);
+
+      } catch (err) {
+        $('drawerBody').innerHTML = `<div style="text-align: center; padding: 40px; color: var(--danger);">${err.message}</div>`;
+      }
+    }
+
+    function openDrawer() {
+      $('drawer').classList.add('open');
+      $('backdrop').classList.add('show');
+    }
+
+    function closeDrawer() {
+      $('drawer').classList.remove('open');
+      $('backdrop').classList.remove('show');
+      destroyAllCharts(); // 차트 정리
+    }
+
+    $('closeDrawer').addEventListener('click', closeDrawer);
+
+    $('headerExportBtn').addEventListener('click', () => {
+      if (!searchResults.length) return alert('검색 결과가 없습니다!');
+
+      const csv = [
+        '제목,채널,조회수,구독자,좋아요,댓글,업로드일,영상URL',
+        ...searchResults.map(r => [
+          r.title, r.channelTitle, r.viewCount, r.subscribers, r.likeCount, r.commentCount, toDate(r.publishedAt),
+          `https://www.youtube.com/watch?v=${r.videoId}`
+        ].map(v => `"${String(v).replace(/"/g, '""')}"`).join(','))
+      ].join('\n');
+
+      const blob = new Blob(['\uFEFF' + csv], { type: 'text/csv;charset=utf-8;' });
+      const url = URL.createObjectURL(blob);
+      const a = document.createElement('a');
+      a.href = url;
+      a.download = `youtube_results_${new Date().toISOString().slice(0,10)}.csv`;
+      a.click();
+      URL.revokeObjectURL(url);
+    });
+
+    $('apiKeyInput').value = API_KEY;
+
+    $('saveApiKey').addEventListener('click', () => {
+      const key = $('apiKeyInput').value.trim();
+      if (!key) return alert('API 키를 입력하세요!');
+      localStorage.setItem(API_KEY_STORAGE, key);
+      API_KEY = key;
+      alert('✅ API 키가 저장되었습니다!');
+      closeSettingsModal();
+    });
+
+    initDates();
+    initTranslateToggle();
+    updateApiCounter();
+    console.log('🎬 YouTube 트렌드 분석기 Pro V6.18 Final 로드 완료!');
+
+    // 상단 버튼 함수들
+    function handleLogin() {
+      alert('🔐 로그인 기능\n\n💡 향후 계획:\n• 회원 가입/로그인\n• 프리미엄 구독\n• 개인화된 분석 데이터 저장\n\n현재는 설정(⚙️)에서 YouTube API 키를 입력하여 무료로 사용 가능합니다!');
+    }
+    
+    function handleClose() {
+      if (confirm('⚠️ YouTube 트렌드 분석기를 종료하시겠습니까?')) {
+        window.close();
+        // window.close()가 작동하지 않는 경우를 위한 대체
+        if (!window.closed) {
+          alert('💡 브라우저 보안상 창을 자동으로 닫을 수 없습니다.\n\n브라우저의 닫기(X) 버튼을 사용해주세요.');
+        }
+      }
+    }
+</script>
+</body>
+</html>
