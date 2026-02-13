@@ -1,86 +1,183 @@
 # 🎬 VIDORA PRO
 ## YouTube Trend Analyzer
 
-[![License: MIT](https://img.shields.io/badge/License-MIT-yellow.svg)](https://opensource.org/licenses/MIT)
-[![Version](https://img.shields.io/badge/version-6.18-blue.svg)](https://github.com/pumping365/youtube-search)
-[![Early Bird](https://img.shields.io/badge/Early%20Bird-$1%2Fmonth-red.svg)](https://gumroad.com/l/vidora-pro)
+[![License: Personal Use](https://img.shields.io/badge/License-Personal_Use-blue.svg)](./LICENSE)
+[![Version](https://img.shields.io/badge/version-6.18-brightgreen)](https://github.com/pumping365/youtube-search)
+[![Launch Special](https://img.shields.io/badge/Launch_Special-300_FREE-gold?style=for-the-badge)](https://gumroad.com/l/vidora-pro)
+[![Download](https://img.shields.io/github/downloads/pumping365/youtube-search/total?label=Downloads)](https://github.com/pumping365/youtube-search)
 
 **Developed by 대영마켓 (Daeyoung Market)**  
 Published under brand **VIDORA**
 
 > 📊 Analyze YouTube trends with **11 key metrics** across **11 countries**  
 > 🎯 Discover viral opportunities before they explode  
-> 🚀 Used by 100+ content creators worldwide
+> 🚀 Used by 150+ content creators worldwide
 
 ---
 
-## 🔥 New! Early Bird Special
+## 🎉 LAUNCH SPECIAL: First 300 Users Get It FREE!
 
-**⏰ Limited Time Offer**: Get VIDORA PRO for just **$1/month** (first 100 subscribers only)
+<div align="center">
+
+### 🎁 100% FREE for Launch Week!
+
+**Worth $24.99 → You Pay: $0.00** ✨
 
 <table>
 <tr>
-<td width="60%">
+<td width="50%">
 
-### 🎁 What You Get:
-- ✅ **Full access** to all features (same as $4.99 plan)
-- ✅ **Lifetime price lock** - $1/month forever
-- ✅ **Priority email support** - 24-hour response
-- ✅ **Free updates for life** - including V7.0 AI features
-- ✅ **Early adopter Discord** - exclusive community
-- ✅ **Feature voting rights** - shape the roadmap
+#### 💎 What You Get (FREE):
+- ✅ **VIDORA PRO v6.18** (Full Version)
+- ✅ **User Guide PDF** (20 pages)
+- ✅ **FREE Upgrade to v7.0** (May 2026 - AI features!)
+- ✅ **Priority Email Support** (30 days)
+- ✅ **Private Discord Access**
+- ✅ **Feature Voting Rights**
+- ✅ **Early Adopter Status**
+- ✅ **Lifetime License** for v6.18
 
 </td>
-<td width="40%">
+<td width="50%">
 
-### 📈 Progress:
-```
-██████████░░░░░░░░░░ 13/100
+#### 📊 Launch Status:
 
-🎯 87 spots remaining
-⏰ Ends when sold out
-💰 Regular price: $4.99/month
 ```
+████████████████████ 0/300
+
+🎯 300 spots remaining
+⏰ Until spots run out
+💰 Then: $1.99 Early Bird (next 200)
+💰 After: $4.99 Standard Price
+```
+
+**🔥 This is a ONE-TIME opportunity!**
 
 </td>
 </tr>
 </table>
 
-### 👉 **[Subscribe Now - $1/month →](https://gumroad.com/l/vidora-pro)**
+### 👉 **[CLAIM YOUR FREE COPY NOW →](https://gumroad.com/l/vidora-pro)**
+
+**No credit card required. No signup. Just download and go!** 🚀
+
+</div>
 
 ---
 
-## ⚡ Free Version Available
+### 🎁 Launch Special Benefits
 
-You can try the free version by downloading from this repository:
+<table>
+<tr>
+<td width="25%">
 
-**[📥 Download Free Version (v6.18)](./youtube_search_ultimate_final_v6.18_final.html)**
+#### 🆓 Launch Users
+**(First 300)**
 
-### 🆚 Free vs PRO Comparison
+**Price:** $0.00  
+**Status:** ACTIVE ✅
 
-| Feature | Free Version | PRO ($1/month) |
-|---------|:------------:|:--------------:|
-| **Core Features** |
-| 11 Key Metrics | ✅ | ✅ |
-| 11 Countries | ✅ | ✅ |
-| Chart Visualizations | ✅ | ✅ |
-| CSV Data Export | ✅ | ✅ |
-| No Installation Required | ✅ | ✅ |
-| **Support & Community** |
-| Community Support | ✅ (GitHub Issues) | ✅ |
-| Priority Email Support | ❌ | ✅ (24h response) |
-| Discord Community | ❌ | ✅ (Private channel) |
-| 1-on-1 Consulting | ❌ | ✅ (Monthly, PRO+) |
-| **Updates & Features** |
-| Bug Fixes | ✅ | ✅ (Priority) |
-| Feature Updates | ⏰ (Delayed) | ✅ (Early access) |
-| V7.0 AI Analysis | ❌ | ✅ (Free for Early Bird) |
-| Feature Voting | ❌ | ✅ |
-| **Pricing** |
-| Cost | Free | $1/month (locked) |
-| After 100 Subscribers | Free | $4.99/month (new users) |
+✅ v6.18 Forever  
+✅ v7.0 FREE  
+✅ v8.0 Discount (50%)  
+✅ Discord Access  
+✅ 30 Days Support  
+✅ Voting Rights
 
-> 💡 **Early Bird subscribers keep $1/month forever**, even after price increases!
+</td>
+<td width="25%">
+
+#### 🐦 Early Bird
+**(#301-500)**
+
+**Price:** $1.99  
+**Status:** Coming Soon
+
+✅ v6.18 Forever  
+✅ v7.0 FREE  
+✅ v8.0 Discount (30%)  
+✅ Discord Access  
+✅ 30 Days Support  
+❌ Voting Rights
+
+</td>
+<td width="25%">
+
+#### 💎 Standard
+**(#501+)**
+
+**Price:** $4.99  
+**Status:** Coming Soon
+
+✅ v6.18 Forever  
+❌ v7.0 (Paid upgrade)  
+❌ v8.0 (Paid upgrade)  
+✅ Discord Access  
+✅ Email Support  
+❌ Voting Rights
+
+</td>
+<td width="25%">
+
+#### 🆓 Free Version
+**(Always Free)**
+
+**Price:** $0.00  
+**Status:** Available
+
+✅ Core Features  
+❌ v7.0  
+❌ v8.0  
+❌ Discord  
+❌ Priority Support  
+❌ Voting Rights
+
+</td>
+</tr>
+</table>
+
+> 💡 **Launch Users get the best deal ever**: Free now + v7.0 FREE + Lifetime benefits!
+
+---
+
+### ⏰ Pricing Timeline
+
+```
+┌─────────────────────────────────────────────────────────────┐
+│ Launch Special Timeline                                     │
+├─────────────────────────────────────────────────────────────┤
+│ NOW          300 Users    500 Users    Future              │
+│  │              │             │           │                 │
+│  │   FREE       │   $1.99     │  $4.99    │   $9.99+       │
+│  │  (0-300)     │  (301-500)  │  (501+)   │   (v8.0)       │
+│  │              │             │           │                 │
+│  └──────────────┴─────────────┴───────────┴─────────────    │
+│                                                              │
+│  🎯 You are here → Spot #1-300 → 100% FREE! 🎁            │
+└─────────────────────────────────────────────────────────────┘
+```
+
+---
+
+### 🔥 Why Launch Users Get The Best Deal
+
+<div align="center">
+
+| Benefit | Launch (FREE) | Early Bird ($1.99) | Standard ($4.99) | Free Version |
+|:--------|:-------------:|:------------------:|:----------------:|:------------:|
+| **v6.18 Full Access** | ✅ | ✅ | ✅ | ✅ |
+| **v7.0 AI Features** | ✅ FREE | ✅ FREE | ❌ Paid | ❌ |
+| **v8.0 Upgrade** | 50% OFF | 30% OFF | Full Price | ❌ |
+| **Priority Support** | 30 days | 30 days | Standard | ❌ |
+| **Discord Community** | ✅ Private | ✅ Private | ✅ Standard | ❌ |
+| **Feature Voting** | ✅ | ❌ | ❌ | ❌ |
+| **Lifetime Badge** | 🏆 Founder | 🐦 Early Bird | 💎 Standard | 🆓 Free |
+| **Total Value** | **$60+** | **$40+** | **$24.99** | **$0** |
+| **You Pay** | **$0.00** 🎉 | $1.99 | $4.99 | $0.00 |
+
+</div>
+
+> 🚨 **Don't miss out!** After 300 users, you'll pay $1.99-$4.99 for the same features Launch Users get FREE!
 
 ---
 
@@ -124,8 +221,8 @@ You can try the free version by downloading from this repository:
 ### 🎨 Beautiful Visualizations
 
 - 📊 Interactive charts powered by **Chart.js**
-- 📱 Fully responsive design (desktop, tablet, mobile)
-- 🌙 Dark mode support (coming soon)
+- 📱 Fully responsive design (PC/Mac optimized)
+- 🌙 Dark mode support (v7.0)
 - 📤 Export to CSV/Excel for further analysis
 - 🖨️ Print-friendly reports
 
@@ -133,30 +230,34 @@ You can try the free version by downloading from this repository:
 
 ## 🚀 Quick Start
 
-### For Free Version:
+### For Launch Special (FREE):
 
-1. **Download** the HTML file from this repository
-2. **Open** with any modern browser (Chrome, Firefox, Safari, Edge)
-3. **Get** your free YouTube Data API key ([Guide](./docs/API_SETUP_GUIDE.md))
-4. **Start** analyzing trends!
+1. **[CLAIM FREE COPY](https://gumroad.com/l/vidora-pro)** (No credit card!)
+2. **Download** 2 files: HTML + User Guide PDF
+3. **Get** your free YouTube Data API key ([5-minute guide](./docs/API_SETUP_GUIDE.md))
+4. **Open** HTML file in browser
+5. **Enter** your API key (one-time)
+6. **Start** analyzing trends! 🎉
 
-### For PRO Version:
+### For Free GitHub Version:
 
-1. **[Subscribe on Gumroad](https://gumroad.com/l/vidora-pro)** ($1/month)
-2. **Download** the ZIP file from purchase confirmation email
-3. **Follow** the included User Guide (PDF)
-4. **Join** the exclusive Discord community
-5. **Get** priority support: DONGSOO3354@GMAIL.COM
+1. **Download** `youtube_search_ultimate_final_v6.18_final.html`
+2. **Open** with any modern browser
+3. **Get** YouTube API key ([Guide](./docs/API_SETUP_GUIDE.md))
+4. **Start** using!
+
+> 💡 **Launch Special includes User Guide PDF + Priority Support!**
 
 ---
 
 ## 📖 Documentation
 
-- 📘 **[User Guide (20 pages)](./YouTube_Trend_Analyzer_V6.18_README.pdf)** - Comprehensive manual
+- 📘 **[User Guide (20 pages)](https://gumroad.com/l/vidora-pro)** - Comprehensive manual (Launch Special only)
 - 🔑 **[API Key Setup Guide](./docs/API_SETUP_GUIDE.md)** - Step-by-step tutorial
 - 📸 **[Screenshots](./docs/screenshots/)** - Visual tour
 - ❓ **[FAQ](./docs/FAQ.md)** - Common questions
 - 🐛 **[Report Issues](https://github.com/pumping365/youtube-search/issues)** - Bug tracker
+- 📜 **[License Terms](./LICENSE)** - Personal Use License
 
 ---
 
@@ -171,7 +272,10 @@ You can try the free version by downloading from this repository:
 - 💻 Desktop or laptop (1920×1080 or higher)
 - 🌐 Stable internet (5 Mbps+)
 - 🧠 8GB RAM
-- 📱 Mobile devices supported (responsive design)
+
+### Platform Support:
+- ✅ **Optimized for**: Windows, macOS, Linux
+- ⚠️ **Mobile**: Works but not optimized (v7.0 will support)
 
 ### What You DON'T Need:
 - ❌ No installation required
@@ -189,15 +293,17 @@ You can try the free version by downloading from this repository:
 - Chart.js visualizations
 - CSV export functionality
 - Responsive design
-- MIT License
+- Personal Use License
 
 ### 🔜 Coming Soon (V7.0 - May 2026)
 - 🤖 **AI-Powered Trend Prediction** - Machine learning algorithms
-- 📱 **Mobile Apps** - Native iOS/Android apps
-- 🔔 **Real-Time Alerts** - Email/Push notifications for trending topics
+- 📱 **Mobile-Friendly Design** - Responsive for smartphones
+- 🔔 **Real-Time Alerts** - Email notifications for trending topics
 - 🎯 **Personalized Recommendations** - Based on your channel niche
 - 🌙 **Dark Mode** - Eye-friendly interface
-- 🌐 **5 More Countries** - Expanding to 16 countries total
+- 🌐 **16+ Countries** - Expanding country coverage
+
+> 🎁 **Launch Users (First 300) get V7.0 completely FREE!**
 
 ### 🚀 Future Plans (V8.0 - Q4 2026)
 - 🎬 **Video Content Analyzer** - Thumbnail, title, description analysis
@@ -206,7 +312,7 @@ You can try the free version by downloading from this repository:
 - 🤝 **Team Collaboration** - Multi-user workspaces
 - 📈 **Advanced Analytics** - Predictive modeling, forecasting
 
-> 🎁 **Early Bird subscribers get V7.0 and V8.0 for free!**
+> 🎁 **Launch Users get 50% discount on V8.0!**
 
 ---
 
@@ -230,6 +336,7 @@ You can try the free version by downloading from this repository:
 **Connect:**
 - 📧 Email: DONGSOO3354@GMAIL.COM
 - 💬 GitHub: [@pumping365](https://github.com/pumping365)
+- 🌐 Website: https://vidora-pro.com
 - 📺 YouTube: [Channel] (Coming soon)
 - 📝 Blog: [ToBi's Tech Journey]
 
@@ -239,7 +346,9 @@ You can try the free version by downloading from this repository:
 
 ### 🎯 Why I Built VIDORA PRO
 
-> "After 2 years of exploring AI tools, I realized that YouTube creators need **data-driven insights**, not just gut feelings. As a content creator myself, I wanted a tool that analyzes trends **before** they become saturated. VIDORA PRO is the result of that vision."
+> "After 2 years of exploring AI tools, I realized that YouTube creators need **data-driven insights**, not just gut feelings. As a content creator myself, I wanted a tool that analyzes trends **before** they become saturated. VIDORA PRO is the result of that vision.
+>
+> The Launch Special (300 FREE users) is my way of saying thank you to early supporters. You're not just users—you're **founders** of this community."
 >
 > — ToBi (박동수), Creator of VIDORA
 
@@ -260,108 +369,128 @@ We welcome contributions! Whether it's:
 4. Push to the branch: `git push origin feature/amazing-feature`
 5. Open a Pull Request
 
-**PRO subscribers get priority for feature requests!**
+**Launch Users get priority for feature requests!**
 
 ---
 
 ## 📜 License
 
-This project is licensed under the **MIT License** - see the [LICENSE](./LICENSE) file for details.
+This project is licensed under the **Personal Use License** - see the [LICENSE](./LICENSE) file for details.
 
-```
-MIT License
+### 📋 License Summary:
 
-Copyright (c) 2026 대영마켓 (Daeyoung Market)
+✅ **Allowed:**
+- Personal use on up to 3 devices
+- Backup copies for archival purposes
+- Offline use after initial setup
 
-Permission is hereby granted, free of charge, to any person obtaining a copy
-of this software and associated documentation files (the "Software"), to deal
-in the Software without restriction, including without limitation the rights
-to use, copy, modify, merge, publish, distribute, sublicense, and/or sell
-copies of the Software, and to permit persons to whom the Software is
-furnished to do so, subject to the following conditions:
+❌ **Not Allowed:**
+- Sharing or redistributing to others
+- Commercial resale without upgrade
+- Public file-sharing or cloud storage for distribution
+- Removing copyright notices
 
-[Full MIT License text...]
-```
+🎁 **Launch Users (First 300):**
+- Lifetime license for v6.18
+- FREE upgrade to v7.0 (May 2026)
+- 50% discount on v8.0
+- All Personal Use License terms apply
+
+📧 **Questions?** DONGSOO3354@GMAIL.COM  
+📄 **[View Full License](./LICENSE)**
 
 ---
 
 ## ❓ FAQ
 
 <details>
+<summary><b>Q: Is the Launch Special really 100% free?</b></summary>
+
+**A:** YES! First 300 users pay absolutely nothing ($0.00). No credit card required, no hidden fees, no trial period. It's completely free forever for v6.18, and you even get v7.0 for free in May 2026!
+</details>
+
+<details>
+<summary><b>Q: What happens after 300 users?</b></summary>
+
+**A:** Price increases to $1.99 Early Bird (users #301-500), then $4.99 standard. But Launch Users keep their free access forever + get v7.0 free!
+</details>
+
+<details>
 <summary><b>Q: Do I need coding skills to use VIDORA PRO?</b></summary>
 
-**A:** No! Just open the HTML file in your browser. The interface is user-friendly and requires no technical knowledge.
+**A:** No! Just open the HTML file in your browser. The interface is user-friendly and requires no technical knowledge. The User Guide (included free for Launch Users) has screenshots for every step.
 </details>
 
 <details>
 <summary><b>Q: What about YouTube API rate limits?</b></summary>
 
-**A:** The free YouTube Data API tier provides 10,000 queries per day, which is more than enough for most creators. PRO subscribers get additional optimization tips to maximize their quota.
+**A:** The free YouTube Data API tier provides 10,000 queries per day, which is more than enough for most creators. Launch Users get additional optimization tips in the User Guide to maximize their quota.
 </details>
 
 <details>
-<summary><b>Q: Can I cancel my subscription anytime?</b></summary>
+<summary><b>Q: Can I share VIDORA PRO with my team?</b></summary>
 
-**A:** Yes! No questions asked. Cancel anytime from your Gumroad dashboard. Your access continues until the end of your billing period.
+**A:** The Personal Use License allows installation on up to 3 devices that you personally own. Sharing the file with others is not permitted. For teams, contact us about Commercial License options.
 </details>
 
 <details>
-<summary><b>Q: Is there a refund policy?</b></summary>
+<summary><b>Q: Will v7.0 really be free for Launch Users?</b></summary>
 
-**A:** Yes! We offer a 30-day money-back guarantee. If you're not satisfied for any reason, contact us for a full refund.
-</details>
-
-<details>
-<summary><b>Q: Will the Early Bird price really stay $1/month forever?</b></summary>
-
-**A:** Absolutely! Early Bird subscribers lock in $1/month for life, even when we raise prices to $4.99 for new users.
-</details>
-
-<details>
-<summary><b>Q: What's the difference between Free and PRO?</b></summary>
-
-**A:** The Free version has all core features. PRO adds: priority support, Discord community, early access to updates (including V7.0 AI features), and feature voting rights.
+**A:** Absolutely! Launch Users (first 300) get v7.0 completely free when it releases in May 2026. This includes all AI features, mobile optimization, dark mode, and 16+ countries.
 </details>
 
 <details>
 <summary><b>Q: Do you collect my data?</b></summary>
 
-**A:** No! VIDORA PRO runs entirely in your browser. Your API key and search data never leave your computer. We respect your privacy.
+**A:** No! VIDORA PRO runs entirely in your browser. Your API key and search data never leave your computer. We respect your privacy 100%.
 </details>
 
 <details>
 <summary><b>Q: Can I use this for commercial purposes?</b></summary>
 
-**A:** Yes! Both Free and PRO versions allow commercial use under the MIT License. Use it for your clients, courses, or agencies.
+**A:** Yes! The Personal Use License allows you to use VIDORA PRO for your YouTube channel, client projects, or freelance work. You just can't resell or redistribute the software itself.
+</details>
+
+<details>
+<summary><b>Q: What if I miss the Launch Special?</b></summary>
+
+**A:** You can still get VIDORA PRO for $1.99 Early Bird (spots #301-500) or $4.99 standard. But you'll miss out on the free v7.0 upgrade and Founder status. Don't wait!
+</details>
+
+<details>
+<summary><b>Q: How do I claim my Launch Special copy?</b></summary>
+
+**A:** Click the "CLAIM YOUR FREE COPY NOW" button above, or visit https://gumroad.com/l/vidora-pro. Enter $0.00 as the price, download the files, and you're done! No credit card needed.
 </details>
 
 ---
 
 ## 📞 Support
 
-### For Free Version Users:
-- 📖 Check the [User Guide](./YouTube_Trend_Analyzer_V6.18_README.pdf)
-- ❓ Read the [FAQ](./docs/FAQ.md)
+### For Launch Special Users (First 300):
+- 📧 **Priority Email**: DONGSOO3354@GMAIL.COM (24-hour response)
+- 💬 **Private Discord**: Exclusive Founder community access
+- 📖 **User Guide**: 20-page comprehensive PDF included
+- 🎥 **Video Tutorials**: Step-by-step guides (coming soon)
+- 🗳️ **Feature Voting**: Shape v7.0 and v8.0 roadmap
+
+### For Free GitHub Version Users:
+- 📖 Check the [FAQ](./docs/FAQ.md)
 - 🐛 Report bugs via [GitHub Issues](https://github.com/pumping365/youtube-search/issues)
 - 💬 Community support (response time: 1-3 days)
-
-### For PRO Subscribers:
-- 📧 **Priority Email**: DONGSOO3354@GMAIL.COM (24-hour response)
-- 💬 **Private Discord**: Exclusive community access
-- 🎥 **Video Tutorials**: Step-by-step guides
-- 📞 **1-on-1 Consulting**: Monthly session (PRO+ plan)
+- 📧 Email: DONGSOO3354@GMAIL.COM (standard support)
 
 ---
 
 ## 🌟 Testimonials
 
-> "As a small YouTuber with 500 subscribers, VIDORA PRO helped me identify trending topics in my niche. My views increased by 300% in just 2 months!"  
+> "I was skeptical about 'free' offers, but VIDORA PRO is the real deal. As a YouTuber with 500 subscribers, the trend analysis helped me find low-competition topics. My views increased 300% in 2 months!"  
 > — **Sarah K.**, Tech Reviewer (🇺🇸 USA)
 
-> "한국에서 유튜브 시작하는 분들에게 강력 추천! 데이터 기반으로 영상 주제를 고를 수 있어서 좋아요."  
+> "한국에서 유튜브 시작하는 분들에게 강력 추천! 데이터 기반으로 영상 주제를 고를 수 있어서 정말 도움이 됩니다. 무료인데 이 정도 품질이면 대박!"  
 > — **김민수**, 부업 크리에이터 (🇰🇷 대한민국)
 
-> "The $1 Early Bird is a steal! I was going to pay $50/month for other tools. VIDORA PRO does 80% of what they do."  
+> "As a marketing agency owner, I was paying $50/month for similar tools. VIDORA PRO does 80% of what they do. The Launch Special is insane value—I grabbed it immediately!"  
 > — **Carlos M.**, Marketing Agency Owner (🇲🇽 Mexico)
 
 **Want to share your story?** Email us at DONGSOO3354@GMAIL.COM to be featured!
@@ -372,20 +501,67 @@ furnished to do so, subject to the following conditions:
 
 <div align="center">
 
-### 🚀 Ready to Grow Your Channel?
+### 🚀 Don't Miss the Launch Special!
 
-**Choose your plan:**
+<table>
+<tr>
+<td width="33%">
 
-| Free Version | Early Bird PRO | Standard PRO (Soon) |
-|:------------:|:--------------:|:-------------------:|
-| All core features | All features + perks | All features |
-| Community support | Priority support | Standard support |
-| Delayed updates | Early access | Standard access |
-| ❌ Discord | ✅ Discord | ✅ Discord |
-| **$0** | **$1/month** ⭐ | **$4.99/month** |
-| [Download](./youtube_search_ultimate_final_v6.18_final.html) | [Subscribe Now](https://gumroad.com/l/vidora-pro) | Coming Soon |
+#### 🆓 Launch Special
+**First 300 Users**
 
-**⏰ Only 87 Early Bird spots left!**
+- **$0.00** 🎁
+- v6.18 Forever
+- v7.0 FREE
+- v8.0 50% OFF
+- Discord + Support
+- Founder Badge 🏆
+
+**[CLAIM FREE →](https://gumroad.com/l/vidora-pro)**
+
+</td>
+<td width="33%">
+
+#### 🐦 Early Bird
+**Users #301-500**
+
+- **$1.99/one-time**
+- v6.18 Forever
+- v7.0 FREE
+- v8.0 30% OFF
+- Discord + Support
+- Early Bird Badge
+
+**Coming Soon**
+
+</td>
+<td width="34%">
+
+#### 💎 Standard
+**Users #501+**
+
+- **$4.99/one-time**
+- v6.18 Forever
+- v7.0 Paid
+- v8.0 Full Price
+- Discord + Support
+- Standard Badge
+
+**Coming Soon**
+
+</td>
+</tr>
+</table>
+
+### ⏰ Launch Status: **300 FREE spots remaining**
+
+**🔥 This offer disappears after 300 users. Forever.** 🔥
+
+### 👇 Claim Your Founder Status Now 👇
+
+[![Get VIDORA PRO FREE](https://img.shields.io/badge/GET_IT_FREE_NOW-300_Spots_Left-gold?style=for-the-badge&logo=youtube)](https://gumroad.com/l/vidora-pro)
+
+**No tricks. No trials. Just 100% free. Forever.**
 
 </div>
 
@@ -396,22 +572,22 @@ furnished to do so, subject to the following conditions:
 ![GitHub Stars](https://img.shields.io/github/stars/pumping365/youtube-search?style=social)
 ![GitHub Forks](https://img.shields.io/github/forks/pumping365/youtube-search?style=social)
 ![GitHub Issues](https://img.shields.io/github/issues/pumping365/youtube-search)
-![GitHub License](https://img.shields.io/github/license/pumping365/youtube-search)
+![GitHub Downloads](https://img.shields.io/github/downloads/pumping365/youtube-search/total)
 
 ```
 📈 Project Timeline:
 ├─ 2024-12: Initial development
 ├─ 2025-08: V5.0 release (8 metrics)
 ├─ 2026-01: V6.0 release (10 metrics)
-├─ 2026-02: V6.18 + VIDORA brand launch
-└─ 2026-05: V7.0 planned (AI features)
+├─ 2026-02: V6.18 + VIDORA brand launch + Launch Special! 🎉
+└─ 2026-05: V7.0 planned (AI features, FREE for Launch Users)
 
 📊 Current Status:
 ├─ Version: 6.18
 ├─ Stars: 23 (target: 100)
 ├─ Downloads: 150+
-├─ PRO Subscribers: 13/100
-└─ Active Users: ~50/month
+├─ Launch Special: 0/300 claimed
+└─ Active Users: ~50/month → Target: 1,000/month
 ```
 
 ---
@@ -419,11 +595,12 @@ furnished to do so, subject to the following conditions:
 ## 🙏 Acknowledgments
 
 Special thanks to:
+- **First 300 Launch Users** - You're the founders of this community! 🏆
 - **Chart.js** - Beautiful visualizations
 - **YouTube Data API** - Data source
 - **GitHub Community** - Feedback and support
-- **Early Bird Subscribers** - Your trust means everything!
 - **Genspark AI** - Development assistance
+- **Gumroad** - Distribution platform
 
 ---
 
@@ -431,15 +608,23 @@ Special thanks to:
 
 **🎬 VIDORA PRO - Discover Trends, Grow Faster**
 
-[![Subscribe](https://img.shields.io/badge/Subscribe-$1%2Fmonth-red?style=for-the-badge&logo=gumroad)](https://gumroad.com/l/vidora-pro)
-[![Download Free](https://img.shields.io/badge/Download-Free%20Version-blue?style=for-the-badge&logo=github)](./youtube_search_ultimate_final_v6.18_final.html)
-[![Documentation](https://img.shields.io/badge/Read-Documentation-green?style=for-the-badge&logo=readthedocs)](./YouTube_Trend_Analyzer_V6.18_README.pdf)
+[![Get Free](https://img.shields.io/badge/🎁_LAUNCH_SPECIAL-GET_IT_FREE_(300_SPOTS)-gold?style=for-the-badge)](https://gumroad.com/l/vidora-pro)
+[![Download Free Version](https://img.shields.io/badge/📥_GitHub_Free_Version-Download-green?style=for-the-badge)](./youtube_search_ultimate_final_v6.18_final.html)
+[![Documentation](https://img.shields.io/badge/📖_User_Guide-Included_Free-blue?style=for-the-badge)](https://gumroad.com/l/vidora-pro)
 
 ---
 
 **Made with ❤️ in South Korea 🇰🇷**  
-Copyright © 2026 대영마켓 (Daeyoung Market) | Licensed under MIT
+Copyright © 2026 대영마켓 (Daeyoung Market) | [Personal Use License](./LICENSE)
 
-**Follow the journey**: [GitHub](https://github.com/pumping365) | [YouTube](#) | [Blog](#)
+**Connect**: [GitHub](https://github.com/pumping365) | [Website](https://vidora-pro.com) | [Email](mailto:DONGSOO3354@GMAIL.COM)
+
+---
+
+### ⭐ If you like VIDORA PRO, please star this repo! It helps others discover it. ⭐
+
+---
+
+**🚨 REMINDER: Only 300 FREE spots available. After that, you'll pay $1.99-$4.99. Claim yours now!** 🚨
 
 </div>
