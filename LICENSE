@@ -1,21 +1,219 @@
-MIT License
+# VIDORA PRO - Personal Use License
 
-Copyright (c) 2026 pumping365
+**Version 6.18**  
+**Copyright © 2026 ToBi (pumping365)**  
+**All Rights Reserved**
 
-Permission is hereby granted, free of charge, to any person obtaining a copy
-of this software and associated documentation files (the "Software"), to deal
-in the Software without restriction, including without limitation the rights
-to use, copy, modify, merge, publish, distribute, sublicense, and/or sell
-copies of the Software, and to permit persons to whom the Software is
-furnished to do so, subject to the following conditions:
+---
 
-The above copyright notice and this permission notice shall be included in all
-copies or substantial portions of the Software.
+## 1. License Grant
 
-THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
-IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,
-FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE
-AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER
-LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
-OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
-SOFTWARE.
+This Personal Use License ("License") grants you, the purchaser ("Licensee"), a non-exclusive, non-transferable right to use VIDORA PRO software ("Software") under the following terms:
+
+### 1.1 Permitted Uses
+✅ **Personal Use Only**: Use the Software for your personal, non-commercial purposes  
+✅ **Multi-Device Installation**: Install on up to **3 devices** that you personally own or control  
+✅ **Backup Copies**: Create backup copies for archival purposes  
+✅ **Offline Use**: Use without internet connection after initial setup  
+
+### 1.2 Device Definition
+A "device" means any computer, laptop, tablet, or mobile device where the Software is installed and actively used.
+
+---
+
+## 2. Restrictions
+
+You may **NOT**:
+
+❌ **Redistribute**: Share, sell, rent, lease, or distribute the Software to third parties  
+❌ **Public Sharing**: Upload to file-sharing sites, public repositories, or cloud storage for public access  
+❌ **Commercial Use**: Use for commercial purposes without upgrading to Commercial License  
+❌ **Modification & Resale**: Modify source code and redistribute as derivative work  
+❌ **Remove Attribution**: Remove or alter copyright notices, author information, or license terms  
+❌ **Reverse Engineering**: Decompile, disassemble, or reverse engineer (except as permitted by law)  
+
+---
+
+## 3. Free Launch Users (First 300)
+
+**Special Terms for Launch Period Users** (received Software for $0.00):
+
+✅ All Personal Use License terms apply  
+✅ Lifetime license for v6.18  
+✅ FREE upgrade to v7.0 (May 2026)  
+✅ v8.0 and later: paid upgrade (discounted pricing for early users)  
+
+**Condition**: You agree to:
+- Provide honest feedback and bug reports
+- Share your experience on social media (optional but appreciated)
+- Respect license terms (no unauthorized distribution)
+
+---
+
+## 4. Intellectual Property
+
+### 4.1 Ownership
+The Software, including all source code, documentation, graphics, and user interface, remains the exclusive property of ToBi (pumping365).
+
+### 4.2 Trademarks
+"VIDORA PRO" and related logos are trademarks of ToBi. You may not use these marks without prior written permission.
+
+---
+
+## 5. Support & Updates
+
+### 5.1 Technical Support
+- **Launch Users (First 300)**: 30 days email support + Private Discord access  
+- **Early Bird Users**: 30 days email support  
+- **Standard Users**: Email support per terms at time of purchase  
+
+### 5.2 Updates
+- **Bug Fixes**: Free for current major version (v6.x)  
+- **Minor Updates**: Free (v6.18 → v6.19)  
+- **Major Updates**: Per terms at time of purchase
+  - Launch Users: Free to v7.0
+  - Others: As specified in purchase terms
+
+---
+
+## 6. Disclaimer of Warranty
+
+**THE SOFTWARE IS PROVIDED "AS IS" WITHOUT WARRANTY OF ANY KIND.**
+
+To the maximum extent permitted by law:
+- No warranties of merchantability or fitness for a particular purpose
+- No guarantee of uninterrupted or error-free operation
+- User assumes all risks associated with use of the Software
+
+---
+
+## 7. Limitation of Liability
+
+**MAXIMUM LIABILITY: Amount paid for the Software (Launch Users: $0.00)**
+
+In no event shall ToBi be liable for:
+- Loss of data or profits
+- Business interruption
+- Indirect, special, or consequential damages
+- Damages exceeding the purchase price
+
+---
+
+## 8. YouTube API Usage
+
+### 8.1 User Responsibility
+You are responsible for:
+- Obtaining your own YouTube Data API v3 key
+- Complying with Google's API Terms of Service
+- Managing your API quota and usage limits
+
+### 8.2 API Key
+- The Software does NOT include a pre-configured API key
+- You must provide your own key (free from Google Cloud Console)
+- See User Guide for detailed instructions
+
+### 8.3 Third-Party Terms
+Your use of YouTube API is subject to:
+- Google API Terms of Service: https://developers.google.com/terms
+- YouTube Terms of Service: https://www.youtube.com/t/terms
+- Google Privacy Policy: https://policies.google.com/privacy
+
+---
+
+## 9. Termination
+
+### 9.1 Automatic Termination
+This License automatically terminates if you:
+- Violate any term of this License
+- Distribute the Software without authorization
+- Use for commercial purposes without upgrade
+
+### 9.2 Effect of Termination
+Upon termination:
+- You must cease all use of the Software
+- Delete all copies from your devices
+- You may lose access to updates and support
+
+---
+
+## 10. Governing Law
+
+This License is governed by the laws of **Republic of Korea**.
+
+Any disputes shall be resolved in the courts of **Seoul, South Korea**.
+
+---
+
+## 11. Enforcement
+
+### 11.1 Violation Reports
+Report unauthorized distribution to: **DONGSOO3354@GMAIL.COM**
+
+### 11.2 Legal Action
+ToBi reserves the right to pursue legal action for:
+- Unauthorized commercial use
+- Mass redistribution
+- Circumvention of license restrictions
+
+### 11.3 Remedies
+Violations may result in:
+- Immediate license termination
+- Damages claim for lost revenue
+- Injunctive relief to prevent further violations
+
+---
+
+## 12. Changes to License
+
+ToBi reserves the right to modify this License for future versions.
+
+Changes do NOT apply retroactively to existing users. Your version (v6.18) remains under these original terms.
+
+---
+
+## 13. Contact Information
+
+**Developer**: ToBi (pumping365)  
+**Email**: DONGSOO3354@GMAIL.COM  
+**Website**: https://vidora-pro.com  
+**GitHub**: https://github.com/pumping365/youtube-search  
+
+---
+
+## 14. Acceptance
+
+By downloading, installing, or using VIDORA PRO, you acknowledge that you have read, understood, and agree to be bound by the terms of this License.
+
+If you do not agree to these terms, do not use the Software.
+
+---
+
+**Last Updated**: February 13, 2026  
+**Version**: 1.0  
+**Applies to**: VIDORA PRO v6.18 and related documentation
+
+---
+
+## Summary (Quick Reference)
+
+✅ **Allowed**:
+- Personal use on up to 3 devices
+- Backup copies
+- Offline use
+
+❌ **Not Allowed**:
+- Sharing with others
+- Commercial use (without upgrade)
+- Public redistribution
+- Removing copyright
+
+🎁 **Launch Users (First 300)**:
+- Free forever (v6.18)
+- Free upgrade to v7.0
+- 30 days support + Discord
+
+📧 **Questions?** DONGSOO3354@GMAIL.COM
+
+---
+
+© 2026 ToBi (pumping365). All Rights Reserved.
