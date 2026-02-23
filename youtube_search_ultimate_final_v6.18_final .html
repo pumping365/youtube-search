@@ -1,5 +1,6 @@
 <!DOCTYPE html>
 <html lang="ko">
+<!-- VIDORA PRO PWA -->
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
@@ -7,7 +8,7 @@
   
   <!-- Chart.js 라이브러리 -->
   <script src="https://cdn.jsdelivr.net/npm/chart.js@4.4.0/dist/chart.umd.min.js"></script>
-  
+  ​​
   <style>
     * {
       margin: 0;
@@ -1753,6 +1754,16 @@
       transform: translateY(-2px);
     }
 </style>
+<!-- VIDORA PRO PWA -->
+<link rel="manifest" href="/manifest.json">
+<meta name="theme-color" content="#0a1929">
+<meta name="apple-mobile-web-app-capable" content="yes">
+<meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+<meta name="apple-mobile-web-app-title" content="VIDORA PRO">
+<link rel="apple-touch-icon" href="/icons/icon-180.png">
+<link rel="apple-touch-icon" sizes="152x152" href="/icons/icon-152.png">
+<link rel="apple-touch-icon" sizes="167x167" href="/icons/icon-167.png">
+<link rel="apple-touch-icon" sizes="180x180" href="/icons/icon-180.png">
 </head>
 <body>
   <div class="container">
@@ -2900,6 +2911,13 @@
         }
       }
     }
+     if ('serviceWorker' in navigator) {
+      window.addEventListener('load', () => {
+     navigator.serviceWorker.register('/service-worker.js')
+      .then(reg => console.log('✅ PWA 활성화'))
+      .catch(err => console.log('❌ 오류:', err));
+  });
+}
 </script>
 </body>
 </html>
