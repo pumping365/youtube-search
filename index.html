@@ -576,8 +576,7 @@ html,body{height:100%;overflow:hidden;background:#0a1929;color:#fff;font-family:
 
       <div class="filter-section">
         <div class="filter-label">⚡ 카테고리</div>
-        <div class="chip-row" id="categoryChips">
-          <div class="chip active" data-cat="" onclick="selectChip(this,'category')">전체</div>
+        <div class="chip-row" id="categoryChips"></div>
           <div class="chip" data-cat="Politics" onclick="selectChip(this,'category')">🏛️ 정치</div>
           <div class="chip" data-cat="Economy" onclick="selectChip(this,'category')">💰 경제</div>
           <div class="chip" data-cat="RealEstate" onclick="selectChip(this,'category')">🏠 부동산</div>
@@ -961,6 +960,9 @@ document.addEventListener('DOMContentLoaded', () => {
   updateApiDot();
   renderFavorites();
   updateFavCount();
+  // Categories: show 'All' immediately; load official categories if API key exists
+  renderCategoryChips([]);
+  if (state.apiKey) loadVideoCategories(state.selectedCountry).catch(err => console.warn(err));
 });
 
 // ===== TAB NAVIGATION =====
@@ -980,13 +982,74 @@ function quickSearch(keyword) {
   setTimeout(doSearch, 100);
 }
 
+// ===== OFFICIAL YOUTUBE CATEGORIES (videoCategoryId) =====
+const CATEGORY_HL = 'en_US';
+const categoryCache = {}; // { KR: [{id,title}...], US: [...] }
+
+async function loadVideoCategories(regionCode) {
+  if (!state.apiKey) return;
+  if (categoryCache[regionCode]) {
+    renderCategoryChips(categoryCache[regionCode]);
+    return;
+  }
+
+  const url =
+    `https://www.googleapis.com/youtube/v3/videoCategories` +
+    `?part=snippet&regionCode=${encodeURIComponent(regionCode)}` +
+    `&hl=${encodeURIComponent(CATEGORY_HL)}` +
+    `&key=${encodeURIComponent(state.apiKey)}`;
+
+  const res = await fetch(url);
+  if (!res.ok) throw new Error(`videoCategories ${res.status}`);
+  const data = await res.json();
+
+  const cats = (data.items || [])
+    .filter(it => it?.snippet?.assignable)
+    .map(it => ({ id: it.id, title: it.snippet.title }));
+
+  categoryCache[regionCode] = cats;
+  renderCategoryChips(cats);
+}
+
+function renderCategoryChips(cats) {
+  const wrap = document.getElementById('categoryChips');
+  if (!wrap) return;
+
+  wrap.innerHTML = '';
+  wrap.appendChild(makeCatChip('', 'All', !state.selectedCategory));
+
+  (cats || []).forEach(c => {
+    wrap.appendChild(makeCatChip(c.id, c.title, state.selectedCategory === c.id));
+  });
+}
+
+function makeCatChip(id, label, isActive) {
+  const div = document.createElement('div');
+  div.className = 'chip' + (isActive ? ' active' : '');
+  div.dataset.cat = id;
+  div.textContent = label;
+  div.onclick = () => selectChip(div, 'category');
+  return div;
+}
+
 // ===== CHIP SELECTORS =====
 function selectChip(el, type) {
   const row = el.closest('.chip-row');
   row.querySelectorAll('.chip:not(.pro-chip)').forEach(c => c.classList.remove('active'));
   el.classList.add('active');
-  if(type === 'country') state.selectedCountry = el.dataset.country;
-  else if(type === 'category') state.selectedCategory = el.dataset.cat;
+
+  if(type === 'country') {
+    state.selectedCountry = el.dataset.country;
+    // When country changes, reset category and reload official categories for that region
+    state.selectedCategory = '';
+    renderCategoryChips([]);
+    if (state.apiKey) loadVideoCategories(state.selectedCountry).catch(err => {
+      console.warn(err);
+      showToast('카테고리 로딩 실패');
+    });
+  } else if(type === 'category') {
+    state.selectedCategory = el.dataset.cat;
+  }
 }
 
 function selectProChip(el) {
@@ -1036,7 +1099,7 @@ async function doSearch() {
       : '';
     let url = `https://www.googleapis.com/youtube/v3/search?part=snippet&type=video&maxResults=${state.selectedCount}&order=${state.selectedOrder}&regionCode=${state.selectedCountry}&q=${encodeURIComponent(query)}&key=${state.apiKey}`;
     if(publishedAfter) url += `&publishedAfter=${publishedAfter}`;
-    if(state.selectedCategory) url += `&videoCategoryId=`;
+    if (state.selectedCategory) url += `&videoCategoryId=${state.selectedCategory}`;
     const res = await fetch(url);
     if(!res.ok) throw new Error(`API 오류 ${res.status}`);
     const data = await res.json();
@@ -1246,6 +1309,13 @@ function saveApiKey() {
   localStorage.setItem('vidora_api_key', key);
   updateApiDot();
   showToast('✅ API 키 저장 완료!');
+
+  // Load official categories immediately after saving API key
+  renderCategoryChips([]);
+  loadVideoCategories(state.selectedCountry).catch(err => {
+    console.warn(err);
+    showToast('카테고리 로딩 실패');
+  });
 }
 
 function updateApiDot() {
