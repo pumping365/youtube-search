@@ -105,6 +105,7 @@ html,body{height:100%;overflow:hidden;background:#0a1929;color:#fff;font-family:
 .search-input{flex:1;background:var(--card);border:1.5px solid var(--border);border-radius:12px;padding:12px 16px;color:#fff;font-size:15px;outline:none;transition:.2s}
 .search-input:focus{border-color:var(--red)}
 .search-input::placeholder{color:var(--text3)}
+.search-input.readonly{opacity:.9;cursor:pointer}
 .btn-search{background:var(--red);border:none;border-radius:12px;width:48px;height:48px;color:#fff;font-size:20px;cursor:pointer;display:flex;align-items:center;justify-content:center;flex-shrink:0;transition:.2s}
 .btn-search:active{background:var(--red2);transform:scale(.95)}
 
@@ -488,7 +489,7 @@ html,body{height:100%;overflow:hidden;background:#0a1929;color:#fff;font-family:
         <div class="section-title">빠른 검색</div>
       </div>
       <div class="quick-btns">
-        <div class="quick-btn" onclick="quickSearch('트렌드')">
+        <div class="quick-btn" onclick="quickHot()">
           <span class="qb-icon">🔥</span><span class="qb-label">트렌드</span>
         </div>
         <div class="quick-btn" onclick="quickSearch('IT 기술')">
@@ -513,7 +514,7 @@ html,body{height:100%;overflow:hidden;background:#0a1929;color:#fff;font-family:
         <div class="section-title">인기 카테고리</div>
       </div>
       <div class="trending-scroll">
-        <div class="trending-chip hot" onclick="quickSearch('급상승')">🚀 급상승</div>
+        <div class="trending-chip hot" onclick="quickHot()">🚀 급상승</div>
         <div class="trending-chip" onclick="quickSearch('정치')">🏛️ 정치</div>
         <div class="trending-chip" onclick="quickSearch('사회')">📰 사회</div>
         <div class="trending-chip" onclick="quickSearch('사건사고')">⚠️ 사건사고</div>
@@ -550,7 +551,7 @@ html,body{height:100%;overflow:hidden;background:#0a1929;color:#fff;font-family:
       <div class="search-box-wrap">
         <div class="search-input-row">
           <input type="search" class="search-input" id="searchInput" placeholder="YouTube 트렌드 검색..." enterkeyhint="search" oninput="onSearchInput(this.value)">
-          <button class="btn-search" onclick="doSearch()">🔍</button>
+          <button class="btn-search" onclick="onSearchButton()">🔍</button>
         </div>
       </div>
 
@@ -942,7 +943,8 @@ const state = {
   selectedOrder: 'relevance',
   selectedCount: 12,
   currentResults: [],
-  currentVideo: null
+  currentVideo: null,
+  mode: 'HOT' // 'HOT' (mostPopular) | 'SEARCH' (keyword)
 };
 
 // ===== INIT =====
@@ -951,9 +953,19 @@ document.addEventListener('DOMContentLoaded', () => {
   updateApiDot();
   renderFavorites();
   updateFavCount();
+
+  // Search input: clicking/focusing in HOT switches to SEARCH
+  const si = document.getElementById('searchInput');
+  if (si) {
+    si.addEventListener('focus', () => {
+      if (state.mode === 'HOT') setMode('SEARCH');
+    });
+  }
+
   // Categories: show 'All' immediately; load official categories if API key exists
   renderCategoryChips([]);
-  if (state.apiKey) loadVideoCategories(state.selectedCountry).catch(err => console.warn(err));
+  updateSearchInputUI();
+  if (state.apiKey) loadVideoCategories(state.selectedCountry).then(() => updateSearchInputUI()).catch(err => console.warn(err));
 });
 
 // ===== TAB NAVIGATION =====
@@ -966,11 +978,47 @@ function showTab(tab) {
   if(nav) nav.classList.add('active');
 }
 
-// ===== QUICK SEARCH =====
-function quickSearch(keyword) {
-  document.getElementById('searchInput').value = keyword;
+// ===== MODE & SEARCH INPUT UI =====
+function getActiveCountryLabel() {
+  return (document.querySelector('#countryChips .chip.active')?.textContent || state.selectedCountry).trim();
+}
+function getActiveCategoryLabel() {
+  if (!state.selectedCategory) return 'All';
+  const cats = categoryCache[state.selectedCountry] || [];
+  return (cats.find(c => c.id === state.selectedCategory)?.title) || 'Category';
+}
+function setMode(mode) {
+  state.mode = mode;
+  updateSearchInputUI();
+}
+function updateSearchInputUI() {
+  const input = document.getElementById('searchInput');
+  if (!input) return;
+
+  if (state.mode === 'HOT') {
+    input.value = '';
+    input.readOnly = true;
+    input.classList.add('readonly');
+    input.placeholder = `HOT • ${getActiveCountryLabel()} • ${getActiveCategoryLabel()}`;
+  } else {
+    input.readOnly = false;
+    input.classList.remove('readonly');
+    input.placeholder = 'Type a keyword and search...';
+  }
+}
+
+// ===== QUICK ACTIONS =====
+function quickHot() {
   showTab('search');
-  setTimeout(doSearch, 100);
+  setMode('HOT');
+  setTimeout(doHot, 50);
+}
+function quickSearch(keyword) {
+  setMode('SEARCH');
+  const input = document.getElementById('searchInput');
+  if (input) input.value = keyword;
+  showTab('search');
+  setTimeout(doSearch, 50);
 }
 
 // ===== OFFICIAL YOUTUBE CATEGORIES (videoCategoryId) =====
@@ -1029,17 +1077,39 @@ function selectChip(el, type) {
   row.querySelectorAll('.chip:not(.pro-chip)').forEach(c => c.classList.remove('active'));
   el.classList.add('active');
 
+  const runAfterUpdate = () => {
+    updateSearchInputUI();
+    if (state.mode === 'HOT') {
+      doHot();
+    } else {
+      const q = (document.getElementById('searchInput')?.value || '').trim();
+      if (q) doSearch();
+    }
+  };
+
   if(type === 'country') {
     state.selectedCountry = el.dataset.country;
-    // When country changes, reset category and reload official categories for that region
-    state.selectedCategory = '';
-    renderCategoryChips([]);
-    if (state.apiKey) loadVideoCategories(state.selectedCountry).catch(err => {
-      console.warn(err);
-      showToast('카테고리 로딩 실패');
-    });
+    if (state.apiKey) {
+      loadVideoCategories(state.selectedCountry).then(() => {
+        // If selectedCategory not present in this region, fallback to All
+        if (state.selectedCategory) {
+          const cats = categoryCache[state.selectedCountry] || [];
+          const ok = cats.some(c => c.id === state.selectedCategory);
+          if (!ok) state.selectedCategory = '';
+        }
+        renderCategoryChips(categoryCache[state.selectedCountry] || []);
+        runAfterUpdate();
+      }).catch(err => {
+        console.warn(err);
+        showToast('카테고리 로딩 실패');
+        runAfterUpdate();
+      });
+    } else {
+      runAfterUpdate();
+    }
   } else if(type === 'category') {
     state.selectedCategory = el.dataset.cat;
+    runAfterUpdate();
   }
 }
 
@@ -1078,8 +1148,55 @@ function selectProCount(el) {
 
 function onSearchInput(val) { /* live search placeholder */ }
 
+function onSearchButton() {
+  if (state.mode === 'HOT') {
+    doHot();
+  } else {
+    doSearch();
+  }
+}
+
+// ===== HOT MODE (Most Popular Chart) =====
+async function doHot() {
+  if(!state.apiKey) { showToast('⚙️ API 키를 먼저 설정해주세요'); showTab('settings'); return; }
+  setMode('HOT');
+  showLoading();
+  try {
+    const maxResults = Math.min(50, Math.max(1, state.selectedCount || 12));
+    let url = `https://www.googleapis.com/youtube/v3/videos?part=snippet,statistics&chart=mostPopular&maxResults=${maxResults}` +
+      `&regionCode=${encodeURIComponent(state.selectedCountry)}` +
+      `&key=${encodeURIComponent(state.apiKey)}`;
+    if (state.selectedCategory) url += `&videoCategoryId=${encodeURIComponent(state.selectedCategory)}`;
+
+    const res = await fetch(url);
+    if(!res.ok) throw new Error(`API 오류 ${res.status}`);
+    const data = await res.json();
+
+    state.apiCallCount++;
+    document.getElementById('apiCallCount').textContent = `API ${state.apiCallCount}`;
+
+    const items = data.items || [];
+    if(!items.length) { showEmptyState(); return; }
+
+    state.currentResults = items.map(item => ({
+      id: item.id,
+      title: item.snippet?.title || '',
+      channel: item.snippet?.channelTitle || '',
+      thumbnail: item.snippet?.thumbnails?.medium?.url || '',
+      publishedAt: item.snippet?.publishedAt || '',
+      description: item.snippet?.description || '',
+      stats: item.statistics || {}
+    }));
+
+    renderResults(state.currentResults);
+  } catch(e) {
+    showErrorState(e.message);
+  }
+}
+
 // ===== MAIN SEARCH =====
 async function doSearch() {
+  setMode('SEARCH');
   const query = document.getElementById('searchInput').value.trim();
   if(!query) { showToast('검색어를 입력해주세요'); return; }
   if(!state.apiKey) { showToast('⚙️ API 키를 먼저 설정해주세요'); showTab('settings'); return; }
