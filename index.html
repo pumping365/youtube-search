@@ -109,6 +109,8 @@ html,body{height:100%;overflow:hidden;background:#0a1929;color:#fff;font-family:
 .expand-note{font-size:11px;color:var(--text3);padding:3px 16px 0;min-height:16px;line-height:1.4;}
 .btn-search{background:var(--red);border:none;border-radius:12px;width:48px;height:48px;color:#fff;font-size:20px;cursor:pointer;display:flex;align-items:center;justify-content:center;flex-shrink:0;transition:.2s}
 .btn-search:active{background:var(--red2);transform:scale(.95)}
+.btn-search.needs-search{animation:pulse-btn 1.2s ease-in-out infinite;box-shadow:0 0 0 0 rgba(255,60,60,.7)}
+@keyframes pulse-btn{0%{box-shadow:0 0 0 0 rgba(255,60,60,.55)}70%{box-shadow:0 0 0 8px rgba(255,60,60,0)}100%{box-shadow:0 0 0 0 rgba(255,60,60,0)}}
 
 .filter-section{padding:12px 16px}
 .filter-label{font-size:12px;color:var(--text2);font-weight:600;margin-bottom:8px;display:flex;align-items:center;gap:4px}
@@ -1082,10 +1084,19 @@ function selectChip(el, type) {
   const runAfterUpdate = () => {
     updateSearchInputUI();
     if (state.mode === 'HOT') {
+      // HOT 모드: videos.list(1유닛) → 자동 재검색 유지
       doHot();
     } else {
+      // SEARCH 모드: search.list(100유닛) → 자동 재검색 금지
+      // 돋보기 버튼에 펄스 애니메이션으로 "눌러주세요" 힌트만 표시
       const q = (document.getElementById('searchInput')?.value || '').trim();
-      if (q) doSearch();
+      if (q) {
+        const btn = document.querySelector('.btn-search');
+        if (btn) {
+          btn.classList.add('needs-search');
+          setTimeout(() => btn.classList.remove('needs-search'), 4000);
+        }
+      }
     }
   };
 
@@ -1274,7 +1285,21 @@ async function doSearch() {
     if(publishedAfter) url += `&publishedAfter=${publishedAfter}`;
     if (state.selectedCategory) url += `&videoCategoryId=${state.selectedCategory}`;
     const res = await fetch(url);
-    if(!res.ok) throw new Error(`API 오류 ${res.status}`);
+    if(!res.ok) {
+      // 403/429 등 상세 reason을 응답 body에서 추출해서 표시
+      let reason = '';
+      try {
+        const errData = await res.json();
+        reason = errData?.error?.errors?.[0]?.reason || errData?.error?.message || '';
+      } catch(_) {}
+      if(res.status === 403) {
+        const hint = reason.includes('quotaExceeded') || reason.includes('dailyLimitExceeded')
+          ? '\n📋 원인: 일일 할당량 소진 (한국 오전 9시 자동 리셋)'
+          : reason ? `\n📋 원인: ${reason}` : '\n📋 API 키 설정 또는 할당량을 확인해주세요';
+        throw new Error(`API 오류 403${hint}`);
+      }
+      throw new Error(`API 오류 ${res.status}${reason ? ' (' + reason + ')' : ''}`);
+    }
     const data = await res.json();
     state.apiCallCount++;
     document.getElementById('apiCallCount').textContent = `API ${state.apiCallCount}`;
