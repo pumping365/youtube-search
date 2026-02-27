@@ -106,6 +106,7 @@ html,body{height:100%;overflow:hidden;background:#0a1929;color:#fff;font-family:
 .search-input:focus{border-color:var(--red)}
 .search-input::placeholder{color:var(--text3)}
 .search-input.readonly{opacity:.9;cursor:pointer}
+.expand-note{font-size:11px;color:var(--text3);padding:3px 16px 0;min-height:16px;line-height:1.4;}
 .btn-search{background:var(--red);border:none;border-radius:12px;width:48px;height:48px;color:#fff;font-size:20px;cursor:pointer;display:flex;align-items:center;justify-content:center;flex-shrink:0;transition:.2s}
 .btn-search:active{background:var(--red2);transform:scale(.95)}
 
@@ -553,6 +554,7 @@ html,body{height:100%;overflow:hidden;background:#0a1929;color:#fff;font-family:
           <input type="search" class="search-input" id="searchInput" placeholder="YouTube 트렌드 검색..." enterkeyhint="search" oninput="onSearchInput(this.value)">
           <button class="btn-search" onclick="onSearchButton()">🔍</button>
         </div>
+        <div class="expand-note" id="expandNote"></div>
       </div>
 
       <!-- Filters -->
@@ -1194,6 +1196,41 @@ async function doHot() {
   }
 }
 
+// ===== COUNTRY → relevanceLanguage MAP =====
+const COUNTRY_LANG = {
+  KR:'ko', JP:'ja', CN:'zh-Hans', TW:'zh-Hant',
+  US:'en', GB:'en', AU:'en', SG:'en',
+  FR:'fr', DE:'de', TH:'th', VN:'vi'
+};
+
+// ===== EN→KO KEYWORD DICTIONARY (OR-expand when country=KR) =====
+const EN_KO_DICT = {
+  'real estate':'부동산','apartment':'아파트','housing':'주택',
+  'house':'집','villa':'빌라','mortgage':'주택담보대출',
+  'investment':'투자','property':'부동산','land':'토지',
+  'construction':'건설','rent':'임대','lease':'전세',
+  'contract':'계약','price':'가격','market':'시장',
+  'selling':'매매','building':'건물','studio':'원룸',
+  'officetel':'오피스텔','redevelopment':'재개발',
+  'reconstruction':'재건축','commercial':'상가',
+  'warehouse':'창고','interest rate':'금리','loan':'대출',
+  'realty':'부동산','condo':'아파트','townhouse':'다세대주택',
+  'jeonse':'전세','monthly rent':'월세'
+};
+
+// ===== QUERY EXPAND (KR only: EN→KO OR) =====
+function buildExpandedQuery(query, country) {
+  if(country !== 'KR') return { q: query, note: '' };
+  const lower = query.toLowerCase().trim();
+  for(const [en, ko] of Object.entries(EN_KO_DICT)) {
+    if(lower === en || lower.includes(en)) {
+      const expanded = query + '|' + ko;
+      return { q: expanded, note: `🔍 자동 확장 적용: ${query} | ${ko} (KR)` };
+    }
+  }
+  return { q: query, note: '' };
+}
+
 // ===== MAIN SEARCH =====
 async function doSearch() {
   setMode('SEARCH');
@@ -1201,11 +1238,18 @@ async function doSearch() {
   if(!query) { showToast('검색어를 입력해주세요'); return; }
   if(!state.apiKey) { showToast('⚙️ API 키를 먼저 설정해주세요'); showTab('settings'); return; }
   showLoading();
+  // 쿼리 확장 (KR + 영어 입력 시만)
+  const { q: finalQ, note: expandNote } = buildExpandedQuery(query, state.selectedCountry);
+  const noteEl = document.getElementById('expandNote');
+  if(noteEl) noteEl.textContent = expandNote;
+  // relevanceLanguage 매핑
+  const relLang = COUNTRY_LANG[state.selectedCountry] || '';
   try {
     const publishedAfter = state.selectedDays > 0 
       ? new Date(Date.now() - state.selectedDays * 86400000).toISOString() 
       : '';
-    let url = `https://www.googleapis.com/youtube/v3/search?part=snippet&type=video&maxResults=${state.selectedCount}&order=${state.selectedOrder}&regionCode=${state.selectedCountry}&q=${encodeURIComponent(query)}&key=${state.apiKey}`;
+    let url = `https://www.googleapis.com/youtube/v3/search?part=snippet&type=video&maxResults=${state.selectedCount}&order=${state.selectedOrder}&regionCode=${state.selectedCountry}&q=${encodeURIComponent(finalQ)}&key=${state.apiKey}`;
+    if(relLang) url += `&relevanceLanguage=${encodeURIComponent(relLang)}`;
     if(publishedAfter) url += `&publishedAfter=${publishedAfter}`;
     if (state.selectedCategory) url += `&videoCategoryId=${state.selectedCategory}`;
     const res = await fetch(url);
