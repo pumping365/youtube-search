@@ -6,9 +6,9 @@
 <title>VIDORA PRO - YouTube Trend Analyzer</title>
 
 <!-- PWA Meta Tags -->
-<link rel="manifest" href="/manifest.json">
+<!-- manifest.json not deployed – removed to suppress 404 -->
 <meta name="theme-color" content="#0a1929">
-<meta name="apple-mobile-web-app-capable" content="yes">
+<!-- apple-mobile-web-app-capable deprecated – removed -->
 <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
 <meta name="apple-mobile-web-app-title" content="VIDORA PRO">
 <link rel="apple-touch-icon" href="/icons/icon-180.png">
@@ -1163,15 +1163,36 @@ async function doHot() {
   if(!state.apiKey) { showToast('⚙️ API 키를 먼저 설정해주세요'); showTab('settings'); return; }
   setMode('HOT');
   showLoading();
-  try {
+
+  // HOT 모드: mostPopular 차트에서 일부 videoCategoryId 조합은
+  // YouTube API가 404(videoChartNotFound)를 반환함 → 자동 fallback
+  async function fetchHot(withCategory) {
     const maxResults = Math.min(50, Math.max(1, state.selectedCount || 12));
     let url = `https://www.googleapis.com/youtube/v3/videos?part=snippet,statistics&chart=mostPopular&maxResults=${maxResults}` +
       `&regionCode=${encodeURIComponent(state.selectedCountry)}` +
       `&key=${encodeURIComponent(state.apiKey)}`;
-    if (state.selectedCategory) url += `&videoCategoryId=${encodeURIComponent(state.selectedCategory)}`;
-
+    if (withCategory && state.selectedCategory) {
+      url += `&videoCategoryId=${encodeURIComponent(state.selectedCategory)}`;
+    }
     const res = await fetch(url);
-    if(!res.ok) throw new Error(`API 오류 ${res.status}`);
+    return { res, ok: res.ok, status: res.status };
+  }
+
+  try {
+    let { res, ok, status } = await fetchHot(true);
+
+    // 404 or 400 → 해당 카테고리가 HOT 차트 미지원 → All로 fallback
+    if (!ok && (status === 404 || status === 400) && state.selectedCategory) {
+      showToast('⚠️ 이 카테고리는 인기 차트 미지원 → 전체(All)로 표시합니다');
+      // 카테고리 칩 UI도 All로 되돌리기
+      state.selectedCategory = '';
+      document.querySelectorAll('.chip[data-type="category"]').forEach(c => c.classList.remove('active'));
+      const allChip = document.querySelector('.chip[data-value=""][data-type="category"]');
+      if(allChip) allChip.classList.add('active');
+      ({ res, ok, status } = await fetchHot(false));
+    }
+
+    if(!ok) throw new Error(`API 오류 ${status}`);
     const data = await res.json();
 
     state.apiCallCount++;
@@ -1574,13 +1595,8 @@ function timeAgo(dateStr) {
 }
 
 // ===== PWA SERVICE WORKER =====
-if('serviceWorker' in navigator) {
-  window.addEventListener('load', () => {
-    navigator.serviceWorker.register('/service-worker.js')
-      .then(()=>console.log('✅ PWA 활성화'))
-      .catch(e=>console.log('SW 오류:',e));
-  });
-}
+// service-worker.js not deployed on GitHub Pages → registration skipped
+// if('serviceWorker' in navigator) { navigator.serviceWorker.register('/service-worker.js'); }
 </script>
 </body>
 </html>
