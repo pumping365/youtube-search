@@ -571,14 +571,18 @@ html,body{height:100%;overflow:hidden;background:#0a1929;color:#fff;font-family:
 
     <!-- ===== SEARCH SCREEN ===== -->
     <div class="screen" id="screen-search">
-      <!-- Breadcrumb: current selection -->
-      <div id="breadcrumb" style="padding:6px 16px 0;font-size:12px;color:var(--text3);display:flex;align-items:center;gap:4px">
-        <span id="bc-country"></span><span>·</span><span id="bc-category"></span>
+      <!-- Breadcrumb: current selection + home button -->
+      <div id="breadcrumb" style="padding:8px 16px 2px;font-size:12px;color:var(--text3);display:flex;align-items:center;gap:6px">
+        <button onclick="showTab('home')" style="background:none;border:none;color:var(--red);font-size:12px;font-weight:700;cursor:pointer;padding:2px 6px 2px 0;display:flex;align-items:center;gap:2px">← 홈</button>
+        <span style="color:var(--border)">|</span>
+        <span id="bc-country"></span>
+        <span>·</span>
+        <span id="bc-category" style="font-weight:700;color:var(--text2)"></span>
       </div>
-      <!-- Search Box -->
-      <div class="search-box-wrap">
+      <!-- Search Box: HOT모드에서는 숨김, SEARCH 모드에서만 표시 -->
+      <div class="search-box-wrap" id="searchBoxWrap">
         <div class="search-input-row">
-          <input type="search" class="search-input" id="searchInput" placeholder="YouTube 트렌드 검색..." enterkeyhint="search" oninput="onSearchInput(this.value)">
+          <input type="search" class="search-input" id="searchInput" placeholder="키워드 입력 후 포 검색..." enterkeyhint="search" oninput="onSearchInput(this.value)">
           <button class="btn-search" onclick="onSearchButton()">🔍</button>
         </div>
         <div class="expand-note" id="expandNote"></div>
@@ -604,23 +608,22 @@ html,body{height:100%;overflow:hidden;background:#0a1929;color:#fff;font-family:
 
       <div class="divider" style="margin:0 16px"></div>
 
-      <div class="filter-section">
+      <!-- 카테고리 칩: HOT모드에서는 홈화면으로 이동했으므로 숨김 -->
+      <div class="filter-section" id="categoryChipsSection" style="display:none">
         <div class="filter-label">⚡ 카테고리</div>
-        <!-- NOTE: categories are rendered dynamically by videoCategories.list -->
         <div class="chip-row" id="categoryChips"></div>
       </div>
 
-      <div class="divider" style="margin:0 16px"></div>
-
-      <div class="filter-section">
-        <div class="filter-label">📅 검색 기간</div>
-        <div class="period-btns">
+      <div class="filter-section" id="periodSection">
+        <div class="filter-label" id="periodLabel">📅 검색 기간</div>
+        <div class="period-btns" id="periodBtns">
           <button class="period-btn active" data-days="7" onclick="selectPeriod(this)">최근 7일</button>
           <button class="period-btn" data-days="30" onclick="selectPeriod(this)">최근 30일</button>
           <button class="period-btn" data-days="60" onclick="selectPeriod(this)">최근 60일</button>
           <button class="period-btn pro-period" data-days="90" onclick="selectProPeriod(this)">최근 90일 ⭐</button>
           <button class="period-btn pro-period" data-days="0" onclick="selectProPeriod(this)">전체기간 ⭐</button>
         </div>
+        <div id="periodHotNote" style="display:none;font-size:11px;color:var(--text3);margin-top:4px">⚠️ HOT 모드에서는 기간 필터 미지원 (YouTube API 제한)</div>
       </div>
 
       <div class="divider" style="margin:0 16px"></div>
@@ -991,10 +994,8 @@ document.addEventListener('DOMContentLoaded', () => {
     });
   }
 
-  // Categories: show 'All' immediately; load official categories if API key exists
-  renderCategoryChips([]);
+  // 카테고리 칩은 홈화면으로 이동 → 결과화면에서 loadVideoCategories 호출 불필요
   updateSearchInputUI();
-  if (state.apiKey) loadVideoCategories(state.selectedCountry).then(() => updateSearchInputUI()).catch(err => console.warn(err));
 });
 
 // ===== TAB NAVIGATION =====
@@ -1042,21 +1043,43 @@ function updateSearchInputUI() {
   const input = document.getElementById('searchInput');
   if (!input) return;
 
-  if (state.mode === 'HOT') {
-    input.value = '';
-    input.readOnly = true;
-    input.classList.add('readonly');
-    input.placeholder = `HOT • ${getActiveCountryLabel()} • ${getActiveCategoryLabel()}`;
-  } else {
+  const isHot = state.mode === 'HOT';
+
+  // ① 검색창: HOT모드에서 숨김, SEARCH모드에서만 표시
+  const searchBox = document.getElementById('searchBoxWrap');
+  if (searchBox) searchBox.style.display = isHot ? 'none' : 'block';
+
+  if (!isHot) {
     input.readOnly = false;
     input.classList.remove('readonly');
     input.placeholder = '키워드 입력 후 포 검색...';
   }
-  // 브레드크럼 업데이트
-  const bcCountry = document.getElementById('bc-country');
+
+  // ② 카테고리 칩: HOT모드에서 숨김 (홈화면으로 이동)
+  const catSection = document.getElementById('categoryChipsSection');
+  if (catSection) catSection.style.display = 'none'; // 항상 숨김
+
+  // ③ 기간 필터: HOT모드에서는 비활성화 + 안내문구 표시
+  const periodBtns = document.getElementById('periodBtns');
+  const periodNote = document.getElementById('periodHotNote');
+  const periodLabel = document.getElementById('periodLabel');
+  if (periodBtns) {
+    periodBtns.querySelectorAll('button').forEach(b => {
+      b.disabled = isHot;
+      b.style.opacity = isHot ? '0.35' : '1';
+      b.style.cursor = isHot ? 'not-allowed' : 'pointer';
+    });
+  }
+  if (periodNote) periodNote.style.display = isHot ? 'block' : 'none';
+  if (periodLabel) periodLabel.textContent = isHot
+    ? '📅 검색 기간 (HOT모드 미지원)'
+    : '📅 검색 기간';
+
+  // ④ 브레드크럼 업데이트
+  const bcCountry  = document.getElementById('bc-country');
   const bcCategory = document.getElementById('bc-category');
-  if (bcCountry) bcCountry.textContent = '🌍 ' + getActiveCountryLabel();
-  if (bcCategory) bcCategory.textContent = state.mode === 'HOT'
+  if (bcCountry)  bcCountry.textContent  = '🌍 ' + getActiveCountryLabel();
+  if (bcCategory) bcCategory.textContent = isHot
     ? '🔥 ' + getActiveCategoryLabel()
     : '🔍 직접 검색';
 }
@@ -1692,3 +1715,4 @@ function timeAgo(dateStr) {
 </script>
 </body>
 </html>
+                                                                                                                                     
