@@ -489,6 +489,24 @@ html,body{height:100%;overflow:hidden;background:#0a1929;color:#fff;font-family:
       </div>
 
       <!-- Quick Actions: ALL HOT MODE (1 unit each) -->
+      <!-- 홈화면 국가 선택 (home-country-chips) — 결과화면 countryChips와 동기화 -->
+      <div style="padding:0 16px 12px">
+        <div class="section-title" style="margin-bottom:8px">🌍 국가 선택</div>
+        <div class="chip-row" id="homeCountryChips">
+          <div class="chip active" data-country="KR" onclick="selectHomeCountry(this)">🇰🇷 한국</div>
+          <div class="chip" data-country="US" onclick="selectHomeCountry(this)">🇺🇸 미국</div>
+          <div class="chip" data-country="JP" onclick="selectHomeCountry(this)">🇯🇵 일본</div>
+          <div class="chip" data-country="CN" onclick="selectHomeCountryPro(this)">🇨🇳 중국 &#x1F451;</div>
+          <div class="chip" data-country="GB" onclick="selectHomeCountryPro(this)">🇬🇧 영국 &#x1F451;</div>
+          <div class="chip" data-country="FR" onclick="selectHomeCountryPro(this)">🇫🇷 프랑스 &#x1F451;</div>
+          <div class="chip" data-country="DE" onclick="selectHomeCountryPro(this)">🇩🇪 독일 &#x1F451;</div>
+          <div class="chip" data-country="TH" onclick="selectHomeCountryPro(this)">🇹🇭 태국 &#x1F451;</div>
+          <div class="chip" data-country="VN" onclick="selectHomeCountryPro(this)">🇻🇳 베트남 &#x1F451;</div>
+          <div class="chip" data-country="SG" onclick="selectHomeCountryPro(this)">🇸🇬 싱가포르 &#x1F451;</div>
+          <div class="chip" data-country="AU" onclick="selectHomeCountryPro(this)">🇦🇺 호주 &#x1F451;</div>
+        </div>
+      </div>
+      <div style="height:1px;background:var(--border);margin:0 16px 12px"></div>
       <div class="section-pad" style="padding-bottom:4px">
         <div class="section-title">⚡ 원클릭 트렌드 <span style="font-size:11px;color:var(--text3);font-weight:400">(1유닛/클릭)</span></div>
       </div>
@@ -995,6 +1013,7 @@ document.addEventListener('DOMContentLoaded', () => {
   }
 
   // 카테고리 칩은 홈화면으로 이동 → 결과화면에서 loadVideoCategories 호출 불필요
+  syncCountryChips(state.selectedCountry); // 홈화면 초기 국가 칩 동기화
   updateSearchInputUI();
 });
 
@@ -1010,7 +1029,12 @@ function showTab(tab) {
 
 // ===== MODE & SEARCH INPUT UI =====
 function getActiveCountryLabel() {
-  return (document.querySelector('#countryChips .chip.active')?.textContent || state.selectedCountry).trim();
+  // 결과화면 칩 또는 홈화면 칩 중 활성 항목의 텍스트 반환
+  return (
+    document.querySelector('#countryChips .chip.active')?.textContent ||
+    document.querySelector('#homeCountryChips .chip.active')?.textContent ||
+    state.selectedCountry
+  ).trim();
 }
 // 카테고리 ID → 한국어 레이블 맵
 const CAT_LABEL_KO = {
@@ -1082,6 +1106,27 @@ function updateSearchInputUI() {
   if (bcCategory) bcCategory.textContent = isHot
     ? '🔥 ' + getActiveCategoryLabel()
     : '🔍 직접 검색';
+}
+
+// ===== 홈 국가 선택 함수 (홈칩 ↔ 결과화면칩 양방향 동기화) =====
+function syncCountryChips(countryCode) {
+  // 홈화면 칩 동기화
+  document.querySelectorAll('#homeCountryChips .chip').forEach(c => {
+    c.classList.toggle('active', c.dataset.country === countryCode);
+  });
+  // 결과화면 칩 동기화
+  document.querySelectorAll('#countryChips .chip').forEach(c => {
+    c.classList.toggle('active', c.dataset.country === countryCode);
+  });
+}
+function selectHomeCountry(el) {
+  state.selectedCountry = el.dataset.country;
+  syncCountryChips(state.selectedCountry);
+  updateSearchInputUI();
+}
+function selectHomeCountryPro(el) {
+  if (!state.isPro) { showProAlert(); return; }
+  selectHomeCountry(el);
 }
 
 // ===== QUICK ACTIONS =====
@@ -1192,6 +1237,7 @@ function selectChip(el, type) {
 
   if(type === 'country') {
     state.selectedCountry = el.dataset.country;
+    syncCountryChips(state.selectedCountry); // 홈화면 칩 동기화
     if (state.apiKey) {
       loadVideoCategories(state.selectedCountry).then(() => {
         // If selectedCategory not present in this region, fallback to All
