@@ -87,11 +87,12 @@ html,body{height:100%;overflow:hidden;background:#0a1929;color:#fff;font-family:
 .hero-stat .num{font-size:18px;font-weight:800;color:var(--gold)}
 .hero-stat .lbl{font-size:11px;color:var(--text2)}
 
-.quick-btns{display:grid;grid-template-columns:repeat(3,1fr);gap:10px;padding:0 16px 16px}
-.quick-btn{background:var(--card);border:1px solid var(--border);border-radius:var(--radius-sm);padding:14px 8px;display:flex;flex-direction:column;align-items:center;gap:6px;cursor:pointer;transition:.2s;text-decoration:none;color:inherit}
+.quick-btns{display:grid;grid-template-columns:repeat(4,1fr);gap:8px;padding:0 16px 16px}
+.quick-btn{background:var(--card);border:1px solid var(--border);border-radius:var(--radius-sm);padding:12px 6px;display:flex;flex-direction:column;align-items:center;gap:5px;cursor:pointer;transition:.2s;text-decoration:none;color:inherit}
 .quick-btn:active{transform:scale(.97);background:var(--navy3)}
-.quick-btn .qb-icon{font-size:24px}
-.quick-btn .qb-label{font-size:12px;font-weight:600;text-align:center;line-height:1.3}
+.quick-btn.hot-btn{border-color:var(--red);background:rgba(229,9,20,.08)}
+.quick-btn .qb-icon{font-size:22px}
+.quick-btn .qb-label{font-size:11px;font-weight:600;text-align:center;line-height:1.3}
 
 .trending-scroll{display:flex;gap:12px;padding:0 16px 16px;overflow-x:auto;scrollbar-width:none}
 .trending-scroll::-webkit-scrollbar{display:none}
@@ -317,7 +318,7 @@ html,body{height:100%;overflow:hidden;background:#0a1929;color:#fff;font-family:
   /* 비디오 카드 2열 그리드 */
   #results-area .video-card-grid{display:grid;grid-template-columns:repeat(2,1fr);gap:14px}
 
-  /* 퀵 버튼 4열 */
+  /* 퀵 버튼 4열 유지(태블릿) */
   .quick-btns{grid-template-columns:repeat(4,1fr)}
 
   /* 플랜 카드 가로 배열 */
@@ -487,42 +488,62 @@ html,body{height:100%;overflow:hidden;background:#0a1929;color:#fff;font-family:
         </div>
       </div>
 
-      <!-- Quick Actions -->
+      <!-- Quick Actions: ALL HOT MODE (1 unit each) -->
       <div class="section-pad" style="padding-bottom:4px">
-        <div class="section-title">빠른 검색</div>
+        <div class="section-title">⚡ 원클릭 트렌드 <span style="font-size:11px;color:var(--text3);font-weight:400">(1유닛/클릭)</span></div>
       </div>
       <div class="quick-btns">
-        <div class="quick-btn" onclick="quickHot()">
-          <span class="qb-icon">🔥</span><span class="qb-label">트렌드</span>
+        <div class="quick-btn hot-btn" onclick="quickHotCat('')">
+          <span class="qb-icon">🔥</span><span class="qb-label">전체 트렌드</span>
         </div>
-        <div class="quick-btn" onclick="quickSearch('IT 기술')">
-          <span class="qb-icon">💻</span><span class="qb-label">IT·기술</span>
+        <div class="quick-btn" onclick="quickHotCat('28')">
+          <span class="qb-icon">💻</span><span class="qb-label">과학·기술</span>
         </div>
-        <div class="quick-btn" onclick="quickSearch('드론')">
-          <span class="qb-icon">🚁</span><span class="qb-label">드론</span>
+        <div class="quick-btn" onclick="quickHotCat('25')">
+          <span class="qb-icon">📰</span><span class="qb-label">뉴스·정치</span>
         </div>
-        <div class="quick-btn" onclick="quickSearch('부동산')">
-          <span class="qb-icon">🏠</span><span class="qb-label">부동산</span>
+        <div class="quick-btn" onclick="quickHotCat('24')">
+          <span class="qb-icon">🎭</span><span class="qb-label">엔터테인먼트</span>
         </div>
-        <div class="quick-btn" onclick="quickSearch('경제')">
-          <span class="qb-icon">💰</span><span class="qb-label">경제</span>
+        <div class="quick-btn" onclick="quickHotCat('10')">
+          <span class="qb-icon">🎵</span><span class="qb-label">음악</span>
         </div>
-        <div class="quick-btn" onclick="quickSearch('PET')">
-          <span class="qb-icon">🐶</span><span class="qb-label">PET</span>
+        <div class="quick-btn" onclick="quickHotCat('17')">
+          <span class="qb-icon">⚽</span><span class="qb-label">스포츠</span>
+        </div>
+        <div class="quick-btn" onclick="quickHotCat('20')">
+          <span class="qb-icon">🎮</span><span class="qb-label">게임</span>
+        </div>
+        <div class="quick-btn" onclick="quickHotCat('1')">
+          <span class="qb-icon">🎬</span><span class="qb-label">영화·애니</span>
+        </div>
+        <div class="quick-btn" onclick="quickHotCat('15')">
+          <span class="qb-icon">🐾</span><span class="qb-label">반려동물</span>
+        </div>
+        <div class="quick-btn" onclick="quickHotCat('2')">
+          <span class="qb-icon">🚗</span><span class="qb-label">자동차</span>
+        </div>
+        <div class="quick-btn" onclick="quickHotCat('26')">
+          <span class="qb-icon">💡</span><span class="qb-label">노하우·스타일</span>
+        </div>
+        <div class="quick-btn" onclick="quickHotCat('22')">
+          <span class="qb-icon">👤</span><span class="qb-label">일상·블로그</span>
+        </div>
+        <div class="quick-btn" onclick="quickHotCat('23')">
+          <span class="qb-icon">😂</span><span class="qb-label">코미디</span>
+        </div>
+        <div class="quick-btn" onclick="quickHotCat('19')">
+          <span class="qb-icon">✈️</span><span class="qb-label">여행·이벤트</span>
+        </div>
+        <div class="quick-btn" onclick="quickHotCat('27')">
+          <span class="qb-icon">📚</span><span class="qb-label">교육</span>
+        </div>
+        <div class="quick-btn" onclick="showSearchMode()">
+          <span class="qb-icon">🔍</span><span class="qb-label">직접 검색</span>
         </div>
       </div>
 
-      <!-- Trending Categories -->
-      <div class="section-pad" style="padding-bottom:8px">
-        <div class="section-title">인기 카테고리</div>
-      </div>
-      <div class="trending-scroll">
-        <div class="trending-chip hot" onclick="quickHot()">🚀 급상승</div>
-        <div class="trending-chip" onclick="quickSearch('정치')">🏛️ 정치</div>
-        <div class="trending-chip" onclick="quickSearch('사회')">📰 사회</div>
-        <div class="trending-chip" onclick="quickSearch('사건사고')">⚠️ 사건사고</div>
-        <div class="trending-chip" onclick="quickSearch('글로벌')">🌍 글로벌</div>
-      </div>
+      <!-- Trending Chips: removed (replaced by quick-btns grid above) -->
 
       <!-- Feature Cards -->
       <div class="section-pad">
@@ -550,6 +571,10 @@ html,body{height:100%;overflow:hidden;background:#0a1929;color:#fff;font-family:
 
     <!-- ===== SEARCH SCREEN ===== -->
     <div class="screen" id="screen-search">
+      <!-- Breadcrumb: current selection -->
+      <div id="breadcrumb" style="padding:6px 16px 0;font-size:12px;color:var(--text3);display:flex;align-items:center;gap:4px">
+        <span id="bc-country"></span><span>·</span><span id="bc-category"></span>
+      </div>
       <!-- Search Box -->
       <div class="search-box-wrap">
         <div class="search-input-row">
@@ -986,10 +1011,28 @@ function showTab(tab) {
 function getActiveCountryLabel() {
   return (document.querySelector('#countryChips .chip.active')?.textContent || state.selectedCountry).trim();
 }
+// 카테고리 ID → 한국어 레이블 맵
+const CAT_LABEL_KO = {
+  '': '전체 트렌드',
+  '1':  '영화·애니',
+  '2':  '자동차',
+  '10': '음악',
+  '15': '반려동물',
+  '17': '스포츠',
+  '19': '여행·이벤트',
+  '20': '게임',
+  '22': '일상·블로그',
+  '23': '코미디',
+  '24': '엔터테인먼트',
+  '25': '뉴스·정치',
+  '26': '노하우·스타일',
+  '27': '교육',
+  '28': '과학·기술',
+  '29': '비영리'
+};
 function getActiveCategoryLabel() {
-  if (!state.selectedCategory) return 'All';
-  const cats = categoryCache[state.selectedCountry] || [];
-  return (cats.find(c => c.id === state.selectedCategory)?.title) || 'Category';
+  const id = state.selectedCategory || '';
+  return CAT_LABEL_KO[id] || 'Category';
 }
 function setMode(mode) {
   state.mode = mode;
@@ -1007,15 +1050,39 @@ function updateSearchInputUI() {
   } else {
     input.readOnly = false;
     input.classList.remove('readonly');
-    input.placeholder = 'Type a keyword and search...';
+    input.placeholder = '키워드 입력 후 포 검색...';
   }
+  // 브레드크럼 업데이트
+  const bcCountry = document.getElementById('bc-country');
+  const bcCategory = document.getElementById('bc-category');
+  if (bcCountry) bcCountry.textContent = '🌍 ' + getActiveCountryLabel();
+  if (bcCategory) bcCategory.textContent = state.mode === 'HOT'
+    ? '🔥 ' + getActiveCategoryLabel()
+    : '🔍 직접 검색';
 }
 
 // ===== QUICK ACTIONS =====
 function quickHot() {
   showTab('search');
+  state.selectedCategory = '';
   setMode('HOT');
   setTimeout(doHot, 50);
+}
+// HOT 모드 + 카테고리 ID 지정 (1유닛)
+function quickHotCat(catId) {
+  state.selectedCategory = catId;
+  showTab('search');
+  setMode('HOT');
+  setTimeout(doHot, 50);
+}
+// 직접 검색 버튼 → search 탭 이동 + 검색창 포커스
+function showSearchMode() {
+  setMode('SEARCH');
+  showTab('search');
+  setTimeout(() => {
+    const input = document.getElementById('searchInput');
+    if (input) { input.value = ''; input.focus(); }
+  }, 80);
 }
 function quickSearch(keyword) {
   setMode('SEARCH');
