@@ -878,7 +878,7 @@ html,body{overflow:hidden;height:100%;margin:0;padding:0}
       <span class="nav-icon">🏠</span>
       <span class="nav-label">홈</span>
     </button>
-    <button class="nav-item" id="nav-search" onclick="showTab('search')">
+    <button class="nav-item" id="nav-search" onclick="showSearchTab()">
       <span class="nav-icon">🔍</span>
       <span class="nav-label">검색</span>
     </button>
@@ -1073,7 +1073,7 @@ function updateSearchInputUI() {
     periodBtns.querySelectorAll('button').forEach(b => {
       // disabled 제거 → onclick 유지하고 selectPeriod 내에서 HOT 차단
       b.style.opacity = isHot ? '0.4' : '1';
-      b.style.cursor = isHot ? 'not-allowed' : 'pointer';
+      b.style.cursor = 'pointer'; // 항상 pointer - 클릭 시 토스트로 안내
       b.style.pointerEvents = 'auto'; // 클릭 가능 유지
     });
   }
@@ -1099,6 +1099,18 @@ function syncCountryChips(countryCode) {
 }
 
 // ===== QUICK ACTIONS =====
+
+// 좌측 검색 버튼: SEARCH 모드로 전환 후 검색창 표시
+function showSearchTab() {
+  setMode('SEARCH');
+  showTab('search');
+  updateSearchInputUI();
+  // 검색창 포커스
+  setTimeout(() => {
+    const inp = document.getElementById('searchInput');
+    if (inp) inp.focus();
+  }, 100);
+}
 function quickHot() {
   showTab('search');
   state.selectedCategory = '';
@@ -1247,6 +1259,11 @@ function selectPeriod(el) {
 }
 
 function selectProPeriod(el) {
+  // HOT 모드에서는 기간 선택 불가 (API 미지원)
+  if(state.mode === 'HOT') {
+    showToast('HOT 모드에서는 30일 고정입니다. 직접 검색 시 변경 가능합니다.');
+    return;
+  }
   if(!state.isPro) { showProAlert(); return; }
   selectPeriod(el);
 }
