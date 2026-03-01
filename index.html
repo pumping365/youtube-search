@@ -1071,9 +1071,10 @@ function updateSearchInputUI() {
   const periodLabel = document.getElementById('periodLabel');
   if (periodBtns) {
     periodBtns.querySelectorAll('button').forEach(b => {
-      b.disabled = isHot;
-      b.style.opacity = isHot ? '0.35' : '1';
+      // disabled 제거 → onclick 유지하고 selectPeriod 내에서 HOT 차단
+      b.style.opacity = isHot ? '0.4' : '1';
       b.style.cursor = isHot ? 'not-allowed' : 'pointer';
+      b.style.pointerEvents = 'auto'; // 클릭 가능 유지
     });
   }
   if (periodNote) periodNote.style.display = isHot ? 'block' : 'none';
