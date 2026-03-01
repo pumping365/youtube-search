@@ -1040,6 +1040,25 @@ const CAT_LABEL_KO = {
   '28': '과학·기술',
   '29': '비영리'
 };
+// HOT 모드 카테고리별 검색 키워드 (mostPopular API 한계 보완)
+const CAT_SEARCH_KEYWORD = {
+  '1':  '영화 애니메이션',
+  '2':  '자동차',
+  '10': '음악 뮤직비디오',
+  '15': '반려동물 동물',
+  '17': '스포츠 하이라이트',
+  '19': '여행 이벤트',
+  '20': '게임',
+  '22': '일상 브이로그',
+  '23': '코미디 웃긴',
+  '24': '엔터테인먼트 연예',
+  '25': '뉴스 속보',
+  '26': '노하우 스타일 패션',
+  '27': '교육 강의',
+  '28': '과학 기술 AI',
+  '29': '비영리 사회'
+};
+
 function getActiveCategoryLabel() {
   const id = state.selectedCategory || '';
   return CAT_LABEL_KO[id] || 'Category';
@@ -1221,15 +1240,10 @@ function selectChip(el, type) {
       // HOT 모드: videos.list(1유닛) → 자동 재검색 유지
       doHot();
     } else {
-      // SEARCH 모드: search.list(100유닛) → 자동 재검색 금지
-      // 돋보기 버튼에 펄스 애니메이션으로 "눌러주세요" 힌트만 표시
+      // SEARCH 모드: 검색어가 있으면 자동 재검색 (국가 변경 시 같은 키워드로 재검색)
       const q = (document.getElementById('searchInput')?.value || '').trim();
       if (q) {
-        const btn = document.querySelector('.btn-search');
-        if (btn) {
-          btn.classList.add('needs-search');
-          setTimeout(() => btn.classList.remove('needs-search'), 4000);
-        }
+        doSearch(); // 현재 키워드로 새 국가에서 자동 재검색
       }
     }
   };
@@ -1319,43 +1333,103 @@ async function doHot() {
   setMode('HOT');
   showLoading();
 
-  // HOT 모드: mostPopular 차트에서 일부 videoCategoryId 조합은
-  // YouTube API가 404(videoChartNotFound)를 반환함 → 자동 fallback
-  async function fetchHot(withCategory) {
-    const maxResults = Math.min(50, Math.max(1, state.selectedCount || 12));
-    let url = `https://www.googleapis.com/youtube/v3/videos?part=snippet,statistics&chart=mostPopular&maxResults=${maxResults}` +
-      `&regionCode=${encodeURIComponent(state.selectedCountry)}` +
+  const maxResults = Math.min(50, Math.max(1, state.selectedCount || 12));
+  const region = encodeURIComponent(state.selectedCountry);
+  const catId = state.selectedCategory || '';
+
+  // 카테고리가 선택된 경우: search.list 방식 (최신·정확한 결과, 100유닛)
+  // 카테고리 없는 경우(전체 트렌드): mostPopular 방식 (1유닛)
+  if (catId && CAT_SEARCH_KEYWORD[catId]) {
+    // search.list 방식 - 해당 카테고리 최신 인기 영상
+    const keyword = CAT_SEARCH_KEYWORD[catId];
+    const lang = { KR:'ko', JP:'ja', US:'en', GB:'en', FR:'fr', DE:'de',
+                   CN:'zh-Hans', TH:'th', VN:'vi', SG:'en', AU:'en' }[state.selectedCountry] || '';
+    let url = `https://www.googleapis.com/youtube/v3/search?part=snippet` +
+      `&q=${encodeURIComponent(keyword)}&type=video&order=viewCount` +
+      `&maxResults=${maxResults}&regionCode=${region}` +
+      `&videoCategoryId=${encodeURIComponent(catId)}` +
+      (lang ? `&relevanceLanguage=${encodeURIComponent(lang)}` : '') +
+      `&publishedAfter=${new Date(Date.now()-30*24*60*60*1000).toISOString()}` +
       `&key=${encodeURIComponent(state.apiKey)}`;
-    if (withCategory && state.selectedCategory) {
-      url += `&videoCategoryId=${encodeURIComponent(state.selectedCategory)}`;
+
+    try {
+      const res = await fetch(url);
+      if(!res.ok) {
+        // videoCategoryId 필터 실패 시 카테고리 없이 재시도
+        let url2 = `https://www.googleapis.com/youtube/v3/search?part=snippet` +
+          `&q=${encodeURIComponent(keyword)}&type=video&order=viewCount` +
+          `&maxResults=${maxResults}&regionCode=${region}` +
+          (lang ? `&relevanceLanguage=${encodeURIComponent(lang)}` : '') +
+          `&publishedAfter=${new Date(Date.now()-30*24*60*60*1000).toISOString()}` +
+          `&key=${encodeURIComponent(state.apiKey)}`;
+        const res2 = await fetch(url2);
+        if(!res2.ok) throw new Error(`API 오류 ${res2.status}`);
+        const data2 = await res2.json();
+        await processSearchResults(data2);
+        return;
+      }
+      const data = await res.json();
+      await processSearchResults(data);
+    } catch(e) {
+      showErrorState(e.message);
     }
+
+    async function processSearchResults(data) {
+      state.apiCallCount++;
+      document.getElementById('apiCallCount').textContent = `API ${state.apiCallCount}`;
+      const items = data.items || [];
+      if(!items.length) { showEmptyState(); return; }
+
+      // search.list는 id.videoId를 반환 → videos.list로 통계 가져오기
+      const videoIds = items.map(i => i.id?.videoId).filter(Boolean).join(',');
+      let stats = {};
+      if (videoIds) {
+        try {
+          const sr = await fetch(`https://www.googleapis.com/youtube/v3/videos?part=statistics&id=${videoIds}&key=${encodeURIComponent(state.apiKey)}`);
+          if (sr.ok) {
+            const sd = await sr.json();
+            (sd.items||[]).forEach(v => { stats[v.id] = v.statistics; });
+          }
+        } catch(e2) {}
+      }
+
+      state.currentResults = items.map(item => ({
+        id: item.id?.videoId || '',
+        title: item.snippet?.title || '',
+        channel: item.snippet?.channelTitle || '',
+        thumbnail: item.snippet?.thumbnails?.medium?.url || '',
+        publishedAt: item.snippet?.publishedAt || '',
+        description: item.snippet?.description || '',
+        stats: stats[item.id?.videoId] || {}
+      })).filter(v => v.id);
+      renderResults(state.currentResults);
+    }
+    return;
+  }
+
+  // ── 전체 트렌드(카테고리 없음): mostPopular 방식 (1유닛) ──
+  async function fetchHot(withCategory) {
+    let url = `https://www.googleapis.com/youtube/v3/videos?part=snippet,statistics&chart=mostPopular&maxResults=${maxResults}` +
+      `&regionCode=${region}` +
+      `&key=${encodeURIComponent(state.apiKey)}`;
+    if (withCategory && catId) url += `&videoCategoryId=${encodeURIComponent(catId)}`;
     const res = await fetch(url);
     return { res, ok: res.ok, status: res.status };
   }
 
   try {
     let { res, ok, status } = await fetchHot(true);
-
-    // 404 or 400 → 해당 카테고리가 HOT 차트 미지원 → All로 fallback
-    if (!ok && (status === 404 || status === 400) && state.selectedCategory) {
+    if (!ok && (status === 404 || status === 400) && catId) {
       showToast('⚠️ 이 카테고리는 인기 차트 미지원 → 전체(All)로 표시합니다');
-      // 카테고리 칩 UI도 All로 되돌리기
       state.selectedCategory = '';
-      document.querySelectorAll('.chip[data-type="category"]').forEach(c => c.classList.remove('active'));
-      const allChip = document.querySelector('.chip[data-value=""][data-type="category"]');
-      if(allChip) allChip.classList.add('active');
       ({ res, ok, status } = await fetchHot(false));
     }
-
     if(!ok) throw new Error(`API 오류 ${status}`);
     const data = await res.json();
-
     state.apiCallCount++;
     document.getElementById('apiCallCount').textContent = `API ${state.apiCallCount}`;
-
     const items = data.items || [];
     if(!items.length) { showEmptyState(); return; }
-
     state.currentResults = items.map(item => ({
       id: item.id,
       title: item.snippet?.title || '',
@@ -1365,12 +1439,12 @@ async function doHot() {
       description: item.snippet?.description || '',
       stats: item.statistics || {}
     }));
-
     renderResults(state.currentResults);
   } catch(e) {
     showErrorState(e.message);
   }
 }
+
 
 // ===== COUNTRY → relevanceLanguage MAP =====
 const COUNTRY_LANG = {
