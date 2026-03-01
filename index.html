@@ -489,24 +489,6 @@ html,body{height:100%;overflow:hidden;background:#0a1929;color:#fff;font-family:
       </div>
 
       <!-- Quick Actions: ALL HOT MODE (1 unit each) -->
-      <!-- 홈화면 국가 선택 (home-country-chips) — 결과화면 countryChips와 동기화 -->
-      <div style="padding:0 16px 12px">
-        <div class="section-title" style="margin-bottom:8px">🌍 국가 선택</div>
-        <div class="chip-row" id="homeCountryChips">
-          <div class="chip active" data-country="KR" onclick="selectHomeCountry(this)">🇰🇷 한국</div>
-          <div class="chip" data-country="US" onclick="selectHomeCountry(this)">🇺🇸 미국</div>
-          <div class="chip" data-country="JP" onclick="selectHomeCountry(this)">🇯🇵 일본</div>
-          <div class="chip" data-country="CN" onclick="selectHomeCountryPro(this)">🇨🇳 중국 &#x1F451;</div>
-          <div class="chip" data-country="GB" onclick="selectHomeCountryPro(this)">🇬🇧 영국 &#x1F451;</div>
-          <div class="chip" data-country="FR" onclick="selectHomeCountryPro(this)">🇫🇷 프랑스 &#x1F451;</div>
-          <div class="chip" data-country="DE" onclick="selectHomeCountryPro(this)">🇩🇪 독일 &#x1F451;</div>
-          <div class="chip" data-country="TH" onclick="selectHomeCountryPro(this)">🇹🇭 태국 &#x1F451;</div>
-          <div class="chip" data-country="VN" onclick="selectHomeCountryPro(this)">🇻🇳 베트남 &#x1F451;</div>
-          <div class="chip" data-country="SG" onclick="selectHomeCountryPro(this)">🇸🇬 싱가포르 &#x1F451;</div>
-          <div class="chip" data-country="AU" onclick="selectHomeCountryPro(this)">🇦🇺 호주 &#x1F451;</div>
-        </div>
-      </div>
-      <div style="height:1px;background:var(--border);margin:0 16px 12px"></div>
       <div class="section-pad" style="padding-bottom:4px">
         <div class="section-title">⚡ 원클릭 트렌드 <span style="font-size:11px;color:var(--text3);font-weight:400">(1유닛/클릭)</span></div>
       </div>
@@ -1032,7 +1014,6 @@ function getActiveCountryLabel() {
   // 결과화면 칩 또는 홈화면 칩 중 활성 항목의 텍스트 반환
   return (
     document.querySelector('#countryChips .chip.active')?.textContent ||
-    document.querySelector('#homeCountryChips .chip.active')?.textContent ||
     state.selectedCountry
   ).trim();
 }
@@ -1111,22 +1092,10 @@ function updateSearchInputUI() {
 // ===== 홈 국가 선택 함수 (홈칩 ↔ 결과화면칩 양방향 동기화) =====
 function syncCountryChips(countryCode) {
   // 홈화면 칩 동기화
-  document.querySelectorAll('#homeCountryChips .chip').forEach(c => {
-    c.classList.toggle('active', c.dataset.country === countryCode);
-  });
-  // 결과화면 칩 동기화
+  // 결과화면 칩만 동기화
   document.querySelectorAll('#countryChips .chip').forEach(c => {
     c.classList.toggle('active', c.dataset.country === countryCode);
   });
-}
-function selectHomeCountry(el) {
-  state.selectedCountry = el.dataset.country;
-  syncCountryChips(state.selectedCountry);
-  updateSearchInputUI();
-}
-function selectHomeCountryPro(el) {
-  if (!state.isPro) { showProAlert(); return; }
-  selectHomeCountry(el);
 }
 
 // ===== QUICK ACTIONS =====
@@ -1761,4 +1730,1736 @@ function timeAgo(dateStr) {
 </script>
 </body>
 </html>
-                                                                                                                                     
+                                                                                                                                                                                                                                                                                                                                                                                                         <!DOCTYPE html>
+<html lang="ko">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+<title>VIDORA PRO - YouTube Trend Analyzer</title>
+
+<!-- PWA Meta Tags -->
+<!-- manifest.json not deployed – removed to suppress 404 -->
+<meta name="theme-color" content="#0a1929">
+<!-- apple-mobile-web-app-capable deprecated – removed -->
+<meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+<meta name="apple-mobile-web-app-title" content="VIDORA PRO">
+<link rel="apple-touch-icon" href="/icons/icon-180.png">
+<link rel="apple-touch-icon" sizes="152x152" href="/icons/icon-152.png">
+<link rel="apple-touch-icon" sizes="167x167" href="/icons/icon-167.png">
+<link rel="apple-touch-icon" sizes="180x180" href="/icons/icon-180.png">
+
+<style>
+/* ===== RESET & BASE ===== */
+*{margin:0;padding:0;box-sizing:border-box;-webkit-tap-highlight-color:transparent}
+html,body{height:100%;overflow:hidden;background:#0a1929;color:#fff;font-family:-apple-system,BlinkMacSystemFont,'Segoe UI',sans-serif;font-size:15px}
+
+/* ===== CSS VARIABLES ===== */
+:root{
+  --navy:#0a1929;
+  --navy2:#132f4c;
+  --navy3:#1e3a5f;
+  --red:#FF0000;
+  --red2:#cc0000;
+  --gold:#FFD700;
+  --purple:#9c27b0;
+  --pink:#e91e8c;
+  --text:#fff;
+  --text2:#b0bec5;
+  --text3:#546e7a;
+  --card:#0d2137;
+  --border:#1e3a5f;
+  --tab-h:64px;
+  --header-h:56px;
+  --radius:14px;
+  --radius-sm:8px;
+}
+
+/* ===== APP LAYOUT ===== */
+#app{display:flex;flex-direction:column;height:100vh;height:100dvh}
+.top-header{height:var(--header-h);background:linear-gradient(135deg,var(--navy) 0%,var(--navy2) 100%);display:flex;align-items:center;justify-content:space-between;padding:0 16px;flex-shrink:0;border-bottom:1px solid var(--border);position:relative;z-index:100}
+.screen-container{flex:1;overflow:hidden;position:relative}
+.screen{position:absolute;inset:0;overflow-y:auto;overflow-x:hidden;-webkit-overflow-scrolling:touch;padding-bottom:calc(var(--tab-h) + 8px);display:none;opacity:0;transform:translateY(8px);transition:opacity .25s,transform .25s}
+.screen.active{display:block;opacity:1;transform:translateY(0)}
+.bottom-nav{height:var(--tab-h);background:linear-gradient(180deg,#0c1e30 0%,var(--navy) 100%);display:flex;border-top:1px solid var(--border);flex-shrink:0;position:relative;z-index:100}
+
+/* ===== HEADER ===== */
+.logo-wrap{display:flex;align-items:center;gap:8px}
+.logo-icon{width:32px;height:32px;background:var(--red);border-radius:8px;display:flex;align-items:center;justify-content:center;font-size:16px;box-shadow:0 2px 8px rgba(255,0,0,.4)}
+.logo-text{font-size:18px;font-weight:800;letter-spacing:.5px;background:linear-gradient(135deg,#fff 0%,#90caf9 100%);-webkit-background-clip:text;-webkit-text-fill-color:transparent}
+.logo-badge{font-size:10px;color:var(--gold);font-weight:700;margin-left:2px;-webkit-text-fill-color:var(--gold)}
+.header-actions{display:flex;align-items:center;gap:8px}
+.btn-icon{width:36px;height:36px;border-radius:50%;border:none;background:rgba(255,255,255,.1);color:#fff;display:flex;align-items:center;justify-content:center;font-size:18px;cursor:pointer;transition:.2s}
+.btn-icon:active{background:rgba(255,255,255,.2);transform:scale(.95)}
+.api-dot{width:8px;height:8px;border-radius:50%;background:#4caf50;margin-right:4px;animation:pulse 2s infinite}
+@keyframes pulse{0%,100%{opacity:1}50%{opacity:.5}}
+
+/* ===== BOTTOM NAV ===== */
+.nav-item{flex:1;display:flex;flex-direction:column;align-items:center;justify-content:center;gap:3px;border:none;background:transparent;color:var(--text3);cursor:pointer;transition:.2s;padding:4px 0;position:relative}
+.nav-item .nav-icon{font-size:22px;line-height:1}
+.nav-item .nav-label{font-size:10px;font-weight:600;letter-spacing:.3px}
+.nav-item.active{color:#fff}
+.nav-item.active .nav-icon{transform:scale(1.1)}
+.nav-item::after{content:'';position:absolute;top:0;left:50%;transform:translateX(-50%);width:0;height:3px;background:var(--red);border-radius:0 0 4px 4px;transition:.25s}
+.nav-item.active::after{width:32px}
+.nav-pro .nav-icon{background:linear-gradient(135deg,var(--gold),#ff8c00);-webkit-background-clip:text;-webkit-text-fill-color:transparent}
+.nav-pro.active .nav-label{color:var(--gold)}
+
+/* ===== SECTION COMMON ===== */
+.section-pad{padding:16px}
+.section-title{font-size:13px;font-weight:700;color:var(--text2);text-transform:uppercase;letter-spacing:.8px;margin-bottom:12px}
+
+/* ===== HOME SCREEN ===== */
+.hero-banner{margin:16px;background:linear-gradient(135deg,var(--navy2) 0%,#1a3a5c 100%);border-radius:var(--radius);padding:20px;border:1px solid var(--border);position:relative;overflow:hidden}
+.hero-banner::before{content:'🎬';position:absolute;right:16px;top:50%;transform:translateY(-50%);font-size:48px;opacity:.15}
+.hero-tag{display:inline-block;background:var(--red);color:#fff;font-size:11px;font-weight:700;padding:3px 10px;border-radius:20px;margin-bottom:10px;letter-spacing:.5px}
+.hero-title{font-size:20px;font-weight:800;line-height:1.3;margin-bottom:6px}
+.hero-sub{font-size:13px;color:var(--text2);line-height:1.5}
+.hero-stats{display:flex;gap:16px;margin-top:14px}
+.hero-stat{text-align:center}
+.hero-stat .num{font-size:18px;font-weight:800;color:var(--gold)}
+.hero-stat .lbl{font-size:11px;color:var(--text2)}
+
+.quick-btns{display:grid;grid-template-columns:repeat(4,1fr);gap:8px;padding:0 16px 16px}
+.quick-btn{background:var(--card);border:1px solid var(--border);border-radius:var(--radius-sm);padding:12px 6px;display:flex;flex-direction:column;align-items:center;gap:5px;cursor:pointer;transition:.2s;text-decoration:none;color:inherit}
+.quick-btn:active{transform:scale(.97);background:var(--navy3)}
+.quick-btn.hot-btn{border-color:var(--red);background:rgba(229,9,20,.08)}
+.quick-btn .qb-icon{font-size:22px}
+.quick-btn .qb-label{font-size:11px;font-weight:600;text-align:center;line-height:1.3}
+
+.trending-scroll{display:flex;gap:12px;padding:0 16px 16px;overflow-x:auto;scrollbar-width:none}
+.trending-scroll::-webkit-scrollbar{display:none}
+.trending-chip{flex-shrink:0;background:var(--card);border:1px solid var(--border);border-radius:20px;padding:8px 16px;font-size:13px;font-weight:600;cursor:pointer;white-space:nowrap;display:flex;align-items:center;gap:6px;transition:.2s}
+.trending-chip:active{background:var(--red);border-color:var(--red)}
+.trending-chip.hot{border-color:var(--red);color:var(--red)}
+
+/* ===== SEARCH SCREEN ===== */
+.search-box-wrap{padding:12px 16px;position:sticky;top:0;background:var(--navy);z-index:10;border-bottom:1px solid var(--border)}
+.search-input-row{display:flex;gap:8px;align-items:center}
+.search-input{flex:1;background:var(--card);border:1.5px solid var(--border);border-radius:12px;padding:12px 16px;color:#fff;font-size:15px;outline:none;transition:.2s}
+.search-input:focus{border-color:var(--red)}
+.search-input::placeholder{color:var(--text3)}
+.search-input.readonly{opacity:.9;cursor:pointer}
+.expand-note{font-size:11px;color:var(--text3);padding:3px 16px 0;min-height:16px;line-height:1.4;}
+.btn-search{background:var(--red);border:none;border-radius:12px;width:48px;height:48px;color:#fff;font-size:20px;cursor:pointer;display:flex;align-items:center;justify-content:center;flex-shrink:0;transition:.2s}
+.btn-search:active{background:var(--red2);transform:scale(.95)}
+.btn-search.needs-search{animation:pulse-btn 1.2s ease-in-out infinite;box-shadow:0 0 0 0 rgba(255,60,60,.7)}
+@keyframes pulse-btn{0%{box-shadow:0 0 0 0 rgba(255,60,60,.55)}70%{box-shadow:0 0 0 8px rgba(255,60,60,0)}100%{box-shadow:0 0 0 0 rgba(255,60,60,0)}}
+
+.filter-section{padding:12px 16px}
+.filter-label{font-size:12px;color:var(--text2);font-weight:600;margin-bottom:8px;display:flex;align-items:center;gap:4px}
+.chip-row{display:flex;gap:8px;overflow-x:auto;scrollbar-width:none;padding-bottom:2px}
+.chip-row::-webkit-scrollbar{display:none}
+.chip{flex-shrink:0;background:var(--card);border:1.5px solid var(--border);border-radius:20px;padding:7px 14px;font-size:13px;cursor:pointer;transition:.2s;white-space:nowrap;font-weight:500}
+.chip.active{background:var(--red);border-color:var(--red);font-weight:700}
+.chip:active{opacity:.8}
+.chip.pro-chip{border-color:var(--gold);color:var(--gold);position:relative}
+.chip.pro-chip::after{content:'PRO';position:absolute;top:-6px;right:-4px;background:var(--gold);color:#000;font-size:8px;font-weight:800;padding:1px 4px;border-radius:4px}
+
+.period-btns{display:flex;gap:6px;flex-wrap:wrap}
+.period-btn{background:var(--card);border:1.5px solid var(--border);border-radius:8px;padding:6px 12px;font-size:12px;cursor:pointer;transition:.2s;color:#fff;font-weight:500}
+.period-btn.active{background:var(--navy3);border-color:#4fc3f7;color:#4fc3f7;font-weight:700}
+
+.sort-row{display:flex;gap:6px;margin-bottom:8px}
+.sort-btn{flex:1;background:var(--card);border:1.5px solid var(--border);border-radius:8px;padding:8px 4px;font-size:12px;cursor:pointer;text-align:center;transition:.2s;color:#fff}
+.sort-btn.active{background:var(--navy3);border-color:#4fc3f7;color:#4fc3f7;font-weight:700}
+
+.divider{height:1px;background:var(--border);margin:4px 0}
+
+/* ===== VIDEO RESULTS ===== */
+#results-area{padding:12px 16px}
+.results-header{display:flex;justify-content:space-between;align-items:center;margin-bottom:12px}
+.results-count{font-size:13px;color:var(--text2)}
+.btn-csv{background:var(--navy3);border:1px solid var(--border);border-radius:8px;padding:6px 12px;color:#4fc3f7;font-size:12px;cursor:pointer;font-weight:600}
+
+.video-card{background:var(--card);border:1px solid var(--border);border-radius:var(--radius);margin-bottom:12px;overflow:hidden;transition:.2s;cursor:pointer}
+.video-card:active{transform:scale(.99);border-color:var(--red)}
+.video-thumb{width:100%;aspect-ratio:16/9;object-fit:cover;background:#0d2137;display:block}
+.video-thumb-placeholder{width:100%;aspect-ratio:16/9;background:linear-gradient(135deg,#0d2137 0%,#1a3a5c 100%);display:flex;align-items:center;justify-content:center;font-size:40px}
+.video-info{padding:12px}
+.video-title{font-size:14px;font-weight:700;line-height:1.4;margin-bottom:8px;display:-webkit-box;-webkit-line-clamp:2;-webkit-box-orient:vertical;overflow:hidden}
+.video-channel{font-size:12px;color:var(--text2);margin-bottom:8px;display:flex;align-items:center;gap:4px}
+.video-stats{display:flex;gap:12px;flex-wrap:wrap}
+.stat-badge{display:flex;align-items:center;gap:4px;font-size:12px;color:var(--text2);background:rgba(255,255,255,.05);padding:4px 8px;border-radius:6px}
+.stat-badge .icon{font-size:13px}
+
+.video-actions{display:flex;gap:8px;padding:0 12px 12px}
+.btn-detail{flex:1;background:rgba(255,0,0,.15);border:1px solid rgba(255,0,0,.3);border-radius:8px;padding:9px;color:var(--red);font-size:13px;font-weight:600;cursor:pointer;transition:.2s;text-align:center}
+.btn-detail:active{background:rgba(255,0,0,.3)}
+.btn-fav{width:40px;height:40px;background:rgba(255,255,255,.05);border:1px solid var(--border);border-radius:8px;display:flex;align-items:center;justify-content:center;font-size:18px;cursor:pointer;transition:.2s;flex-shrink:0}
+.btn-fav.active{background:rgba(255,215,0,.15);border-color:var(--gold)}
+.btn-fav:active{transform:scale(.95)}
+
+/* PRO badge on card */
+.pro-lock{display:flex;align-items:center;justify-content:center;gap:8px;padding:14px;background:linear-gradient(135deg,rgba(255,215,0,.1),rgba(255,140,0,.1));border-top:1px solid rgba(255,215,0,.2);font-size:13px;color:var(--gold);font-weight:600;cursor:pointer}
+
+/* ===== EMPTY/LOADING STATES ===== */
+.state-box{display:flex;flex-direction:column;align-items:center;justify-content:center;padding:60px 32px;text-align:center;gap:12px}
+.state-icon{font-size:56px}
+.state-title{font-size:17px;font-weight:700}
+.state-sub{font-size:14px;color:var(--text2);line-height:1.6}
+.loading-dots{display:flex;gap:8px;margin-top:8px}
+.dot{width:10px;height:10px;border-radius:50%;background:var(--red);animation:bounce .8s infinite}
+.dot:nth-child(2){animation-delay:.15s}
+.dot:nth-child(3){animation-delay:.3s}
+@keyframes bounce{0%,80%,100%{transform:translateY(0)}40%{transform:translateY(-12px)}}
+
+/* ===== FAVORITES SCREEN ===== */
+.fav-header{padding:16px;display:flex;justify-content:space-between;align-items:center}
+.fav-count-badge{background:var(--red);color:#fff;font-size:11px;font-weight:700;padding:3px 8px;border-radius:10px}
+.btn-clear{background:transparent;border:1px solid var(--border);border-radius:8px;padding:6px 12px;color:var(--text2);font-size:12px;cursor:pointer}
+
+/* ===== PRO SCREEN ===== */
+.pro-hero{margin:16px;background:linear-gradient(135deg,#1a1a00 0%,#2d2000 100%);border:2px solid var(--gold);border-radius:var(--radius);padding:24px;text-align:center;position:relative;overflow:hidden}
+.pro-hero::before{content:'👑';position:absolute;top:-10px;right:-10px;font-size:60px;opacity:.15;transform:rotate(20deg)}
+.pro-crown{font-size:40px;margin-bottom:12px}
+.pro-title{font-size:22px;font-weight:800;background:linear-gradient(135deg,var(--gold),#ff8c00);-webkit-background-clip:text;-webkit-text-fill-color:transparent;margin-bottom:6px}
+.pro-sub{font-size:14px;color:var(--text2);line-height:1.6}
+
+.plan-cards{padding:0 16px 16px;display:flex;flex-direction:column;gap:12px}
+.plan-card{border-radius:var(--radius);padding:20px;border:2px solid var(--border);background:var(--card);position:relative;overflow:hidden}
+.plan-card.free{border-color:var(--border)}
+.plan-card.pro{border-color:var(--gold);background:linear-gradient(135deg,#1a1500 0%,#0d2137 100%)}
+.plan-card.pro::before{content:'추천';position:absolute;top:12px;right:12px;background:var(--gold);color:#000;font-size:11px;font-weight:800;padding:3px 10px;border-radius:20px}
+.plan-name{font-size:13px;font-weight:700;color:var(--text2);margin-bottom:4px}
+.plan-price{font-size:28px;font-weight:800;margin-bottom:12px}
+.plan-price span{font-size:14px;color:var(--text2);font-weight:400}
+.plan-features{list-style:none;display:flex;flex-direction:column;gap:8px;margin-bottom:18px}
+.plan-features li{font-size:13px;display:flex;align-items:center;gap:8px}
+.plan-features li::before{content:'✓';color:#4caf50;font-weight:800}
+.plan-features li.disabled{color:var(--text3)}
+.plan-features li.disabled::before{content:'✗';color:var(--text3)}
+.btn-upgrade{width:100%;padding:14px;border-radius:12px;border:none;font-size:15px;font-weight:800;cursor:pointer;transition:.2s;letter-spacing:.3px}
+.btn-upgrade.free{background:rgba(255,255,255,.1);color:#fff}
+.btn-upgrade.pro{background:linear-gradient(135deg,var(--gold),#ff8c00);color:#000}
+.btn-upgrade:active{transform:scale(.98)}
+
+.compare-table{margin:0 16px 16px;border-radius:var(--radius);overflow:hidden;border:1px solid var(--border)}
+.compare-row{display:flex;border-bottom:1px solid var(--border)}
+.compare-row:last-child{border-bottom:none}
+.compare-row.header{background:var(--navy2);font-weight:700;font-size:12px;color:var(--text2)}
+.compare-cell{flex:1;padding:12px 10px;font-size:13px;text-align:center;border-right:1px solid var(--border)}
+.compare-cell:first-child{text-align:left;flex:2;padding-left:14px}
+.compare-cell:last-child{border-right:none;color:var(--gold)}
+.check-yes{color:#4caf50;font-size:16px}
+.check-no{color:var(--text3);font-size:16px}
+
+/* ===== SETTINGS SCREEN ===== */
+.settings-section{padding:0 16px 16px}
+.settings-title{font-size:11px;font-weight:700;color:var(--text3);text-transform:uppercase;letter-spacing:1px;padding:16px 0 8px}
+.settings-card{background:var(--card);border:1px solid var(--border);border-radius:var(--radius);overflow:hidden}
+.settings-row{display:flex;align-items:center;gap:12px;padding:14px 16px;border-bottom:1px solid var(--border);cursor:pointer;transition:.2s}
+.settings-row:last-child{border-bottom:none}
+.settings-row:active{background:var(--navy3)}
+.settings-icon{font-size:22px;width:28px;text-align:center;flex-shrink:0}
+.settings-info{flex:1}
+.settings-name{font-size:15px;font-weight:600}
+.settings-desc{font-size:12px;color:var(--text2);margin-top:2px}
+.settings-value{font-size:13px;color:var(--text2);display:flex;align-items:center;gap:4px}
+.settings-arrow{color:var(--text3);font-size:16px}
+.toggle{width:48px;height:28px;border-radius:14px;background:var(--navy3);border:none;cursor:pointer;position:relative;transition:.3s;flex-shrink:0}
+.toggle.on{background:var(--red)}
+.toggle::after{content:'';position:absolute;top:4px;left:4px;width:20px;height:20px;border-radius:50%;background:#fff;transition:.3s;box-shadow:0 2px 4px rgba(0,0,0,.3)}
+.toggle.on::after{left:calc(100% - 24px)}
+
+/* ===== API KEY INPUT ===== */
+.api-input-wrap{margin:0 16px 16px}
+.api-label{font-size:12px;color:var(--text2);font-weight:600;margin-bottom:8px}
+.api-input-row{display:flex;gap:8px}
+.api-input{flex:1;background:var(--card);border:1.5px solid var(--border);border-radius:10px;padding:12px;color:#fff;font-size:14px;outline:none}
+.api-input:focus{border-color:var(--red)}
+.btn-save-api{background:var(--red);border:none;border-radius:10px;padding:12px 16px;color:#fff;font-weight:700;cursor:pointer;font-size:14px;white-space:nowrap}
+.btn-save-api:active{background:var(--red2)}
+
+/* ===== MODAL ===== */
+.modal-overlay{position:fixed;inset:0;background:rgba(0,0,0,.75);z-index:1000;display:none;align-items:flex-end;justify-content:center}
+.modal-overlay.open{display:flex}
+.modal-sheet{background:var(--navy);border-radius:24px 24px 0 0;width:100%;max-height:90vh;overflow-y:auto;padding:0 0 32px;animation:slideUp .3s ease}
+@keyframes slideUp{from{transform:translateY(100%)}to{transform:translateY(0)}}
+.modal-handle{width:40px;height:4px;background:var(--border);border-radius:2px;margin:12px auto}
+.modal-header{display:flex;justify-content:space-between;align-items:flex-start;padding:8px 16px 16px}
+.modal-title{font-size:17px;font-weight:700;line-height:1.4;flex:1;margin-right:8px}
+.btn-modal-close{background:rgba(255,255,255,.1);border:none;border-radius:50%;width:32px;height:32px;color:#fff;font-size:18px;cursor:pointer;display:flex;align-items:center;justify-content:center;flex-shrink:0}
+.modal-thumb{width:100%;aspect-ratio:16/9;object-fit:cover;background:#0d2137}
+.modal-stats-grid{display:grid;grid-template-columns:repeat(2,1fr);gap:10px;padding:16px}
+.modal-stat-box{background:var(--card);border:1px solid var(--border);border-radius:var(--radius-sm);padding:14px;text-align:center}
+.modal-stat-icon{font-size:20px;margin-bottom:4px}
+.modal-stat-val{font-size:18px;font-weight:800;color:#fff}
+.modal-stat-lbl{font-size:11px;color:var(--text2);margin-top:2px}
+.modal-section{padding:0 16px 12px}
+.modal-section-title{font-size:12px;font-weight:700;color:var(--text2);text-transform:uppercase;letter-spacing:.8px;margin-bottom:10px}
+.ai-box{background:var(--card);border:1px solid var(--border);border-left:3px solid var(--purple);border-radius:var(--radius-sm);padding:14px;font-size:13px;line-height:1.6;color:var(--text2)}
+.cpm-box{background:linear-gradient(135deg,rgba(255,215,0,.1),rgba(255,140,0,.05));border:1px solid rgba(255,215,0,.3);border-radius:var(--radius-sm);padding:14px}
+.cpm-val{font-size:22px;font-weight:800;color:var(--gold)}
+.cpm-sub{font-size:12px;color:var(--text2);margin-top:4px}
+.btn-watch{display:block;margin:16px;padding:14px;background:var(--red);border:none;border-radius:14px;color:#fff;font-size:16px;font-weight:700;text-align:center;text-decoration:none;cursor:pointer}
+.btn-watch:active{background:var(--red2)}
+
+/* ===== LOGIN MODAL ===== */
+.login-modal{background:var(--navy2);border-radius:24px 24px 0 0;width:100%;padding:0 24px 40px;animation:slideUp .3s ease}
+.login-icon{text-align:center;font-size:48px;margin:24px 0 12px}
+.login-title{text-align:center;font-size:20px;font-weight:800;margin-bottom:8px}
+.login-sub{text-align:center;font-size:14px;color:var(--text2);line-height:1.6;margin-bottom:28px}
+.btn-google{display:flex;align-items:center;justify-content:center;gap:12px;width:100%;padding:15px;background:#fff;border:none;border-radius:14px;font-size:15px;font-weight:700;color:#333;cursor:pointer;margin-bottom:12px;transition:.2s}
+.btn-google:active{transform:scale(.98)}
+.btn-guest{width:100%;padding:14px;background:transparent;border:1.5px solid var(--border);border-radius:14px;color:#fff;font-size:15px;font-weight:600;cursor:pointer;transition:.2s}
+.btn-guest:active{background:var(--navy3)}
+.login-terms{text-align:center;font-size:11px;color:var(--text3);margin-top:16px;line-height:1.6}
+
+/* ===== TOAST ===== */
+.toast{position:fixed;bottom:calc(var(--tab-h) + 16px);left:50%;transform:translateX(-50%);background:rgba(30,58,95,.95);border:1px solid var(--border);backdrop-filter:blur(8px);border-radius:12px;padding:12px 20px;font-size:14px;font-weight:600;z-index:2000;pointer-events:none;opacity:0;transition:opacity .25s;white-space:nowrap}
+.toast.show{opacity:1}
+
+/* ===== SCROLLBAR ===== */
+::-webkit-scrollbar{width:3px}
+::-webkit-scrollbar-track{background:transparent}
+::-webkit-scrollbar-thumb{background:var(--navy3);border-radius:4px}
+
+/* ===== UTILITY ===== */
+.hidden{display:none!important}
+
+/* ===== HOVER EFFECTS (PC) ===== */
+@media(hover:hover){
+  .btn-icon:hover{background:rgba(255,255,255,.2)}
+  .quick-btn:hover{background:var(--navy3);border-color:#4fc3f7;transform:translateY(-2px)}
+  .trending-chip:hover{background:rgba(255,0,0,.15);border-color:var(--red)}
+  .chip:hover:not(.pro-chip){background:var(--navy3)}
+  .video-card:hover{border-color:rgba(255,0,0,.4);transform:translateY(-2px);box-shadow:0 8px 24px rgba(0,0,0,.3)}
+  .btn-detail:hover{background:rgba(255,0,0,.25)}
+  .btn-fav:hover{background:rgba(255,215,0,.15)}
+  .settings-row:hover{background:var(--navy3)}
+  .nav-item:hover{color:var(--text2)}
+  .btn-upgrade.pro:hover{filter:brightness(1.1);transform:scale(1.01)}
+  .btn-upgrade.free:hover{background:rgba(255,255,255,.15)}
+  .sort-btn:hover{border-color:#4fc3f7;color:#4fc3f7}
+  .period-btn:hover{border-color:#4fc3f7}
+  .plan-card:hover{transform:translateY(-2px);box-shadow:0 12px 32px rgba(0,0,0,.3)}
+  .compare-row:hover:not(.header){background:rgba(255,255,255,.03)}
+  cursor:auto
+}
+
+/* ===== TABLET (768px+) ===== */
+@media(min-width:768px){
+  html,body{overflow:auto}
+  #app{max-width:960px;margin:0 auto;height:100vh;height:100dvh;box-shadow:0 0 60px rgba(0,0,0,.5)}
+
+  /* 검색 필터 2열 */
+  .filter-section{display:inline-block;width:calc(50% - 32px);vertical-align:top}
+  #countryChips,#categoryChips{flex-wrap:wrap}
+  .chip-row{flex-wrap:wrap}
+
+  /* 비디오 카드 2열 그리드 */
+  #results-area .video-card-grid{display:grid;grid-template-columns:repeat(2,1fr);gap:14px}
+
+  /* 퀵 버튼 4열 유지(태블릿) */
+  .quick-btns{grid-template-columns:repeat(4,1fr)}
+
+  /* 플랜 카드 가로 배열 */
+  .plan-cards{flex-direction:row}
+  .plan-card{flex:1}
+}
+
+/* ===== DESKTOP (1024px+) ===== */
+@media(min-width:1024px){
+  :root{
+    --header-h:64px;
+    --tab-h:72px;
+  }
+  html,body{background:#060e1a;overflow:auto}
+
+  /* 전체 앱 컨테이너 */
+  #app{
+    max-width:1280px;
+    margin:0 auto;
+    height:100vh;
+    height:100dvh;
+    display:grid;
+    grid-template-columns:220px 1fr;
+    grid-template-rows:var(--header-h) 1fr;
+    grid-template-areas:
+      'header header'
+      'sidenav main';
+    box-shadow:0 0 80px rgba(0,0,0,.6);
+    border-radius:0;
+  }
+
+  /* 헤더 풀 너비 */
+  .top-header{
+    grid-area:header;
+    border-radius:0;
+    padding:0 32px;
+  }
+  .logo-text{font-size:22px}
+
+  /* 스크린 컨테이너 메인 영역 */
+  .screen-container{
+    grid-area:main;
+    overflow:hidden;
+  }
+
+  /* 사이드 네비게이션 (PC) */
+  .bottom-nav{
+    grid-area:sidenav;
+    flex-direction:column;
+    height:auto;
+    width:220px;
+    border-top:none;
+    border-right:1px solid var(--border);
+    padding:24px 0;
+    background:linear-gradient(180deg,var(--navy) 0%,#060e1a 100%);
+  }
+  .nav-item{
+    flex-direction:row;
+    justify-content:flex-start;
+    padding:14px 24px;
+    gap:14px;
+    border-radius:0;
+  }
+  .nav-item .nav-icon{font-size:20px}
+  .nav-item .nav-label{font-size:14px;font-weight:600}
+  .nav-item::after{
+    width:3px;
+    height:0;
+    left:0;
+    top:50%;
+    transform:translateY(-50%);
+    border-radius:0 4px 4px 0;
+    transition:.25s;
+  }
+  .nav-item.active::after{height:32px;width:3px}
+
+  /* 스크린 패딩 증가 */
+  .screen{padding-bottom:0}
+  .hero-banner{margin:24px;padding:28px 32px}
+  .hero-title{font-size:26px}
+  .section-pad{padding:20px 24px}
+  .quick-btns{grid-template-columns:repeat(6,1fr);padding:0 24px 20px}
+
+  /* 검색 레이아웃 */
+  .search-box-wrap{padding:16px 24px}
+  .filter-section{padding:12px 24px;display:block;width:auto}
+
+  /* 결과 3열 그리드 */
+  #results-area{padding:16px 24px}
+  .video-grid-inner{display:grid;grid-template-columns:repeat(3,1fr);gap:16px}
+
+  /* 모달 중앙 정렬 */
+  .modal-overlay{align-items:center}
+  .modal-sheet{
+    border-radius:var(--radius);
+    max-width:600px;
+    max-height:85vh;
+    width:90%;
+    animation:fadeScale .25s ease;
+  }
+  .login-modal{
+    border-radius:var(--radius);
+    max-width:420px;
+    width:90%;
+  }
+  @keyframes fadeScale{
+    from{opacity:0;transform:scale(.95)}
+    to{opacity:1;transform:scale(1)}
+  }
+
+  /* PRO 화면 */
+  .pro-hero{margin:24px;padding:32px}
+  .plan-cards{flex-direction:row;padding:0 24px 24px}
+  .plan-card{flex:1}
+  .compare-table{margin:0 24px 24px}
+
+  /* 설정 화면 */
+  .settings-section{padding:0 24px 16px}
+  .api-input-wrap{margin:16px 24px}
+
+  /* 즐겨찾기 */
+  .fav-header{padding:20px 24px}
+  #favorites-list > div{display:grid;grid-template-columns:repeat(3,1fr);gap:16px;padding:0 24px}
+
+  /* 토스트 위치 */
+  .toast{bottom:24px}
+
+  /* 스크롤바 */
+  ::-webkit-scrollbar{width:6px}
+}
+</style>
+</head>
+<body>
+
+<div id="app">
+  <!-- TOP HEADER -->
+  <header class="top-header">
+    <div class="logo-wrap">
+      <div class="logo-icon">▶</div>
+      <span class="logo-text">VIDORA</span>
+      <span class="logo-badge">PRO</span>
+    </div>
+    <div class="header-actions">
+      <div style="display:flex;align-items:center;font-size:11px;color:var(--text2)">
+        <span class="api-dot" id="apiDot"></span>
+        <span id="apiCallCount">API 0</span>
+      </div>
+      <button class="btn-icon" onclick="openLoginModal()" title="로그인">👤</button>
+      <button class="btn-icon" onclick="showTab('settings')" title="설정">⚙️</button>
+    </div>
+  </header>
+
+  <!-- SCREEN CONTAINER -->
+  <div class="screen-container">
+
+    <!-- ===== HOME SCREEN ===== -->
+    <div class="screen active" id="screen-home">
+      <!-- Hero Banner -->
+      <div class="hero-banner">
+        <div class="hero-tag">Watch → Remix</div>
+        <div class="hero-title">YouTube 트렌드를<br>분석하고 창작하세요</div>
+        <div class="hero-sub">11개국 × 11가지 지표로<br>최신 트렌드를 발견하세요</div>
+        <div class="hero-stats">
+          <div class="hero-stat"><div class="num">11</div><div class="lbl">개국</div></div>
+          <div class="hero-stat"><div class="num">11</div><div class="lbl">가지 지표</div></div>
+          <div class="hero-stat"><div class="num">AI</div><div class="lbl">분석</div></div>
+        </div>
+      </div>
+
+      <!-- Quick Actions: ALL HOT MODE (1 unit each) -->
+      <div class="section-pad" style="padding-bottom:4px">
+        <div class="section-title">⚡ 원클릭 트렌드 <span style="font-size:11px;color:var(--text3);font-weight:400">(1유닛/클릭)</span></div>
+      </div>
+      <div class="quick-btns">
+        <div class="quick-btn hot-btn" onclick="quickHotCat('')">
+          <span class="qb-icon">🔥</span><span class="qb-label">전체 트렌드</span>
+        </div>
+        <div class="quick-btn" onclick="quickHotCat('28')">
+          <span class="qb-icon">💻</span><span class="qb-label">과학·기술</span>
+        </div>
+        <div class="quick-btn" onclick="quickHotCat('25')">
+          <span class="qb-icon">📰</span><span class="qb-label">뉴스·정치</span>
+        </div>
+        <div class="quick-btn" onclick="quickHotCat('24')">
+          <span class="qb-icon">🎭</span><span class="qb-label">엔터테인먼트</span>
+        </div>
+        <div class="quick-btn" onclick="quickHotCat('10')">
+          <span class="qb-icon">🎵</span><span class="qb-label">음악</span>
+        </div>
+        <div class="quick-btn" onclick="quickHotCat('17')">
+          <span class="qb-icon">⚽</span><span class="qb-label">스포츠</span>
+        </div>
+        <div class="quick-btn" onclick="quickHotCat('20')">
+          <span class="qb-icon">🎮</span><span class="qb-label">게임</span>
+        </div>
+        <div class="quick-btn" onclick="quickHotCat('1')">
+          <span class="qb-icon">🎬</span><span class="qb-label">영화·애니</span>
+        </div>
+        <div class="quick-btn" onclick="quickHotCat('15')">
+          <span class="qb-icon">🐾</span><span class="qb-label">반려동물</span>
+        </div>
+        <div class="quick-btn" onclick="quickHotCat('2')">
+          <span class="qb-icon">🚗</span><span class="qb-label">자동차</span>
+        </div>
+        <div class="quick-btn" onclick="quickHotCat('26')">
+          <span class="qb-icon">💡</span><span class="qb-label">노하우·스타일</span>
+        </div>
+        <div class="quick-btn" onclick="quickHotCat('22')">
+          <span class="qb-icon">👤</span><span class="qb-label">일상·블로그</span>
+        </div>
+        <div class="quick-btn" onclick="quickHotCat('23')">
+          <span class="qb-icon">😂</span><span class="qb-label">코미디</span>
+        </div>
+        <div class="quick-btn" onclick="quickHotCat('19')">
+          <span class="qb-icon">✈️</span><span class="qb-label">여행·이벤트</span>
+        </div>
+        <div class="quick-btn" onclick="quickHotCat('27')">
+          <span class="qb-icon">📚</span><span class="qb-label">교육</span>
+        </div>
+        <div class="quick-btn" onclick="showSearchMode()">
+          <span class="qb-icon">🔍</span><span class="qb-label">직접 검색</span>
+        </div>
+      </div>
+
+      <!-- Trending Chips: removed (replaced by quick-btns grid above) -->
+
+      <!-- Feature Cards -->
+      <div class="section-pad">
+        <div class="section-title">핵심 기능</div>
+        <div style="display:flex;flex-direction:column;gap:10px">
+          <div style="background:var(--card);border:1px solid var(--border);border-radius:var(--radius);padding:14px;display:flex;align-items:center;gap:12px">
+            <span style="font-size:28px">🎯</span>
+            <div><div style="font-size:14px;font-weight:700;margin-bottom:3px">전문 분석</div><div style="font-size:12px;color:var(--text2)">11가지 지표로 정밀한 트렌드 분석</div></div>
+          </div>
+          <div style="background:var(--card);border:1px solid var(--border);border-radius:var(--radius);padding:14px;display:flex;align-items:center;gap:12px">
+            <span style="font-size:28px">📊</span>
+            <div><div style="font-size:14px;font-weight:700;margin-bottom:3px">실시간 차트</div><div style="font-size:12px;color:var(--text2)">조회수·구독자·CPM 실시간 추적</div></div>
+          </div>
+          <div style="background:var(--card);border:1px solid var(--border);border-radius:var(--radius);padding:14px;display:flex;align-items:center;gap:12px">
+            <span style="font-size:28px">🤖</span>
+            <div><div style="font-size:14px;font-weight:700;margin-bottom:3px">AI 평가</div><div style="font-size:12px;color:var(--text2)">콘텐츠 잠재력 AI 자동 분석</div></div>
+          </div>
+          <div style="background:var(--card);border:1px solid var(--border);border-radius:var(--radius);padding:14px;display:flex;align-items:center;gap:12px">
+            <span style="font-size:28px">🎬</span>
+            <div><div style="font-size:14px;font-weight:700;margin-bottom:3px">영상 리믹스</div><div style="font-size:12px;color:var(--text2)">감상한 영상을 업그레이드 작품으로</div></div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- ===== SEARCH SCREEN ===== -->
+    <div class="screen" id="screen-search">
+      <!-- Breadcrumb: current selection + home button -->
+      <div id="breadcrumb" style="padding:8px 16px 2px;font-size:12px;color:var(--text3);display:flex;align-items:center;gap:6px">
+        <button onclick="showTab('home')" style="background:none;border:none;color:var(--red);font-size:12px;font-weight:700;cursor:pointer;padding:2px 6px 2px 0;display:flex;align-items:center;gap:2px">← 홈</button>
+        <span style="color:var(--border)">|</span>
+        <span id="bc-country"></span>
+        <span>·</span>
+        <span id="bc-category" style="font-weight:700;color:var(--text2)"></span>
+      </div>
+      <!-- Search Box: HOT모드에서는 숨김, SEARCH 모드에서만 표시 -->
+      <div class="search-box-wrap" id="searchBoxWrap">
+        <div class="search-input-row">
+          <input type="search" class="search-input" id="searchInput" placeholder="키워드 입력 후 포 검색..." enterkeyhint="search" oninput="onSearchInput(this.value)">
+          <button class="btn-search" onclick="onSearchButton()">🔍</button>
+        </div>
+        <div class="expand-note" id="expandNote"></div>
+      </div>
+
+      <!-- Filters -->
+      <div class="filter-section">
+        <div class="filter-label">🌍 국가 선택</div>
+        <div class="chip-row" id="countryChips">
+          <div class="chip active" data-country="KR" onclick="selectChip(this,'country')">🇰🇷 한국</div>
+          <div class="chip" data-country="US" onclick="selectChip(this,'country')">🇺🇸 미국</div>
+          <div class="chip" data-country="JP" onclick="selectChip(this,'country')">🇯🇵 일본</div>
+          <div class="chip pro-chip" data-country="CN" onclick="selectProChip(this)">🇨🇳 중국</div>
+          <div class="chip pro-chip" data-country="GB" onclick="selectProChip(this)">🇬🇧 영국</div>
+          <div class="chip pro-chip" data-country="FR" onclick="selectProChip(this)">🇫🇷 프랑스</div>
+          <div class="chip pro-chip" data-country="DE" onclick="selectProChip(this)">🇩🇪 독일</div>
+          <div class="chip pro-chip" data-country="TH" onclick="selectProChip(this)">🇹🇭 태국</div>
+          <div class="chip pro-chip" data-country="VN" onclick="selectProChip(this)">🇻🇳 베트남</div>
+          <div class="chip pro-chip" data-country="SG" onclick="selectProChip(this)">🇸🇬 싱가포르</div>
+          <div class="chip pro-chip" data-country="AU" onclick="selectProChip(this)">🇦🇺 호주</div>
+        </div>
+      </div>
+
+      <div class="divider" style="margin:0 16px"></div>
+
+      <!-- 카테고리 칩: HOT모드에서는 홈화면으로 이동했으므로 숨김 -->
+      <div class="filter-section" id="categoryChipsSection" style="display:none">
+        <div class="filter-label">⚡ 카테고리</div>
+        <div class="chip-row" id="categoryChips"></div>
+      </div>
+
+      <div class="filter-section" id="periodSection">
+        <div class="filter-label" id="periodLabel">📅 검색 기간</div>
+        <div class="period-btns" id="periodBtns">
+          <button class="period-btn active" data-days="7" onclick="selectPeriod(this)">최근 7일</button>
+          <button class="period-btn" data-days="30" onclick="selectPeriod(this)">최근 30일</button>
+          <button class="period-btn" data-days="60" onclick="selectPeriod(this)">최근 60일</button>
+          <button class="period-btn pro-period" data-days="90" onclick="selectProPeriod(this)">최근 90일 ⭐</button>
+          <button class="period-btn pro-period" data-days="0" onclick="selectProPeriod(this)">전체기간 ⭐</button>
+        </div>
+        <div id="periodHotNote" style="display:none;font-size:11px;color:var(--text3);margin-top:4px">⚠️ HOT 모드에서는 기간 필터 미지원 (YouTube API 제한)</div>
+      </div>
+
+      <div class="divider" style="margin:0 16px"></div>
+
+      <div class="filter-section">
+        <div class="filter-label">📊 정렬</div>
+        <div class="sort-row">
+          <button class="sort-btn active" data-order="relevance" onclick="selectSort(this)">관련도</button>
+          <button class="sort-btn" data-order="date" onclick="selectSort(this)">최신순</button>
+          <button class="sort-btn" data-order="viewCount" onclick="selectSort(this)">조회수</button>
+          <button class="sort-btn" data-order="rating" onclick="selectSort(this)">평점순</button>
+        </div>
+        <div style="display:flex;gap:6px;align-items:center">
+          <span style="font-size:12px;color:var(--text2)">결과 수:</span>
+          <button class="sort-btn active" data-cnt="12" onclick="selectCount(this)" style="flex:none;padding:6px 14px">12개</button>
+          <button class="sort-btn" data-cnt="24" onclick="selectCount(this)" style="flex:none;padding:6px 14px">24개</button>
+          <button class="sort-btn pro-cnt" data-cnt="36" onclick="selectProCount(this)" style="flex:none;padding:6px 14px">36개 ⭐</button>
+        </div>
+      </div>
+
+      <!-- Results Area -->
+      <div id="results-area">
+        <div class="state-box">
+          <div class="state-icon">🔍</div>
+          <div class="state-title">검색을 시작하세요</div>
+          <div class="state-sub">키워드 입력 또는<br>카테고리를 선택하세요</div>
+        </div>
+      </div>
+    </div>
+
+    <!-- ===== FAVORITES SCREEN ===== -->
+    <div class="screen" id="screen-favorites">
+      <div class="fav-header">
+        <div>
+          <div style="font-size:18px;font-weight:800">즐겨찾기</div>
+          <div style="font-size:13px;color:var(--text2);margin-top:2px">저장된 영상 목록</div>
+        </div>
+        <div style="display:flex;gap:8px;align-items:center">
+          <span class="fav-count-badge" id="favCountBadge">0</span>
+          <button class="btn-clear" onclick="clearFavorites()">전체 삭제</button>
+        </div>
+      </div>
+      <div id="favorites-list">
+        <div class="state-box">
+          <div class="state-icon">⭐</div>
+          <div class="state-title">즐겨찾기가 비어있습니다</div>
+          <div class="state-sub">영상 검색 후 ⭐ 버튼을 눌러<br>나만의 목록을 만들어보세요</div>
+        </div>
+      </div>
+    </div>
+
+    <!-- ===== PRO SCREEN ===== -->
+    <div class="screen" id="screen-pro">
+      <!-- Pro Hero -->
+      <div class="pro-hero">
+        <div class="pro-crown">👑</div>
+        <div class="pro-title">VIDORA PRO</div>
+        <div class="pro-sub">YouTube 트렌드 분석의 모든 기능을<br>제한 없이 사용하세요</div>
+      </div>
+
+      <!-- Plan Cards -->
+      <div class="plan-cards">
+        <div class="plan-card free">
+          <div class="plan-name">FREE</div>
+          <div class="plan-price">₩0 <span>/ 영구 무료</span></div>
+          <ul class="plan-features">
+            <li>3개국 검색 (한국, 미국, 일본)</li>
+            <li>최근 7일 / 30일 기간</li>
+            <li>12개 결과 표시</li>
+            <li>기본 영상 정보</li>
+            <li class="disabled">전체 11개국 검색</li>
+            <li class="disabled">AI 콘텐츠 분석</li>
+            <li class="disabled">CPM 수익 예측</li>
+            <li class="disabled">CSV 내보내기</li>
+          </ul>
+          <button class="btn-upgrade free" onclick="showTab('search')">지금 무료로 시작</button>
+        </div>
+
+        <div class="plan-card pro">
+          <div class="plan-name">PRO</div>
+          <div class="plan-price">₩9,900 <span>/ 월</span></div>
+          <ul class="plan-features">
+            <li>11개국 전체 검색</li>
+            <li>전체 기간 제한 없음</li>
+            <li>36개 결과 표시</li>
+            <li>상세 영상 분석</li>
+            <li>🤖 AI 콘텐츠 평가</li>
+            <li>💰 CPM 수익 예측</li>
+            <li>📥 CSV 내보내기</li>
+            <li>⚡ 우선 검색 속도</li>
+          </ul>
+          <button class="btn-upgrade pro" onclick="goToGumroad()">지금 업그레이드 →</button>
+        </div>
+      </div>
+
+      <!-- Compare Table -->
+      <div style="padding:0 16px 8px"><div class="section-title">기능 비교</div></div>
+      <div class="compare-table">
+        <div class="compare-row header">
+          <div class="compare-cell">기능</div>
+          <div class="compare-cell">Free</div>
+          <div class="compare-cell">Pro</div>
+        </div>
+        <div class="compare-row">
+          <div class="compare-cell">검색 국가</div>
+          <div class="compare-cell">3개국</div>
+          <div class="compare-cell">11개국</div>
+        </div>
+        <div class="compare-row">
+          <div class="compare-cell">검색 기간</div>
+          <div class="compare-cell">~30일</div>
+          <div class="compare-cell">전체</div>
+        </div>
+        <div class="compare-row">
+          <div class="compare-cell">결과 수</div>
+          <div class="compare-cell">12개</div>
+          <div class="compare-cell">36개</div>
+        </div>
+        <div class="compare-row">
+          <div class="compare-cell">AI 분석</div>
+          <div class="compare-cell"><span class="check-no">✗</span></div>
+          <div class="compare-cell"><span class="check-yes">✓</span></div>
+        </div>
+        <div class="compare-row">
+          <div class="compare-cell">CPM 예측</div>
+          <div class="compare-cell"><span class="check-no">✗</span></div>
+          <div class="compare-cell"><span class="check-yes">✓</span></div>
+        </div>
+        <div class="compare-row">
+          <div class="compare-cell">CSV 내보내기</div>
+          <div class="compare-cell"><span class="check-no">✗</span></div>
+          <div class="compare-cell"><span class="check-yes">✓</span></div>
+        </div>
+      </div>
+    </div>
+
+    <!-- ===== SETTINGS SCREEN ===== -->
+    <div class="screen" id="screen-settings">
+      <!-- API Key -->
+      <div class="api-input-wrap" style="margin-top:16px">
+        <div class="api-label">🔑 YouTube Data API Key</div>
+        <div class="api-input-row">
+          <input type="password" class="api-input" id="apiKeyInput" placeholder="API 키를 입력하세요">
+          <button class="btn-save-api" onclick="saveApiKey()">저장</button>
+        </div>
+        <div style="font-size:11px;color:var(--text3);margin-top:6px">
+          Google Cloud Console에서 YouTube Data API v3 키를 발급받으세요
+        </div>
+      </div>
+
+      <div class="settings-section">
+        <div class="settings-title">계정</div>
+        <div class="settings-card">
+          <div class="settings-row" onclick="openLoginModal()">
+            <span class="settings-icon">👤</span>
+            <div class="settings-info">
+              <div class="settings-name" id="loginStatusText">로그인 / 회원가입</div>
+              <div class="settings-desc">Google 계정으로 로그인</div>
+            </div>
+            <span class="settings-arrow">›</span>
+          </div>
+          <div class="settings-row" onclick="showTab('pro')">
+            <span class="settings-icon">👑</span>
+            <div class="settings-info">
+              <div class="settings-name">PRO 업그레이드</div>
+              <div class="settings-desc">모든 기능 무제한 사용</div>
+            </div>
+            <span class="settings-value" style="color:var(--gold)">₩9,900</span>
+            <span class="settings-arrow">›</span>
+          </div>
+        </div>
+      </div>
+
+      <div class="settings-section">
+        <div class="settings-title">검색 설정</div>
+        <div class="settings-card">
+          <div class="settings-row">
+            <span class="settings-icon">🌐</span>
+            <div class="settings-info">
+              <div class="settings-name">자동 번역</div>
+              <div class="settings-desc">영문 제목 자동 번역</div>
+            </div>
+            <button class="toggle on" id="translateToggle" onclick="toggleSetting(this)"></button>
+          </div>
+          <div class="settings-row">
+            <span class="settings-icon">🔔</span>
+            <div class="settings-info">
+              <div class="settings-name">트렌드 알림</div>
+              <div class="settings-desc">급상승 트렌드 푸시 알림</div>
+            </div>
+            <button class="toggle" id="notiToggle" onclick="toggleSetting(this)"></button>
+          </div>
+          <div class="settings-row">
+            <span class="settings-icon">🌙</span>
+            <div class="settings-info">
+              <div class="settings-name">다크 모드</div>
+              <div class="settings-desc">어두운 화면 테마</div>
+            </div>
+            <button class="toggle on" id="darkToggle" onclick="toggleSetting(this)"></button>
+          </div>
+        </div>
+      </div>
+
+      <div class="settings-section">
+        <div class="settings-title">앱 정보</div>
+        <div class="settings-card">
+          <div class="settings-row">
+            <span class="settings-icon">📱</span>
+            <div class="settings-info">
+              <div class="settings-name">버전</div>
+              <div class="settings-desc">VIDORA PRO Mobile v1.0</div>
+            </div>
+          </div>
+          <div class="settings-row" onclick="window.open('https://gumroad.com','_blank')">
+            <span class="settings-icon">🛒</span>
+            <div class="settings-info">
+              <div class="settings-name">Gumroad 스토어</div>
+              <div class="settings-desc">PRO 구독 및 구매</div>
+            </div>
+            <span class="settings-arrow">›</span>
+          </div>
+          <div class="settings-row" onclick="clearAllData()">
+            <span class="settings-icon">🗑️</span>
+            <div class="settings-info">
+              <div class="settings-name" style="color:#ef5350">데이터 초기화</div>
+              <div class="settings-desc">저장된 설정 및 즐겨찾기 삭제</div>
+            </div>
+            <span class="settings-arrow">›</span>
+          </div>
+        </div>
+      </div>
+    </div>
+
+  </div><!-- /screen-container -->
+
+  <!-- BOTTOM NAVIGATION (Mobile) + SIDEBAR (PC) -->
+  <nav class="bottom-nav">
+    <!-- PC Sidebar 로고 영역 (모바일에서 hidden) -->
+    <div class="pc-sidebar-logo">
+      <div class="pc-logo-icon">▶</div>
+      <span class="pc-logo-text">VIDORA</span>
+      <span class="pc-logo-badge">PRO</span>
+    </div>
+    <!-- PC API 상태 표시 (모바일에서 hidden) -->
+    <div class="pc-api-status">
+      <span class="api-dot"></span>
+      <span>API 연결</span>
+      <button onclick="openLoginModal()" style="margin-left:auto;background:rgba(255,255,255,.1);border:none;border-radius:6px;padding:4px 10px;color:#fff;font-size:11px;cursor:pointer">👤 로그인</button>
+    </div>
+    <button class="nav-item active" id="nav-home" onclick="showTab('home')">
+      <span class="nav-icon">🏠</span>
+      <span class="nav-label">홈</span>
+    </button>
+    <button class="nav-item" id="nav-search" onclick="showTab('search')">
+      <span class="nav-icon">🔍</span>
+      <span class="nav-label">검색</span>
+    </button>
+    <button class="nav-item" id="nav-favorites" onclick="showTab('favorites')">
+      <span class="nav-icon">⭐</span>
+      <span class="nav-label">즐겨찾기</span>
+    </button>
+    <button class="nav-item nav-pro" id="nav-pro" onclick="showTab('pro')">
+      <span class="nav-icon">👑</span>
+      <span class="nav-label">PRO</span>
+    </button>
+    <button class="nav-item" id="nav-settings" onclick="showTab('settings')">
+      <span class="nav-icon">⚙️</span>
+      <span class="nav-label">설정</span>
+    </button>
+  </nav>
+</div>
+
+<!-- VIDEO DETAIL MODAL -->
+<div class="modal-overlay" id="videoModal" onclick="closeVideoModal(event)">
+  <div class="modal-sheet" id="videoModalSheet">
+    <div class="modal-handle"></div>
+    <div class="modal-header">
+      <div class="modal-title" id="modalTitle"></div>
+      <button class="btn-modal-close" onclick="closeVideoModal()">✕</button>
+    </div>
+    <img class="modal-thumb" id="modalThumb" src="" alt="">
+    <div class="modal-stats-grid">
+      <div class="modal-stat-box">
+        <div class="modal-stat-icon">👁️</div>
+        <div class="modal-stat-val" id="modalViews">-</div>
+        <div class="modal-stat-lbl">조회수</div>
+      </div>
+      <div class="modal-stat-box">
+        <div class="modal-stat-icon">👥</div>
+        <div class="modal-stat-val" id="modalSubs">-</div>
+        <div class="modal-stat-lbl">구독자</div>
+      </div>
+      <div class="modal-stat-box">
+        <div class="modal-stat-icon">👍</div>
+        <div class="modal-stat-val" id="modalLikes">-</div>
+        <div class="modal-stat-lbl">좋아요</div>
+      </div>
+      <div class="modal-stat-box">
+        <div class="modal-stat-icon">💬</div>
+        <div class="modal-stat-val" id="modalComments">-</div>
+        <div class="modal-stat-lbl">댓글</div>
+      </div>
+    </div>
+    <div class="modal-section" id="aiSection">
+      <div class="modal-section-title">🤖 AI 콘텐츠 분석</div>
+      <div class="ai-box" id="aiAnalysis"></div>
+    </div>
+    <div class="modal-section" id="cpmSection">
+      <div class="modal-section-title">💰 수익 예측</div>
+      <div class="cpm-box">
+        <div class="cpm-val" id="cpmValue">₩0</div>
+        <div class="cpm-sub">예상 월 수익 (CPM 기반)</div>
+      </div>
+    </div>
+    <a class="btn-watch" id="watchLink" href="#" target="_blank">▶ YouTube에서 보기</a>
+  </div>
+</div>
+
+<!-- LOGIN MODAL -->
+<div class="modal-overlay" id="loginModal" onclick="closeLoginModal(event)">
+  <div class="login-modal">
+    <div class="modal-handle"></div>
+    <div class="login-icon">🎬</div>
+    <div class="login-title">VIDORA PRO 로그인</div>
+    <div class="login-sub">로그인하면 즐겨찾기를 기기 간<br>동기화하고 PRO 기능을 이용할 수 있습니다</div>
+    <button class="btn-google" onclick="loginGoogle()">
+      <svg width="20" height="20" viewBox="0 0 48 48"><path fill="#FFC107" d="M43.6 20H24v8h11.3C33.7 33.3 29.3 36 24 36c-6.6 0-12-5.4-12-12s5.4-12 12-12c3.1 0 5.9 1.2 8.1 3.1l5.7-5.7C34.3 6.3 29.4 4 24 4 12.9 4 4 12.9 4 24s8.9 20 20 20c11 0 20-8.9 20-20 0-1.3-.1-2.7-.4-4z"/><path fill="#FF3D00" d="M6.3 14.7l6.6 4.8C14.6 16 19 13 24 13c3.1 0 5.9 1.2 8.1 3.1l5.7-5.7C34.3 6.3 29.4 4 24 4 16.3 4 9.7 8.3 6.3 14.7z"/><path fill="#4CAF50" d="M24 44c5.2 0 10-1.9 13.7-5.1l-6.3-5.2C29.5 35.5 26.9 36 24 36c-5.2 0-9.6-3.4-11.3-8.1l-6.5 5C9.8 39.7 16.4 44 24 44z"/><path fill="#1976D2" d="M43.6 20H24v8h11.3c-.8 2.3-2.3 4.3-4.3 5.7l6.3 5.2C40.8 35.7 44 30.3 44 24c0-1.3-.1-2.7-.4-4z"/></svg>
+      Google로 로그인
+    </button>
+    <button class="btn-guest" onclick="loginGuest()">게스트로 계속하기</button>
+    <div class="login-terms">로그인 시 서비스 이용약관 및 개인정보처리방침에 동의합니다</div>
+  </div>
+</div>
+
+<!-- TOAST -->
+<div class="toast" id="toast"></div>
+
+<script>
+// ===== APP STATE =====
+const state = {
+  apiKey: localStorage.getItem('vidora_api_key') || '',
+  apiCallCount: 0,
+  isPro: localStorage.getItem('vidora_pro') === 'true',
+  isLoggedIn: false,
+  favorites: JSON.parse(localStorage.getItem('vidora_favs') || '[]'),
+  selectedCountry: 'KR',
+  selectedCategory: '',
+  selectedDays: 7,
+  selectedOrder: 'relevance',
+  selectedCount: 12,
+  currentResults: [],
+  currentVideo: null,
+  mode: 'HOT' // 'HOT' (mostPopular) | 'SEARCH' (keyword)
+};
+
+// ===== INIT =====
+document.addEventListener('DOMContentLoaded', () => {
+  if(state.apiKey) document.getElementById('apiKeyInput').value = state.apiKey;
+  updateApiDot();
+  renderFavorites();
+  updateFavCount();
+
+  // Search input: clicking/focusing in HOT switches to SEARCH
+  const si = document.getElementById('searchInput');
+  if (si) {
+    si.addEventListener('focus', () => {
+      if (state.mode === 'HOT') setMode('SEARCH');
+    });
+  }
+
+  // 카테고리 칩은 홈화면으로 이동 → 결과화면에서 loadVideoCategories 호출 불필요
+  syncCountryChips(state.selectedCountry); // 홈화면 초기 국가 칩 동기화
+  updateSearchInputUI();
+});
+
+// ===== TAB NAVIGATION =====
+function showTab(tab) {
+  document.querySelectorAll('.screen').forEach(s => s.classList.remove('active'));
+  document.querySelectorAll('.nav-item').forEach(n => n.classList.remove('active'));
+  const screen = document.getElementById('screen-'+tab);
+  if(screen) { screen.classList.add('active'); }
+  const nav = document.getElementById('nav-'+tab);
+  if(nav) nav.classList.add('active');
+}
+
+// ===== MODE & SEARCH INPUT UI =====
+function getActiveCountryLabel() {
+  // 결과화면 칩 또는 홈화면 칩 중 활성 항목의 텍스트 반환
+  return (
+    document.querySelector('#countryChips .chip.active')?.textContent ||
+    state.selectedCountry
+  ).trim();
+}
+// 카테고리 ID → 한국어 레이블 맵
+const CAT_LABEL_KO = {
+  '': '전체 트렌드',
+  '1':  '영화·애니',
+  '2':  '자동차',
+  '10': '음악',
+  '15': '반려동물',
+  '17': '스포츠',
+  '19': '여행·이벤트',
+  '20': '게임',
+  '22': '일상·블로그',
+  '23': '코미디',
+  '24': '엔터테인먼트',
+  '25': '뉴스·정치',
+  '26': '노하우·스타일',
+  '27': '교육',
+  '28': '과학·기술',
+  '29': '비영리'
+};
+function getActiveCategoryLabel() {
+  const id = state.selectedCategory || '';
+  return CAT_LABEL_KO[id] || 'Category';
+}
+function setMode(mode) {
+  state.mode = mode;
+  updateSearchInputUI();
+}
+function updateSearchInputUI() {
+  const input = document.getElementById('searchInput');
+  if (!input) return;
+
+  const isHot = state.mode === 'HOT';
+
+  // ① 검색창: HOT모드에서 숨김, SEARCH모드에서만 표시
+  const searchBox = document.getElementById('searchBoxWrap');
+  if (searchBox) searchBox.style.display = isHot ? 'none' : 'block';
+
+  if (!isHot) {
+    input.readOnly = false;
+    input.classList.remove('readonly');
+    input.placeholder = '키워드 입력 후 포 검색...';
+  }
+
+  // ② 카테고리 칩: HOT모드에서 숨김 (홈화면으로 이동)
+  const catSection = document.getElementById('categoryChipsSection');
+  if (catSection) catSection.style.display = 'none'; // 항상 숨김
+
+  // ③ 기간 필터: HOT모드에서는 비활성화 + 안내문구 표시
+  const periodBtns = document.getElementById('periodBtns');
+  const periodNote = document.getElementById('periodHotNote');
+  const periodLabel = document.getElementById('periodLabel');
+  if (periodBtns) {
+    periodBtns.querySelectorAll('button').forEach(b => {
+      b.disabled = isHot;
+      b.style.opacity = isHot ? '0.35' : '1';
+      b.style.cursor = isHot ? 'not-allowed' : 'pointer';
+    });
+  }
+  if (periodNote) periodNote.style.display = isHot ? 'block' : 'none';
+  if (periodLabel) periodLabel.textContent = isHot
+    ? '📅 검색 기간 (HOT모드 미지원)'
+    : '📅 검색 기간';
+
+  // ④ 브레드크럼 업데이트
+  const bcCountry  = document.getElementById('bc-country');
+  const bcCategory = document.getElementById('bc-category');
+  if (bcCountry)  bcCountry.textContent  = '🌍 ' + getActiveCountryLabel();
+  if (bcCategory) bcCategory.textContent = isHot
+    ? '🔥 ' + getActiveCategoryLabel()
+    : '🔍 직접 검색';
+}
+
+// ===== 홈 국가 선택 함수 (홈칩 ↔ 결과화면칩 양방향 동기화) =====
+function syncCountryChips(countryCode) {
+  // 홈화면 칩 동기화
+  // 결과화면 칩만 동기화
+  document.querySelectorAll('#countryChips .chip').forEach(c => {
+    c.classList.toggle('active', c.dataset.country === countryCode);
+  });
+}
+
+// ===== QUICK ACTIONS =====
+function quickHot() {
+  showTab('search');
+  state.selectedCategory = '';
+  setMode('HOT');
+  setTimeout(doHot, 50);
+}
+// HOT 모드 + 카테고리 ID 지정 (1유닛)
+function quickHotCat(catId) {
+  state.selectedCategory = catId;
+  showTab('search');
+  setMode('HOT');
+  setTimeout(doHot, 50);
+}
+// 직접 검색 버튼 → search 탭 이동 + 검색창 포커스
+function showSearchMode() {
+  setMode('SEARCH');
+  showTab('search');
+  setTimeout(() => {
+    const input = document.getElementById('searchInput');
+    if (input) { input.value = ''; input.focus(); }
+  }, 80);
+}
+function quickSearch(keyword) {
+  setMode('SEARCH');
+  const input = document.getElementById('searchInput');
+  if (input) input.value = keyword;
+  showTab('search');
+  setTimeout(doSearch, 50);
+}
+
+// ===== OFFICIAL YOUTUBE CATEGORIES (videoCategoryId) =====
+const CATEGORY_HL = 'en_US';
+const categoryCache = {}; // { KR: [{id,title}...], US: [...] }
+
+async function loadVideoCategories(regionCode) {
+  if (!state.apiKey) return;
+  if (categoryCache[regionCode]) {
+    renderCategoryChips(categoryCache[regionCode]);
+    return;
+  }
+
+  const url =
+    `https://www.googleapis.com/youtube/v3/videoCategories` +
+    `?part=snippet&regionCode=${encodeURIComponent(regionCode)}` +
+    `&hl=${encodeURIComponent(CATEGORY_HL)}` +
+    `&key=${encodeURIComponent(state.apiKey)}`;
+
+  const res = await fetch(url);
+  if (!res.ok) throw new Error(`videoCategories ${res.status}`);
+  const data = await res.json();
+
+  const cats = (data.items || [])
+    .filter(it => it?.snippet?.assignable)
+    .map(it => ({ id: it.id, title: it.snippet.title }));
+
+  categoryCache[regionCode] = cats;
+  renderCategoryChips(cats);
+}
+
+function renderCategoryChips(cats) {
+  const wrap = document.getElementById('categoryChips');
+  if (!wrap) return;
+
+  wrap.innerHTML = '';
+  wrap.appendChild(makeCatChip('', 'All', !state.selectedCategory));
+
+  (cats || []).forEach(c => {
+    wrap.appendChild(makeCatChip(c.id, c.title, state.selectedCategory === c.id));
+  });
+}
+
+function makeCatChip(id, label, isActive) {
+  const div = document.createElement('div');
+  div.className = 'chip' + (isActive ? ' active' : '');
+  div.dataset.cat = id;
+  div.textContent = label;
+  div.onclick = () => selectChip(div, 'category');
+  return div;
+}
+
+// ===== CHIP SELECTORS =====
+function selectChip(el, type) {
+  const row = el.closest('.chip-row');
+  row.querySelectorAll('.chip:not(.pro-chip)').forEach(c => c.classList.remove('active'));
+  el.classList.add('active');
+
+  const runAfterUpdate = () => {
+    updateSearchInputUI();
+    if (state.mode === 'HOT') {
+      // HOT 모드: videos.list(1유닛) → 자동 재검색 유지
+      doHot();
+    } else {
+      // SEARCH 모드: search.list(100유닛) → 자동 재검색 금지
+      // 돋보기 버튼에 펄스 애니메이션으로 "눌러주세요" 힌트만 표시
+      const q = (document.getElementById('searchInput')?.value || '').trim();
+      if (q) {
+        const btn = document.querySelector('.btn-search');
+        if (btn) {
+          btn.classList.add('needs-search');
+          setTimeout(() => btn.classList.remove('needs-search'), 4000);
+        }
+      }
+    }
+  };
+
+  if(type === 'country') {
+    state.selectedCountry = el.dataset.country;
+    syncCountryChips(state.selectedCountry); // 홈화면 칩 동기화
+    if (state.apiKey) {
+      loadVideoCategories(state.selectedCountry).then(() => {
+        // If selectedCategory not present in this region, fallback to All
+        if (state.selectedCategory) {
+          const cats = categoryCache[state.selectedCountry] || [];
+          const ok = cats.some(c => c.id === state.selectedCategory);
+          if (!ok) state.selectedCategory = '';
+        }
+        renderCategoryChips(categoryCache[state.selectedCountry] || []);
+        runAfterUpdate();
+      }).catch(err => {
+        console.warn(err);
+        showToast('카테고리 로딩 실패');
+        runAfterUpdate();
+      });
+    } else {
+      runAfterUpdate();
+    }
+  } else if(type === 'category') {
+    state.selectedCategory = el.dataset.cat;
+    runAfterUpdate();
+  }
+}
+
+function selectProChip(el) {
+  if(!state.isPro) { showProAlert(); return; }
+  selectChip(el, 'country');
+}
+
+function selectPeriod(el) {
+  document.querySelectorAll('.period-btn').forEach(b => b.classList.remove('active'));
+  el.classList.add('active');
+  state.selectedDays = parseInt(el.dataset.days);
+}
+
+function selectProPeriod(el) {
+  if(!state.isPro) { showProAlert(); return; }
+  selectPeriod(el);
+}
+
+function selectSort(el) {
+  document.querySelectorAll('.sort-btn[data-order]').forEach(b => b.classList.remove('active'));
+  el.classList.add('active');
+  state.selectedOrder = el.dataset.order;
+}
+
+function selectCount(el) {
+  document.querySelectorAll('.sort-btn[data-cnt]').forEach(b => b.classList.remove('active'));
+  el.classList.add('active');
+  state.selectedCount = parseInt(el.dataset.cnt);
+}
+
+function selectProCount(el) {
+  if(!state.isPro) { showProAlert(); return; }
+  selectCount(el);
+}
+
+function onSearchInput(val) { /* live search placeholder */ }
+
+function onSearchButton() {
+  if (state.mode === 'HOT') {
+    doHot();
+  } else {
+    doSearch();
+  }
+}
+
+// ===== HOT MODE (Most Popular Chart) =====
+async function doHot() {
+  if(!state.apiKey) { showToast('⚙️ API 키를 먼저 설정해주세요'); showTab('settings'); return; }
+  setMode('HOT');
+  showLoading();
+
+  // HOT 모드: mostPopular 차트에서 일부 videoCategoryId 조합은
+  // YouTube API가 404(videoChartNotFound)를 반환함 → 자동 fallback
+  async function fetchHot(withCategory) {
+    const maxResults = Math.min(50, Math.max(1, state.selectedCount || 12));
+    let url = `https://www.googleapis.com/youtube/v3/videos?part=snippet,statistics&chart=mostPopular&maxResults=${maxResults}` +
+      `&regionCode=${encodeURIComponent(state.selectedCountry)}` +
+      `&key=${encodeURIComponent(state.apiKey)}`;
+    if (withCategory && state.selectedCategory) {
+      url += `&videoCategoryId=${encodeURIComponent(state.selectedCategory)}`;
+    }
+    const res = await fetch(url);
+    return { res, ok: res.ok, status: res.status };
+  }
+
+  try {
+    let { res, ok, status } = await fetchHot(true);
+
+    // 404 or 400 → 해당 카테고리가 HOT 차트 미지원 → All로 fallback
+    if (!ok && (status === 404 || status === 400) && state.selectedCategory) {
+      showToast('⚠️ 이 카테고리는 인기 차트 미지원 → 전체(All)로 표시합니다');
+      // 카테고리 칩 UI도 All로 되돌리기
+      state.selectedCategory = '';
+      document.querySelectorAll('.chip[data-type="category"]').forEach(c => c.classList.remove('active'));
+      const allChip = document.querySelector('.chip[data-value=""][data-type="category"]');
+      if(allChip) allChip.classList.add('active');
+      ({ res, ok, status } = await fetchHot(false));
+    }
+
+    if(!ok) throw new Error(`API 오류 ${status}`);
+    const data = await res.json();
+
+    state.apiCallCount++;
+    document.getElementById('apiCallCount').textContent = `API ${state.apiCallCount}`;
+
+    const items = data.items || [];
+    if(!items.length) { showEmptyState(); return; }
+
+    state.currentResults = items.map(item => ({
+      id: item.id,
+      title: item.snippet?.title || '',
+      channel: item.snippet?.channelTitle || '',
+      thumbnail: item.snippet?.thumbnails?.medium?.url || '',
+      publishedAt: item.snippet?.publishedAt || '',
+      description: item.snippet?.description || '',
+      stats: item.statistics || {}
+    }));
+
+    renderResults(state.currentResults);
+  } catch(e) {
+    showErrorState(e.message);
+  }
+}
+
+// ===== COUNTRY → relevanceLanguage MAP =====
+const COUNTRY_LANG = {
+  KR:'ko', JP:'ja', CN:'zh-Hans', TW:'zh-Hant',
+  US:'en', GB:'en', AU:'en', SG:'en',
+  FR:'fr', DE:'de', TH:'th', VN:'vi'
+};
+
+// ===== EN→KO KEYWORD DICTIONARY (OR-expand when country=KR) =====
+const EN_KO_DICT = {
+  'real estate':'부동산','apartment':'아파트','housing':'주택',
+  'house':'집','villa':'빌라','mortgage':'주택담보대출',
+  'investment':'투자','property':'부동산','land':'토지',
+  'construction':'건설','rent':'임대','lease':'전세',
+  'contract':'계약','price':'가격','market':'시장',
+  'selling':'매매','building':'건물','studio':'원룸',
+  'officetel':'오피스텔','redevelopment':'재개발',
+  'reconstruction':'재건축','commercial':'상가',
+  'warehouse':'창고','interest rate':'금리','loan':'대출',
+  'realty':'부동산','condo':'아파트','townhouse':'다세대주택',
+  'jeonse':'전세','monthly rent':'월세'
+};
+
+// ===== QUERY EXPAND (KR only: EN→KO OR) =====
+function buildExpandedQuery(query, country) {
+  if(country !== 'KR') return { q: query, note: '' };
+  const lower = query.toLowerCase().trim();
+  for(const [en, ko] of Object.entries(EN_KO_DICT)) {
+    if(lower === en || lower.includes(en)) {
+      const expanded = query + '|' + ko;
+      return { q: expanded, note: `🔍 자동 확장 적용: ${query} | ${ko} (KR)` };
+    }
+  }
+  return { q: query, note: '' };
+}
+
+// ===== MAIN SEARCH =====
+async function doSearch() {
+  setMode('SEARCH');
+  const query = document.getElementById('searchInput').value.trim();
+  if(!query) { showToast('검색어를 입력해주세요'); return; }
+  if(!state.apiKey) { showToast('⚙️ API 키를 먼저 설정해주세요'); showTab('settings'); return; }
+  showLoading();
+  // 쿼리 확장 (KR + 영어 입력 시만)
+  const { q: finalQ, note: expandNote } = buildExpandedQuery(query, state.selectedCountry);
+  const noteEl = document.getElementById('expandNote');
+  if(noteEl) noteEl.textContent = expandNote;
+  // relevanceLanguage 매핑
+  const relLang = COUNTRY_LANG[state.selectedCountry] || '';
+  try {
+    const publishedAfter = state.selectedDays > 0 
+      ? new Date(Date.now() - state.selectedDays * 86400000).toISOString() 
+      : '';
+    let url = `https://www.googleapis.com/youtube/v3/search?part=snippet&type=video&maxResults=${state.selectedCount}&order=${state.selectedOrder}&regionCode=${state.selectedCountry}&q=${encodeURIComponent(finalQ)}&key=${state.apiKey}`;
+    if(relLang) url += `&relevanceLanguage=${encodeURIComponent(relLang)}`;
+    if(publishedAfter) url += `&publishedAfter=${publishedAfter}`;
+    if (state.selectedCategory) url += `&videoCategoryId=${state.selectedCategory}`;
+    const res = await fetch(url);
+    if(!res.ok) {
+      // 403/429 등 상세 reason을 응답 body에서 추출해서 표시
+      let reason = '';
+      try {
+        const errData = await res.json();
+        reason = errData?.error?.errors?.[0]?.reason || errData?.error?.message || '';
+      } catch(_) {}
+      if(res.status === 403) {
+        const hint = reason.includes('quotaExceeded') || reason.includes('dailyLimitExceeded')
+          ? '\n📋 원인: 일일 할당량 소진 (한국 오전 9시 자동 리셋)'
+          : reason ? `\n📋 원인: ${reason}` : '\n📋 API 키 설정 또는 할당량을 확인해주세요';
+        throw new Error(`API 오류 403${hint}`);
+      }
+      throw new Error(`API 오류 ${res.status}${reason ? ' (' + reason + ')' : ''}`);
+    }
+    const data = await res.json();
+    state.apiCallCount++;
+    document.getElementById('apiCallCount').textContent = `API ${state.apiCallCount}`;
+    if(!data.items || data.items.length === 0) { showEmptyState(); return; }
+    const videoIds = data.items.map(i => i.id.videoId).filter(Boolean).join(',');
+    const statsRes = await fetch(`https://www.googleapis.com/youtube/v3/videos?part=statistics&id=${videoIds}&key=${state.apiKey}`);
+    state.apiCallCount++;
+    document.getElementById('apiCallCount').textContent = `API ${state.apiCallCount}`;
+    const statsData = await statsRes.json();
+    const statsMap = {};
+    if(statsData.items) statsData.items.forEach(v => { statsMap[v.id] = v.statistics; });
+    state.currentResults = data.items.map(item => ({
+      id: item.id.videoId,
+      title: item.snippet.title,
+      channel: item.snippet.channelTitle,
+      thumbnail: item.snippet.thumbnails?.medium?.url || '',
+      publishedAt: item.snippet.publishedAt,
+      description: item.snippet.description,
+      stats: statsMap[item.id.videoId] || {}
+    }));
+    renderResults(state.currentResults);
+  } catch(e) {
+    showErrorState(e.message);
+  }
+}
+
+// ===== RENDER RESULTS =====
+function renderResults(videos) {
+  const area = document.getElementById('results-area');
+  if(!videos.length) { showEmptyState(); return; }
+  let html = `<div class="results-header">
+    <span class="results-count">검색 결과 ${videos.length}개</span>
+    ${state.isPro ? '<button class="btn-csv" onclick="exportCSV()">📥 CSV</button>' : ''}
+  </div><div class="video-grid-inner">`;
+  videos.forEach((v, i) => {
+    const isFav = state.favorites.some(f => f.id === v.id);
+    html += `
+    <div class="video-card" id="card-${v.id}">
+      ${v.thumbnail 
+        ? `<img class="video-thumb" src="${v.thumbnail}" alt="${v.title}" loading="lazy" onerror="this.style.display='none'">`
+        : `<div class="video-thumb-placeholder">🎬</div>`}
+      <div class="video-info">
+        <div class="video-title">${escHtml(v.title)}</div>
+        <div class="video-channel">📺 ${escHtml(v.channel)} · ${timeAgo(v.publishedAt)}</div>
+        <div class="video-stats">
+          ${v.stats.viewCount ? `<span class="stat-badge"><span class="icon">👁️</span>${fmtNum(v.stats.viewCount)}</span>` : ''}
+          ${v.stats.likeCount ? `<span class="stat-badge"><span class="icon">👍</span>${fmtNum(v.stats.likeCount)}</span>` : ''}
+          ${v.stats.commentCount ? `<span class="stat-badge"><span class="icon">💬</span>${fmtNum(v.stats.commentCount)}</span>` : ''}
+        </div>
+      </div>
+      <div class="video-actions">
+        <button class="btn-detail" onclick="openVideoModal('${v.id}',${i})">📊 분석 보기</button>
+        <button class="btn-fav ${isFav?'active':''}" onclick="toggleFav('${v.id}',${i})" id="fav-${v.id}">${isFav?'⭐':'☆'}</button>
+      </div>
+      ${(!state.isPro && i >= 2) ? `<div class="pro-lock" onclick="showTab('pro')">🔒 PRO로 더 많은 분석 보기 →</div>` : ''}
+    </div>`;
+  });
+  html += '</div>';
+  area.innerHTML = html;
+}
+
+function showLoading() {
+  document.getElementById('results-area').innerHTML = `
+    <div class="state-box">
+      <div class="state-icon">🔍</div>
+      <div class="state-title">검색 중...</div>
+      <div class="loading-dots"><div class="dot"></div><div class="dot"></div><div class="dot"></div></div>
+    </div>`;
+}
+
+function showEmptyState() {
+  document.getElementById('results-area').innerHTML = `
+    <div class="state-box">
+      <div class="state-icon">😕</div>
+      <div class="state-title">결과가 없습니다</div>
+      <div class="state-sub">다른 키워드나<br>기간을 변경해보세요</div>
+    </div>`;
+}
+
+function showErrorState(msg) {
+  document.getElementById('results-area').innerHTML = `
+    <div class="state-box">
+      <div class="state-icon">⚠️</div>
+      <div class="state-title">검색 오류</div>
+      <div class="state-sub">${escHtml(msg)}<br><br>API 키를 확인해주세요</div>
+    </div>`;
+}
+
+// ===== VIDEO DETAIL MODAL =====
+function openVideoModal(id, idx) {
+  const v = state.currentResults[idx];
+  if(!v) return;
+  state.currentVideo = v;
+  document.getElementById('modalTitle').textContent = v.title;
+  document.getElementById('modalThumb').src = v.thumbnail;
+  document.getElementById('modalViews').textContent = fmtNum(v.stats.viewCount || 0);
+  document.getElementById('modalSubs').textContent = '-';
+  document.getElementById('modalLikes').textContent = fmtNum(v.stats.likeCount || 0);
+  document.getElementById('modalComments').textContent = fmtNum(v.stats.commentCount || 0);
+  document.getElementById('watchLink').href = `https://www.youtube.com/watch?v=${id}`;
+  if(state.isPro) {
+    document.getElementById('aiSection').classList.remove('hidden');
+    document.getElementById('cpmSection').classList.remove('hidden');
+    document.getElementById('aiAnalysis').textContent = generateAIAnalysis(v);
+    document.getElementById('cpmValue').textContent = calcCPM(v.stats.viewCount);
+  } else {
+    document.getElementById('aiSection').classList.add('hidden');
+    document.getElementById('cpmSection').classList.add('hidden');
+  }
+  document.getElementById('videoModal').classList.add('open');
+  document.body.style.overflow = 'hidden';
+}
+
+function closeVideoModal(e) {
+  if(e && e.target !== document.getElementById('videoModal') && e) return;
+  document.getElementById('videoModal').classList.remove('open');
+  document.body.style.overflow = '';
+}
+
+function generateAIAnalysis(v) {
+  const views = parseInt(v.stats.viewCount || 0);
+  let score = views > 1000000 ? '높음' : views > 100000 ? '중간' : '낮음';
+  return `📊 조회수 잠재력: ${score}\n🎯 콘텐츠 방향성: ${v.category || '트렌드 콘텐츠'}\n✨ 크리에이터 제안: 이 트렌드를 활용한 리믹스 영상 제작을 권장합니다.\n📈 성장 가능성: 현재 트렌드와 높은 연관성이 있습니다.`;
+}
+
+function calcCPM(views) {
+  const v = parseInt(views || 0);
+  const cpm = 2500;
+  const monthly = Math.round((v / 1000) * cpm / 30);
+  return `₩${monthly.toLocaleString()}`;
+}
+
+// ===== FAVORITES =====
+function toggleFav(id, idx) {
+  const v = state.currentResults[idx];
+  if(!v) return;
+  const favIdx = state.favorites.findIndex(f => f.id === id);
+  const btn = document.getElementById('fav-'+id);
+  if(favIdx > -1) {
+    state.favorites.splice(favIdx, 1);
+    if(btn) { btn.textContent = '☆'; btn.classList.remove('active'); }
+    showToast('즐겨찾기 해제');
+  } else {
+    state.favorites.push(v);
+    if(btn) { btn.textContent = '⭐'; btn.classList.add('active'); }
+    showToast('⭐ 즐겨찾기 저장!');
+  }
+  localStorage.setItem('vidora_favs', JSON.stringify(state.favorites));
+  updateFavCount();
+  renderFavorites();
+}
+
+function renderFavorites() {
+  const list = document.getElementById('favorites-list');
+  if(!state.favorites.length) {
+    list.innerHTML = `<div class="state-box"><div class="state-icon">⭐</div><div class="state-title">즐겨찾기가 비어있습니다</div><div class="state-sub">영상 검색 후 ⭐ 버튼을 눌러<br>나만의 목록을 만들어보세요</div></div>`;
+    return;
+  }
+  let html = '<div style="padding:0 16px">';
+  state.favorites.forEach(v => {
+    html += `<div class="video-card">
+      ${v.thumbnail ? `<img class="video-thumb" src="${v.thumbnail}" alt="" loading="lazy">` : `<div class="video-thumb-placeholder">🎬</div>`}
+      <div class="video-info">
+        <div class="video-title">${escHtml(v.title)}</div>
+        <div class="video-channel">📺 ${escHtml(v.channel)}</div>
+      </div>
+      <div class="video-actions">
+        <a class="btn-detail" href="https://www.youtube.com/watch?v=${v.id}" target="_blank" style="text-decoration:none">▶ YouTube에서 보기</a>
+        <button class="btn-fav active" onclick="removeFavById('${v.id}')">⭐</button>
+      </div>
+    </div>`;
+  });
+  html += '</div>';
+  list.innerHTML = html;
+}
+
+function removeFavById(id) {
+  state.favorites = state.favorites.filter(f => f.id !== id);
+  localStorage.setItem('vidora_favs', JSON.stringify(state.favorites));
+  updateFavCount();
+  renderFavorites();
+  showToast('즐겨찾기 해제');
+}
+
+function updateFavCount() {
+  document.getElementById('favCountBadge').textContent = state.favorites.length;
+}
+
+function clearFavorites() {
+  if(!state.favorites.length) return;
+  if(confirm('모든 즐겨찾기를 삭제할까요?')) {
+    state.favorites = [];
+    localStorage.removeItem('vidora_favs');
+    updateFavCount();
+    renderFavorites();
+    showToast('즐겨찾기 전체 삭제');
+  }
+}
+
+// ===== API KEY =====
+function saveApiKey() {
+  const key = document.getElementById('apiKeyInput').value.trim();
+  if(!key) { showToast('API 키를 입력해주세요'); return; }
+  state.apiKey = key;
+  localStorage.setItem('vidora_api_key', key);
+  updateApiDot();
+  showToast('✅ API 키 저장 완료!');
+
+  // Load official categories immediately after saving API key
+  renderCategoryChips([]);
+  loadVideoCategories(state.selectedCountry).catch(err => {
+    console.warn(err);
+    showToast('카테고리 로딩 실패');
+  });
+}
+
+function updateApiDot() {
+  const dot = document.getElementById('apiDot');
+  dot.style.background = state.apiKey ? '#4caf50' : '#f44336';
+}
+
+// ===== CSV EXPORT =====
+function exportCSV() {
+  if(!state.isPro) { showProAlert(); return; }
+  if(!state.currentResults.length) { showToast('검색 결과가 없습니다'); return; }
+  const rows = [['제목','채널','조회수','좋아요','댓글','링크']];
+  state.currentResults.forEach(v => {
+    rows.push([v.title, v.channel, v.stats.viewCount||0, v.stats.likeCount||0, v.stats.commentCount||0, `https://youtu.be/${v.id}`]);
+  });
+  const csv = rows.map(r => r.map(c => `"${String(c).replace(/"/g,'""')}"`).join(',')).join('\n');
+  const blob = new Blob(['\uFEFF'+csv], {type:'text/csv;charset=utf-8'});
+  const a = document.createElement('a');
+  a.href = URL.createObjectURL(blob);
+  a.download = `vidora_results_${new Date().toISOString().slice(0,10)}.csv`;
+  a.click();
+}
+
+// ===== SETTINGS =====
+function toggleSetting(el) { el.classList.toggle('on'); }
+
+function clearAllData() {
+  if(confirm('모든 데이터를 초기화할까요?\n(즐겨찾기, API 키, 설정 삭제)')) {
+    localStorage.clear();
+    state.apiKey = '';
+    state.favorites = [];
+    document.getElementById('apiKeyInput').value = '';
+    updateApiDot();
+    updateFavCount();
+    renderFavorites();
+    showToast('🗑️ 초기화 완료');
+  }
+}
+
+// ===== LOGIN =====
+function openLoginModal() {
+  document.getElementById('loginModal').classList.add('open');
+}
+
+function closeLoginModal(e) {
+  if(e && e.target !== document.getElementById('loginModal')) return;
+  document.getElementById('loginModal').classList.remove('open');
+}
+
+function loginGoogle() {
+  showToast('🚀 Google 로그인 - 준비 중');
+  document.getElementById('loginModal').classList.remove('open');
+}
+
+function loginGuest() {
+  state.isLoggedIn = false;
+  document.getElementById('loginModal').classList.remove('open');
+  showToast('👤 게스트로 계속합니다');
+}
+
+// ===== GUMROAD =====
+function goToGumroad() {
+  window.open('https://gumroad.com/l/vidora-pro', '_blank');
+}
+
+// ===== PRO ALERT =====
+function showProAlert() {
+  showToast('👑 PRO 기능입니다. 업그레이드하세요!');
+  setTimeout(() => showTab('pro'), 1500);
+}
+
+// ===== TOAST =====
+function showToast(msg) {
+  const t = document.getElementById('toast');
+  t.textContent = msg;
+  t.classList.add('show');
+  clearTimeout(showToast._timer);
+  showToast._timer = setTimeout(() => t.classList.remove('show'), 2500);
+}
+
+// ===== UTILS =====
+function escHtml(s) {
+  return String(s||'').replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;').replace(/"/g,'&quot;');
+}
+
+function fmtNum(n) {
+  n = parseInt(n||0);
+  if(n >= 100000000) return (n/100000000).toFixed(1)+'억';
+  if(n >= 10000) return (n/10000).toFixed(1)+'만';
+  if(n >= 1000) return (n/1000).toFixed(1)+'천';
+  return n.toLocaleString();
+}
+
+function timeAgo(dateStr) {
+  if(!dateStr) return '';
+  const diff = Date.now() - new Date(dateStr).getTime();
+  const d = Math.floor(diff/86400000);
+  if(d===0) return '오늘';
+  if(d===1) return '어제';
+  if(d<7) return d+'일 전';
+  if(d<30) return Math.floor(d/7)+'주 전';
+  if(d<365) return Math.floor(d/30)+'개월 전';
+  return Math.floor(d/365)+'년 전';
+}
+
+// ===== PWA SERVICE WORKER =====
+// service-worker.js not deployed on GitHub Pages → registration skipped
+// if('serviceWorker' in navigator) { navigator.serviceWorker.register('/service-worker.js'); }
+</script>
+</body>
+</html>
+                                                                                                                                                                                                                                                                                                                                                                                                         
