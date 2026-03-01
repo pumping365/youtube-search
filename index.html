@@ -2,6 +2,9 @@
 <html lang="ko">
 <head>
 <meta charset="UTF-8">
+  <meta http-equiv="Cache-Control" content="no-cache, no-store, must-revalidate">
+  <meta http-equiv="Pragma" content="no-cache">
+  <meta http-equiv="Expires" content="0">
 <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
 <title>VIDORA PRO - YouTube Trend Analyzer</title>
 
@@ -1102,14 +1105,29 @@ function syncCountryChips(countryCode) {
 
 // 좌측 검색 버튼: SEARCH 모드로 전환 후 검색창 표시
 function showSearchTab() {
-  setMode('SEARCH');
+  // 1) SEARCH 모드로 전환
+  state.mode = 'SEARCH';
+
+  // 2) searchBoxWrap 강제 표시 (display 인라인으로 확실히 열기)
+  const searchBox = document.getElementById('searchBoxWrap');
+  if (searchBox) searchBox.style.display = 'block';
+
+  // 3) 화면 전환 (이미 screen-search 이더라도 재실행)
   showTab('search');
+
+  // 4) 결과 영역 초기화 (HOT 결과 지우기)
+  state.currentResults = [];
+  const ra = document.getElementById('results-area');
+  if (ra) ra.innerHTML = '<div class="state-box">🔍 검색어를 입력해 주세요</div>';
+
+  // 5) UI 갱신
   updateSearchInputUI();
-  // 검색창 포커스
+
+  // 6) 검색창 포커스 + 내용 초기화
   setTimeout(() => {
     const inp = document.getElementById('searchInput');
-    if (inp) inp.focus();
-  }, 100);
+    if (inp) { inp.value = ''; inp.focus(); }
+  }, 150);
 }
 function quickHot() {
   showTab('search');
