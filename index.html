@@ -10,7 +10,8 @@
 
 <!-- PWA Meta Tags -->
 <!-- manifest.json not deployed – removed to suppress 404 -->
-<meta name="theme-color" content="#0a1929">
+<link rel="icon" href="data:,">
+  <meta name="theme-color" content="#0a1929">
 <!-- apple-mobile-web-app-capable deprecated – removed -->
 <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
 <meta name="apple-mobile-web-app-title" content="VIDORA PRO">
@@ -111,7 +112,9 @@ html,body{overflow:hidden;height:100%;margin:0;padding:0}
 .search-input:focus{border-color:var(--red)}
 .search-input::placeholder{color:var(--text3)}
 .search-input.readonly{opacity:.9;cursor:pointer}
-.expand-note{font-size:11px;color:var(--text3);padding:3px 16px 0;min-height:16px;line-height:1.4;}
+.pc-sidebar-logo,.pc-api-status{display:none}
+.expand-note{font-size:11px;color:var(--text2);padding:3px 16px 0;min-height:16px;line-height:1.4;transition:background .3s,color .3s;}
+.expand-note.cache-hit{color:#64b5f6;font-weight:600;background:rgba(100,181,246,.12);border-radius:4px;padding:3px 10px;}
 .btn-search{background:var(--red);border:none;border-radius:12px;width:48px;height:48px;color:#fff;font-size:20px;cursor:pointer;display:flex;align-items:center;justify-content:center;flex-shrink:0;transition:.2s}
 .btn-search:active{background:var(--red2);transform:scale(.95)}
 .btn-search.needs-search{animation:pulse-btn 1.2s ease-in-out infinite;box-shadow:0 0 0 0 rgba(255,60,60,.7)}
@@ -278,7 +281,7 @@ html,body{overflow:hidden;height:100%;margin:0;padding:0}
 .login-terms{text-align:center;font-size:11px;color:var(--text3);margin-top:16px;line-height:1.6}
 
 /* ===== TOAST ===== */
-.toast{position:fixed;bottom:calc(var(--tab-h) + 16px);left:50%;transform:translateX(-50%);background:rgba(30,58,95,.95);border:1px solid var(--border);backdrop-filter:blur(8px);border-radius:12px;padding:12px 20px;font-size:14px;font-weight:600;z-index:2000;pointer-events:none;opacity:0;transition:opacity .25s;white-space:nowrap}
+.toast{position:fixed;top:calc(var(--header-h) + 12px);bottom:auto;left:50%;transform:translateX(-50%);background:rgba(30,58,95,.95);border:1px solid var(--border);backdrop-filter:blur(8px);border-radius:12px;padding:12px 20px;font-size:14px;font-weight:600;z-index:2000;pointer-events:none;opacity:0;transition:opacity .25s;white-space:nowrap}
 .toast.show{opacity:1}
 
 /* ===== SCROLLBAR ===== */
@@ -372,12 +375,39 @@ html,body{overflow:hidden;height:100%;margin:0;padding:0}
   .bottom-nav{
     grid-area:sidenav;
     flex-direction:column;
-    height:auto;
+    justify-content:flex-start;
+    height:100%;
     width:220px;
     border-top:none;
     border-right:1px solid var(--border);
-    padding:24px 0;
+    padding:0;
     background:linear-gradient(180deg,var(--navy) 0%,#060e1a 100%);
+    overflow-y:auto;
+  }
+  /* PC 사이드바 로고 영역 */
+  .pc-sidebar-logo{
+    display:flex;
+    align-items:center;
+    gap:8px;
+    padding:20px 24px 14px;
+    border-bottom:1px solid var(--border);
+    margin-bottom:4px;
+    flex-shrink:0;
+  }
+  .pc-logo-icon{font-size:20px;color:var(--red)}
+  .pc-logo-text{font-size:18px;font-weight:800;color:#fff;letter-spacing:.5px}
+  .pc-logo-badge{font-size:9px;background:var(--red);color:#fff;padding:2px 5px;border-radius:4px;font-weight:700}
+  /* PC API 상태 */
+  .pc-api-status{
+    display:flex;
+    align-items:center;
+    gap:6px;
+    padding:8px 16px 10px;
+    font-size:11px;
+    color:var(--text2);
+    border-bottom:1px solid var(--border);
+    margin-bottom:4px;
+    flex-shrink:0;
   }
   .nav-item{
     flex-direction:row;
@@ -447,8 +477,8 @@ html,body{overflow:hidden;height:100%;margin:0;padding:0}
   .fav-header{padding:20px 24px}
   #favorites-list > div{display:grid;grid-template-columns:repeat(3,1fr);gap:16px;padding:0 24px}
 
-  /* 토스트 위치 */
-  .toast{bottom:24px}
+  /* 토스트 위치 – PC도 상단 고정 */
+  .toast{top:calc(var(--header-h) + 12px);bottom:auto;z-index:3000}
 
   /* 스크롤바 */
   ::-webkit-scrollbar{width:6px}
@@ -466,9 +496,9 @@ html,body{overflow:hidden;height:100%;margin:0;padding:0}
       <span class="logo-badge">PRO</span>
     </div>
     <div class="header-actions">
-      <div style="display:flex;align-items:center;gap:4px;cursor:pointer;" onclick="showTab('settings')" title="API 할당량 현황 (설정에서 자세히 보기)">
+      <div style="display:flex;align-items:center;gap:4px;cursor:pointer;background:rgba(255,255,255,0.07);border:1px solid rgba(255,255,255,0.12);border-radius:8px;padding:4px 10px;" onclick="showTab('settings')" title="API 할당량 현황 (설정에서 자세히 보기)">
         <span class="api-dot" id="apiDot" style="width:8px;height:8px;border-radius:50%;background:#4caf50;display:inline-block;flex-shrink:0;"></span>
-        <span id="apiCallCount" style="font-size:15px;font-weight:700;color:#4caf50;">0 <span style="font-size:11px;color:var(--text3);font-weight:400;">/ 10,000유닛</span></span>
+        <span id="apiCallCount" style="font-size:15px;font-weight:700;color:#4caf50;">0 <span style="font-size:12px;color:#aaa;font-weight:400;">/ 10,000유닛</span></span>
       </div>
       <button class="btn-icon" onclick="openLoginModal()" title="로그인">👤</button>
       <button class="btn-icon" onclick="showTab('settings')" title="설정">⚙️</button>
@@ -1032,7 +1062,7 @@ function _showCacheInfo(entry) {
   const ageMin = Math.floor((Date.now() - entry.ts) / 60000);
   const ageTxt = ageMin < 1 ? '방금 전' : `${ageMin}분 전`;
   const noteEl = document.getElementById('expandNote');
-  if (noteEl) noteEl.textContent = `📦 캐시 결과 (${ageTxt} | API 0유닛 절약)`;
+  if (noteEl) { noteEl.textContent = `📦 캐시 결과 (${ageTxt} | API 0유닛 절약)`; noteEl.classList.add('cache-hit'); setTimeout(()=>noteEl.classList.remove('cache-hit'), 5000); }
   showToast(`📦 캐시 결과 (${ageTxt}) — API 호출 없음!`, 4000);
 }
 
@@ -1060,10 +1090,10 @@ function _updateApiDisplay() {
   else if (pct >= 50) color = '#ff9800';
   // 상단 헤더 카운터
   if (el) {
-    el.innerHTML = `<span style="font-size:11px;color:var(--text3);font-weight:400;">사용</span> ${state.unitsUsed.toLocaleString()} <span style="font-size:11px;color:var(--text3);font-weight:400;">/ 잔여</span> <span style="font-size:14px;">${remaining.toLocaleString()}</span><span style="font-size:11px;color:var(--text3);font-weight:400;">유닛</span>`;
+    el.innerHTML = `<span style="font-size:11px;color:#aaa;font-weight:400;">사용 </span><span style="font-size:16px;font-weight:800;">${state.unitsUsed.toLocaleString()}</span><span style="font-size:11px;color:#aaa;font-weight:400;"> / 잔여 </span><span style="font-size:15px;font-weight:700;">${remaining.toLocaleString()}</span><span style="font-size:11px;color:#aaa;font-weight:400;">유닛</span>`;
     el.style.color = color;
     el.style.fontWeight = '700';
-    el.style.fontSize = '16px';
+    // font-size controlled by innerHTML spans
   }
   if (dotEl) dotEl.style.background = color;
   // 설정 화면 진행 바 + 수치 업데이트
