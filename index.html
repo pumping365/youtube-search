@@ -1059,6 +1059,61 @@ const CAT_SEARCH_KEYWORD = {
   '29': '비영리 사회'
 };
 
+// ===== 카테고리별 다국어 키워드 (HOT모드 국가별 검색) =====
+const CAT_KEYWORDS_MULTI = {
+  '1':  { KR:'영화 애니메이션', US:'movies animation trending', JP:'映画 アニメ 人気',
+          GB:'movies animation', FR:'films animation', DE:'Filme Animation',
+          CN:'电影 动画', TH:'ภาพยนตร์', VN:'phim hoạt hình', SG:'movies animation', AU:'movies animation', TW:'電影 動畫' },
+  '2':  { KR:'자동차', US:'cars automotive review', JP:'自動車 カー',
+          GB:'cars automotive', FR:'voiture automobile', DE:'Auto Automobil',
+          CN:'汽车', TH:'รถยนต์', VN:'xe hơi ô tô', SG:'cars', AU:'cars', TW:'汽車' },
+  '10': { KR:'음악 뮤직비디오', US:'music video trending', JP:'音楽 ミュージックビデオ',
+          GB:'music video', FR:'musique clip vidéo', DE:'Musik Musikvideo',
+          CN:'音乐 MV', TH:'เพลง มิวสิควิดีโอ', VN:'nhạc âm nhạc MV', SG:'music video', AU:'music video', TW:'音樂 MV' },
+  '15': { KR:'반려동물 동물', US:'pets animals cute', JP:'ペット 動物 かわいい',
+          GB:'pets animals', FR:'animaux de compagnie', DE:'Haustiere Tiere',
+          CN:'宠物 动物', TH:'สัตว์เลี้ยง', VN:'thú cưng động vật', SG:'pets animals', AU:'pets animals', TW:'寵物 動物' },
+  '17': { KR:'스포츠 하이라이트', US:'sports highlights', JP:'スポーツ ハイライト',
+          GB:'sports highlights', FR:'sport highlights', DE:'Sport Highlights',
+          CN:'体育 精彩集锦', TH:'กีฬา ไฮไลท์', VN:'thể thao highlight', SG:'sports highlights', AU:'sports highlights', TW:'體育 精彩' },
+  '19': { KR:'여행 이벤트', US:'travel vlog destinations', JP:'旅行 トラベル',
+          GB:'travel vlog', FR:'voyage tourisme', DE:'Reise Travel',
+          CN:'旅游 旅行', TH:'ท่องเที่ยว ท่องเที่ยว', VN:'du lịch travel', SG:'travel vlog', AU:'travel vlog', TW:'旅遊 旅行' },
+  '20': { KR:'게임', US:'gaming gameplay', JP:'ゲーム ゲームプレイ',
+          GB:'gaming', FR:'jeux vidéo gaming', DE:'Gaming Spiele',
+          CN:'游戏 玩法', TH:'เกมส์ gaming', VN:'game chơi game', SG:'gaming', AU:'gaming', TW:'遊戲' },
+  '22': { KR:'일상 브이로그', US:'daily vlog lifestyle', JP:'日常 Vlog ライフスタイル',
+          GB:'vlog lifestyle', FR:'vlog quotidien', DE:'Vlog Alltag',
+          CN:'日常 Vlog 生活', TH:'วีล็อก ชีวิตประจำวัน', VN:'vlog hằng ngày', SG:'vlog lifestyle', AU:'vlog lifestyle', TW:'日常 Vlog' },
+  '23': { KR:'코미디 웃긴', US:'comedy funny viral', JP:'コメディ 面白い',
+          GB:'comedy funny', FR:'comédie humour', DE:'Komödie lustig',
+          CN:'搞笑 喜剧', TH:'ตลก คอมเมดี้', VN:'hài hước comedy', SG:'comedy funny', AU:'comedy funny', TW:'搞笑 喜劇' },
+  '24': { KR:'엔터테인먼트 연예', US:'entertainment celebrity', JP:'エンターテインメント 芸能',
+          GB:'entertainment celebrity', FR:'divertissement célébrité', DE:'Unterhaltung Promis',
+          CN:'娱乐 明星', TH:'บันเทิง ดารา', VN:'giải trí nghệ sĩ', SG:'entertainment', AU:'entertainment', TW:'娛樂 明星' },
+  '25': { KR:'뉴스 속보', US:'breaking news today', JP:'ニュース 速報 最新',
+          GB:'breaking news UK', FR:'actualités infos', DE:'Nachrichten aktuell',
+          CN:'新闻 最新消息', TH:'ข่าว ล่าสุด', VN:'tin tức mới nhất', SG:'news today', AU:'news today', TW:'新聞 最新' },
+  '26': { KR:'노하우 스타일 패션', US:'fashion style howto', JP:'ファッション スタイル ハウツー',
+          GB:'fashion style', FR:'mode style beauté', DE:'Mode Style Beauty',
+          CN:'时尚 穿搭', TH:'แฟชั่น สไตล์', VN:'thời trang phong cách', SG:'fashion style', AU:'fashion style', TW:'時尚 穿搭' },
+  '27': { KR:'교육 강의', US:'education tutorial learning', JP:'教育 チュートリアル 学習',
+          GB:'education tutorial', FR:'éducation tutoriel', DE:'Bildung Tutorial',
+          CN:'教育 教程 学习', TH:'การศึกษา สอน', VN:'giáo dục học tập', SG:'education tutorial', AU:'education', TW:'教育 教程' },
+  '28': { KR:'과학 기술 AI', US:'science technology AI', JP:'科学 テクノロジー AI 人工知能',
+          GB:'science technology AI', FR:'science technologie IA', DE:'Wissenschaft Technologie KI',
+          CN:'科学 技术 人工智能', TH:'วิทยาศาสตร์ เทคโนโลยี', VN:'khoa học công nghệ AI', SG:'science tech AI', AU:'science technology', TW:'科學 技術 AI' },
+  '29': { KR:'비영리 사회', US:'nonprofit social cause', JP:'非営利 社会問題',
+          GB:'nonprofit charity', FR:'association humanitaire', DE:'Non-profit Gemeinnützig',
+          CN:'公益 慈善', TH:'องค์กรไม่แสวงหาผลกำไร', VN:'phi lợi nhuận xã hội', SG:'nonprofit', AU:'nonprofit', TW:'非營利 社會' }
+};
+
+// 국가 코드 → 다국어 라벨 (토스트 표시용)
+const COUNTRY_LABEL = {
+  KR:'한국', US:'미국', JP:'일본', GB:'영국', CN:'중국', FR:'프랑스',
+  DE:'독일', TH:'태국', VN:'베트남', SG:'싱가포르', AU:'호주', TW:'대만'
+};
+
 function getActiveCategoryLabel() {
   const id = state.selectedCategory || '';
   return CAT_LABEL_KO[id] || 'Category';
@@ -1341,9 +1396,10 @@ async function doHot() {
   // 카테고리 없는 경우(전체 트렌드): mostPopular 방식 (1유닛)
   if (catId && CAT_SEARCH_KEYWORD[catId]) {
     // search.list 방식 - 해당 카테고리 최신 인기 영상
-    const keyword = CAT_SEARCH_KEYWORD[catId];
-    const lang = { KR:'ko', JP:'ja', US:'en', GB:'en', FR:'fr', DE:'de',
-                   CN:'zh-Hans', TH:'th', VN:'vi', SG:'en', AU:'en' }[state.selectedCountry] || '';
+    // 다국어 키워드 사전에서 현재 국가에 맞는 키워드 선택
+    const kwMap = CAT_KEYWORDS_MULTI[catId] || {};
+    const keyword = kwMap[state.selectedCountry] || kwMap['US'] || CAT_SEARCH_KEYWORD[catId] || catId;
+    const lang = COUNTRY_LANG[state.selectedCountry] || '';
     let url = `https://www.googleapis.com/youtube/v3/search?part=snippet` +
       `&q=${encodeURIComponent(keyword)}&type=video&order=viewCount` +
       `&maxResults=${maxResults}&regionCode=${region}` +
@@ -1468,16 +1524,71 @@ const EN_KO_DICT = {
   'jeonse':'전세','monthly rent':'월세'
 };
 
-// ===== QUERY EXPAND (KR only: EN→KO OR) =====
+// ===== 한국어 → 다국어 번역 사전 =====
+const KO_TRANS_DICT = {
+  '뉴스':   { US:'news', JP:'ニュース', GB:'news', FR:'actualités', DE:'Nachrichten', CN:'新闻', TH:'ข่าว', VN:'tin tức', SG:'news', AU:'news', TW:'新聞' },
+  '부동산': { US:'real estate', JP:'不動産', GB:'property real estate', FR:'immobilier', DE:'Immobilien', CN:'房产 不动产', SG:'real estate', AU:'real estate', TW:'房地產' },
+  '드론':   { US:'drone', JP:'ドローン', GB:'drone', FR:'drone', DE:'Drohne', CN:'无人机', TH:'โดรน', VN:'máy bay không người lái', SG:'drone', AU:'drone', TW:'無人機' },
+  '게임':   { US:'game gaming', JP:'ゲーム', GB:'gaming', FR:'jeux vidéo', DE:'Spiele Gaming', CN:'游戏', TH:'เกมส์', VN:'trò chơi', SG:'gaming', AU:'gaming', TW:'遊戲' },
+  '음악':   { US:'music', JP:'音楽', GB:'music', FR:'musique', DE:'Musik', CN:'音乐', TH:'เพลง', VN:'âm nhạc', SG:'music', AU:'music', TW:'音樂' },
+  '스포츠': { US:'sports', JP:'スポーツ', GB:'sports', FR:'sport', DE:'Sport', CN:'体育', TH:'กีฬา', VN:'thể thao', SG:'sports', AU:'sports', TW:'體育' },
+  '영화':   { US:'movies film', JP:'映画', GB:'movies film', FR:'film cinéma', DE:'Film Kino', CN:'电影', TH:'ภาพยนตร์', VN:'phim', SG:'movies', AU:'movies', TW:'電影' },
+  '요리':   { US:'cooking recipe', JP:'料理 レシピ', GB:'cooking recipe', FR:'cuisine recette', DE:'Kochen Rezept', CN:'美食 料理', TH:'อาหาร ทำอาหาร', VN:'nấu ăn', SG:'cooking', AU:'cooking', TW:'料理 食譜' },
+  '여행':   { US:'travel vlog', JP:'旅行', GB:'travel', FR:'voyage', DE:'Reise', CN:'旅游', TH:'ท่องเที่ยว', VN:'du lịch', SG:'travel', AU:'travel', TW:'旅遊' },
+  '과학':   { US:'science', JP:'科学', GB:'science', FR:'science', DE:'Wissenschaft', CN:'科学', TH:'วิทยาศาสตร์', VN:'khoa học', SG:'science', AU:'science', TW:'科學' },
+  '기술':   { US:'technology', JP:'テクノロジー', GB:'technology', FR:'technologie', DE:'Technologie', CN:'技术', TH:'เทคโนโลยี', VN:'công nghệ', SG:'technology', AU:'technology', TW:'科技' },
+  'AI':     { US:'AI artificial intelligence', JP:'AI 人工知能', GB:'AI artificial intelligence', FR:'intelligence artificielle', DE:'Künstliche Intelligenz KI', CN:'人工智能 AI', TH:'AI ปัญญาประดิษฐ์', VN:'trí tuệ nhân tạo AI', SG:'AI', AU:'AI', TW:'人工智慧 AI' },
+  '정치':   { US:'politics', JP:'政治', GB:'politics', FR:'politique', DE:'Politik', CN:'政治', TH:'การเมือง', VN:'chính trị', SG:'politics', AU:'politics', TW:'政治' },
+  '경제':   { US:'economy finance', JP:'経済 ニュース', GB:'economy finance', FR:'économie finances', DE:'Wirtschaft', CN:'经济 财经', TH:'เศรษฐกิจ', VN:'kinh tế', SG:'economy finance', AU:'economy', TW:'經濟 財經' },
+  '코미디': { US:'comedy funny', JP:'コメディ 面白い', GB:'comedy', FR:'comédie humour', DE:'Komödie lustig', CN:'搞笑', TH:'ตลก', VN:'hài hước', SG:'comedy', AU:'comedy', TW:'搞笑' },
+  '교육':   { US:'education tutorial', JP:'教育 学習', GB:'education', FR:'éducation', DE:'Bildung', CN:'教育 学习', TH:'การศึกษา', VN:'giáo dục', SG:'education', AU:'education', TW:'教育' },
+  '건강':   { US:'health fitness', JP:'健康 フィットネス', GB:'health wellness', FR:'santé bien-être', DE:'Gesundheit Fitness', CN:'健康 养生', TH:'สุขภาพ', VN:'sức khỏe', SG:'health', AU:'health', TW:'健康' },
+  '패션':   { US:'fashion style', JP:'ファッション スタイル', GB:'fashion style', FR:'mode style', DE:'Mode Fashion', CN:'时尚 穿搭', TH:'แฟชั่น', VN:'thời trang', SG:'fashion', AU:'fashion', TW:'時尚' },
+  '자동차': { US:'cars automotive', JP:'自動車 カー', GB:'cars automotive', FR:'voiture auto', DE:'Auto Automobil', CN:'汽车', TH:'รถยนต์', VN:'xe hơi', SG:'cars', AU:'cars', TW:'汽車' },
+  '속보':   { US:'breaking news', JP:'速報', GB:'breaking news', FR:'flash info', DE:'Eilmeldung', CN:'突发新闻', TH:'ข่าวด่วน', VN:'tin nóng', SG:'breaking news', AU:'breaking news', TW:'快訊' },
+  '연예':   { US:'celebrity entertainment', JP:'芸能 エンタメ', GB:'celebrity entertainment', FR:'people célébrités', DE:'Prominente Unterhaltung', CN:'娱乐 明星', TH:'ดารา บันเทิง', VN:'giải trí nghệ sĩ', SG:'entertainment', AU:'entertainment', TW:'娛樂 藝人' },
+  '애니':   { US:'anime animation', JP:'アニメ', GB:'anime animation', FR:'anime animation', DE:'Anime Animation', CN:'动漫 动画', TH:'การ์ตูน แอนิเมชัน', VN:'hoạt hình anime', SG:'anime', AU:'anime', TW:'動漫 動畫' },
+  '강의':   { US:'lecture tutorial', JP:'講義 レクチャー', GB:'lecture tutorial', FR:'cours tutoriel', DE:'Vortrag Tutorial', CN:'讲座 教程', TH:'บทเรียน', VN:'bài giảng', SG:'tutorial', AU:'tutorial', TW:'講座 教程' }
+};
+
+// ===== QUERY EXPAND (KR→EN/JP 번역 + KR에서 EN입력 시 확장) =====
 function buildExpandedQuery(query, country) {
-  if(country !== 'KR') return { q: query, note: '' };
   const lower = query.toLowerCase().trim();
-  for(const [en, ko] of Object.entries(EN_KO_DICT)) {
-    if(lower === en || lower.includes(en)) {
-      const expanded = query + '|' + ko;
-      return { q: expanded, note: `🔍 자동 확장 적용: ${query} | ${ko} (KR)` };
+
+  // KR 모드: 영어 입력 시 한국어로 확장
+  if (country === 'KR') {
+    for (const [en, ko] of Object.entries(EN_KO_DICT)) {
+      if (lower === en || lower.includes(en)) {
+        const expanded = query + '|' + ko;
+        return { q: expanded, note: `🔍 자동 확장 적용: ${query} | ${ko} (KR)` };
+      }
+    }
+    return { q: query, note: '' };
+  }
+
+  // 비KR 모드: 한국어 키워드 → 해당 국가 언어로 자동 번역
+  let translatedQ = query;
+  let translated = false;
+  const transNote = [];
+
+  for (const [ko, langMap] of Object.entries(KO_TRANS_DICT)) {
+    if (query.includes(ko)) {
+      const tgt = langMap[country] || langMap['US'] || ko;
+      translatedQ = translatedQ.replace(ko, tgt);
+      transNote.push(`${ko}→${tgt}`);
+      translated = true;
     }
   }
+
+  const countryLbl = COUNTRY_LABEL?.[country] || country;
+  if (translated) {
+    return {
+      q: translatedQ,
+      note: `🌐 자동 번역 적용 (${countryLbl}): ${transNote.join(', ')}`
+    };
+  }
+
+  // 번역 불가 시 원문 그대로 (영어 키워드는 그냥 사용)
   return { q: query, note: '' };
 }
 
