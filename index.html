@@ -766,6 +766,14 @@ html,body{overflow:hidden;height:100%;margin:0;padding:0}
 
     <!-- ===== SETTINGS SCREEN ===== -->
     <div class="screen" id="screen-settings">
+      <!-- API 할당량 안내 -->
+      <div style="background:#1a2a1a;border:1px solid #2d5a2d;border-radius:8px;padding:12px;margin:12px 0 4px;font-size:12px;line-height:1.7;">
+        <b style="color:#7ec87e;">📊 API 할당량 안내</b> <span style="color:#666;">(무료: 일 10,000유닛 / 오전 9시 리셋)</span><br>
+        <span style="color:#aaa;">• 🔥 HOT 전체트렌드&nbsp;&nbsp;&nbsp;<b style="color:#7ec87e;">1유닛</b></span><br>
+        <span style="color:#aaa;">• 🗂️ HOT 카테고리 클릭&nbsp;<b style="color:#f0c040;">~101유닛</b></span><br>
+        <span style="color:#aaa;">• 🔍 직접 검색 1회&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<b style="color:#f0c040;">~101유닛</b></span><br>
+        <span style="color:#aaa;">• 📦 캐시 재사용&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<b style="color:#7ec87e;">0유닛</b> (HOT 60분·검색 20분)</span>
+      </div>
       <!-- API Key -->
       <div class="api-input-wrap" style="margin-top:16px">
         <div class="api-label">🔑 YouTube Data API Key</div>
@@ -982,6 +990,44 @@ const state = {
   currentVideo: null,
   mode: 'HOT' // 'HOT' (mostPopular) | 'SEARCH' (keyword)
 };
+// ===== RESULT CACHE (TTL 기반 - API 할당량 절약) =====
+const resultCache = {};
+const CACHE_TTL_MS = {
+  HOT:    60 * 60 * 1000,   // HOT 모드: 60분 (트렌드는 자주 안 바뀜)
+  SEARCH: 20 * 60 * 1000    // SEARCH 모드: 20분
+};
+
+function _cacheKey(mode, country, cat, query, days, order, count) {
+  return [mode, country, cat || '', query || '', days, order, count].join('|');
+}
+
+function _getCached(key, mode) {
+  const entry = resultCache[key];
+  if (!entry) return null;
+  const ttl = CACHE_TTL_MS[mode] || CACHE_TTL_MS.SEARCH;
+  if (Date.now() - entry.ts > ttl) { delete resultCache[key]; return null; }
+  return entry;
+}
+
+function _setCache(key, results, mode, label) {
+  resultCache[key] = { results, ts: Date.now(), mode, label };
+}
+
+function _showCacheInfo(entry) {
+  const ageMin = Math.floor((Date.now() - entry.ts) / 60000);
+  const noteEl = document.getElementById('expandNote');
+  if (noteEl) noteEl.textContent = `📦 캐시 결과 (${ageMin}분 전 | API 절약)`;
+  showToast(`📦 캐시 결과 표시 (${ageMin}분 전 검색)`);
+}
+
+// ===== DEBOUNCE =====
+const _debounceTimers = {};
+function _debounce(key, fn, delay) {
+  clearTimeout(_debounceTimers[key]);
+  _debounceTimers[key] = setTimeout(fn, delay);
+}
+
+
 
 // ===== INIT =====
 document.addEventListener('DOMContentLoaded', () => {
@@ -1292,13 +1338,13 @@ function selectChip(el, type) {
   const runAfterUpdate = () => {
     updateSearchInputUI();
     if (state.mode === 'HOT') {
-      // HOT 모드: videos.list(1유닛) → 자동 재검색 유지
-      doHot();
+      // HOT 모드: debounce 300ms - 빠른 국가 전환 시 중복 API 호출 방지
+      _debounce('hotSearch', () => doHot(), 300);
     } else {
-      // SEARCH 모드: 검색어가 있으면 자동 재검색 (국가 변경 시 같은 키워드로 재검색)
+      // SEARCH 모드: 검색어가 있으면 debounce 500ms 후 자동 재검색
       const q = (document.getElementById('searchInput')?.value || '').trim();
       if (q) {
-        doSearch(); // 현재 키워드로 새 국가에서 자동 재검색
+        _debounce('searchDebounce', () => doSearch(), 500);
       }
     }
   };
@@ -1386,11 +1432,21 @@ function onSearchButton() {
 async function doHot() {
   if(!state.apiKey) { showToast('⚙️ API 키를 먼저 설정해주세요'); showTab('settings'); return; }
   setMode('HOT');
-  showLoading();
 
   const maxResults = Math.min(50, Math.max(1, state.selectedCount || 12));
   const region = encodeURIComponent(state.selectedCountry);
   const catId = state.selectedCategory || '';
+
+  // ── HOT 캐시 체크 ──
+  const _hCacheKey = _cacheKey('HOT', state.selectedCountry, catId, '', 30, 'viewCount', maxResults);
+  const _hCached = _getCached(_hCacheKey, 'HOT');
+  if (_hCached) {
+    state.currentResults = _hCached.results;
+    renderResults(_hCached.results);
+    _showCacheInfo(_hCached);
+    return;
+  }
+  showLoading();
 
   // 카테고리가 선택된 경우: search.list 방식 (최신·정확한 결과, 100유닛)
   // 카테고리 없는 경우(전체 트렌드): mostPopular 방식 (1유닛)
@@ -1458,6 +1514,7 @@ async function doHot() {
         description: item.snippet?.description || '',
         stats: stats[item.id?.videoId] || {}
       })).filter(v => v.id);
+      _setCache(_hCacheKey, state.currentResults, 'HOT');
       renderResults(state.currentResults);
     }
     return;
@@ -1495,6 +1552,7 @@ async function doHot() {
       description: item.snippet?.description || '',
       stats: item.statistics || {}
     }));
+    _setCache(_hCacheKey, state.currentResults, 'HOT');
     renderResults(state.currentResults);
   } catch(e) {
     showErrorState(e.message);
@@ -1598,6 +1656,16 @@ async function doSearch() {
   const query = document.getElementById('searchInput').value.trim();
   if(!query) { showToast('검색어를 입력해주세요'); return; }
   if(!state.apiKey) { showToast('⚙️ API 키를 먼저 설정해주세요'); showTab('settings'); return; }
+  // ── 캐시 체크 ──
+  const { q: _preQ } = buildExpandedQuery(query, state.selectedCountry);
+  const _sCacheKey = _cacheKey('SEARCH', state.selectedCountry, state.selectedCategory, _preQ, state.selectedDays, state.selectedOrder, state.selectedCount);
+  const _sCached = _getCached(_sCacheKey, 'SEARCH');
+  if (_sCached) {
+    state.currentResults = _sCached.results;
+    renderResults(_sCached.results);
+    _showCacheInfo(_sCached);
+    return;
+  }
   showLoading();
   // 쿼리 확장 (KR + 영어 입력 시만)
   const { q: finalQ, note: expandNote } = buildExpandedQuery(query, state.selectedCountry);
