@@ -510,7 +510,7 @@ html,body{overflow:hidden;height:100%;margin:0;padding:0}
     <div class="header-actions">
       <div style="display:flex;align-items:center;gap:4px;cursor:pointer;background:rgba(255,255,255,0.07);border:1px solid rgba(255,255,255,0.12);border-radius:8px;padding:4px 10px;" onclick="showTab('settings')" title="API 할당량 현황 (설정에서 자세히 보기)">
         <span class="api-dot" id="apiDot" style="width:8px;height:8px;border-radius:50%;background:#4caf50;display:inline-block;flex-shrink:0;"></span>
-        <span id="apiCallCount" style="font-size:15px;font-weight:700;color:#4caf50;">0 <span style="font-size:12px;color:#aaa;font-weight:400;">/ 10,000유닛</span></span>
+        <span id="apiCallCount" style="font-size:15px;font-weight:700;color:#4caf50;"><span style="font-size:16px;color:#aaa;font-weight:400;">API 사용 </span>0<span style="font-size:16px;color:#aaa;font-weight:400;"> / 잔여 </span><span style="font-size:14px;color:#aaa;font-weight:400;">10,000유닛</span></span>
       </div>
       <button class="btn-icon" onclick="openLoginModal()" title="로그인">👤</button>
       <button class="btn-icon" onclick="showTab('settings')" title="설정">⚙️</button>
@@ -835,6 +835,7 @@ html,body{overflow:hidden;height:100%;margin:0;padding:0}
         <div class="api-label">🔑 YouTube Data API Key</div>
         <div class="api-input-row">
           <input type="password" class="api-input" id="apiKeyInput" placeholder="API 키를 입력하세요">
+          <button type="button" id="apiKeyToggle" onclick="toggleApiKeyVis()" title="API 키 보기/숨기기" style="background:var(--card2,#1e3a5f);border:1px solid var(--border);border-radius:8px;padding:0 12px;color:#aaa;cursor:pointer;font-size:18px;flex-shrink:0;height:44px;line-height:1;">👁</button>
           <button class="btn-save-api" onclick="saveApiKey()">저장</button>
         </div>
         <div style="font-size:11px;color:var(--text3);margin-top:6px">
@@ -1102,7 +1103,7 @@ function _updateApiDisplay() {
   else if (pct >= 50) color = '#ff9800';
   // 상단 헤더 카운터
   if (el) {
-    el.innerHTML = `<span style="font-size:11px;color:#aaa;font-weight:400;">사용 </span><span style="font-size:16px;font-weight:800;">${state.unitsUsed.toLocaleString()}</span><span style="font-size:11px;color:#aaa;font-weight:400;"> / 잔여 </span><span style="font-size:15px;font-weight:700;">${remaining.toLocaleString()}</span><span style="font-size:11px;color:#aaa;font-weight:400;">유닛</span>`;
+    el.innerHTML = `<span style="font-size:16px;color:#aaa;font-weight:400;">API 사용 </span><span style="font-size:24px;font-weight:800;">${state.unitsUsed.toLocaleString()}</span><span style="font-size:16px;color:#aaa;font-weight:400;"> / 잔여 </span><span style="font-size:22px;font-weight:700;">${remaining.toLocaleString()}</span><span style="font-size:16px;color:#aaa;font-weight:400;">유닛</span>`;
     el.style.color = color;
     el.style.fontWeight = '700';
     // font-size controlled by innerHTML spans
@@ -1996,6 +1997,18 @@ function clearFavorites() {
 }
 
 // ===== API KEY =====
+function toggleApiKeyVis() {
+  const input = document.getElementById('apiKeyInput');
+  const btn = document.getElementById('apiKeyToggle');
+  if (!input) return;
+  if (input.type === 'password') {
+    input.type = 'text';
+    if (btn) btn.textContent = '🙈';
+  } else {
+    input.type = 'password';
+    if (btn) btn.textContent = '👁';
+  }
+}
 function saveApiKey() {
   const key = document.getElementById('apiKeyInput').value.trim();
   if(!key) { showToast('API 키를 입력해주세요'); return; }
