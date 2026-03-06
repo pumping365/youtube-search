@@ -433,10 +433,12 @@ html,body{overflow:hidden;height:100%;margin:0;padding:0}
 
   /* 스크린 패딩 증가 */
   .screen{padding-bottom:0}
-  .hero-banner{margin:24px;padding:24px 32px}
+  .hero-banner{margin:20px 24px 12px;padding:18px 28px;flex-shrink:0;overflow:visible}
   .hero-brand{display:none}
   .hero-tagline{display:none}
-  .hero-title{font-size:26px;margin-bottom:0}
+  .hero-stats{display:none}
+  .hero-title{font-size:22px;font-weight:800;margin-bottom:0;white-space:nowrap}
+  .hero-banner::before{font-size:36px;right:20px;top:50%;transform:translateY(-50%)}
   .section-pad{padding:20px 24px}
   .quick-btns{grid-template-columns:repeat(6,1fr);padding:0 24px 20px}
 
