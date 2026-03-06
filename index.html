@@ -527,6 +527,11 @@ html,body{overflow:hidden;height:100%;margin:0;padding:0}
   #screen-home .section-pad:last-child [style*="font-size:14px"]{font-size:15px !important}
   #screen-home .section-pad:last-child [style*="font-size:12px"]{font-size:13px !important}
   #screen-home .section-pad:last-child [style*="font-size:28px"]{font-size:32px !important}
+
+  /* ── 헤더 API 표시: 한 줄 강제 ── */
+  #apiCallCount{white-space:nowrap;overflow:hidden;max-width:200px}
+  .header-actions{gap:6px}
+  .top-header{padding:0 10px}
 }
 </style>
 </head>
@@ -1136,7 +1141,11 @@ function _updateApiDisplay() {
   else if (pct >= 50) color = '#ff9800';
   // 상단 헤더 카운터
   if (el) {
-    el.innerHTML = `<span style="font-size:16px;color:#aaa;font-weight:400;">API 사용 </span><span style="font-size:24px;font-weight:800;">${state.unitsUsed.toLocaleString()}</span><span style="font-size:16px;color:#aaa;font-weight:400;"> / 잔여 </span><span style="font-size:22px;font-weight:700;">${remaining.toLocaleString()}</span><span style="font-size:16px;color:#aaa;font-weight:400;">유닛</span>`;
+    const isMobile = window.innerWidth <= 767;
+    const sz = isMobile
+      ? { lbl:'11px', num:'15px', rem:'14px' }
+      : { lbl:'16px', num:'24px', rem:'22px' };
+    el.innerHTML = `<span style="font-size:${sz.lbl};color:#aaa;font-weight:400;">API </span><span style="font-size:${sz.num};font-weight:800;">${state.unitsUsed.toLocaleString()}</span><span style="font-size:${sz.lbl};color:#aaa;font-weight:400;"> / 잔여 </span><span style="font-size:${sz.rem};font-weight:700;">${remaining.toLocaleString()}</span><span style="font-size:${sz.lbl};color:#aaa;font-weight:400;">유닛</span>`;
     el.style.color = color;
     el.style.fontWeight = '700';
     // font-size controlled by innerHTML spans
