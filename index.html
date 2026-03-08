@@ -149,7 +149,7 @@ html,body{overflow:hidden;height:100%;margin:0;padding:0}
 .results-count{font-size:13px;color:var(--text2)}
 .btn-csv{background:var(--navy3);border:1px solid var(--border);border-radius:8px;padding:6px 12px;color:#4fc3f7;font-size:12px;cursor:pointer;font-weight:600}
 
-.video-card{background:var(--card);border:1px solid var(--border);border-radius:var(--radius);margin-bottom:12px;overflow:hidden;transition:.2s;cursor:pointer}
+.video-card{background:var(--card);border:1px solid var(--border);border-radius:var(--radius);margin-bottom:12px;overflow:hidden;transition:.2s;cursor:pointer;position:relative}
 .video-card:active{transform:scale(.99);border-color:var(--red)}
 .video-thumb{width:100%;aspect-ratio:16/9;object-fit:cover;background:#0d2137;display:block}
 .video-thumb-placeholder{width:100%;aspect-ratio:16/9;background:linear-gradient(135deg,#0d2137 0%,#1a3a5c 100%);display:flex;align-items:center;justify-content:center;font-size:40px}
@@ -160,8 +160,10 @@ html,body{overflow:hidden;height:100%;margin:0;padding:0}
 .stat-badge{display:flex;align-items:center;gap:4px;font-size:12px;color:var(--text2);background:rgba(255,255,255,.05);padding:4px 8px;border-radius:6px}
 .stat-badge .icon{font-size:13px}
 
-.video-actions{display:flex;gap:8px;padding:0 12px 12px}
-.btn-detail{flex:1;background:rgba(255,0,0,.15);border:1px solid rgba(255,0,0,.3);border-radius:8px;padding:9px;color:var(--red);font-size:13px;font-weight:600;cursor:pointer;transition:.2s;text-align:center}
+.video-actions{display:flex;gap:6px;padding:10px 12px 12px;align-items:center}
+.btn-detail{display:flex;align-items:center;justify-content:center;gap:4px;flex:1;background:rgba(255,68,68,.12);border:1px solid rgba(255,68,68,.3);border-radius:8px;padding:9px 6px;color:#ff6b6b;font-size:12px;font-weight:700;cursor:pointer;transition:.2s;text-align:center}
+.btn-detail.open{background:rgba(255,68,68,.25);border-color:rgba(255,68,68,.6);color:#fff}
+.btn-detail:hover{background:rgba(255,68,68,.22)}
 .btn-detail:active{background:rgba(255,0,0,.3)}
 .btn-fav{width:40px;height:40px;background:rgba(255,255,255,.05);border:1px solid var(--border);border-radius:8px;display:flex;align-items:center;justify-content:center;font-size:18px;cursor:pointer;transition:.2s;flex-shrink:0}
 .btn-fav.active{background:rgba(255,215,0,.15);border-color:var(--gold)}
@@ -452,6 +454,125 @@ html,body{overflow:hidden;height:100%;margin:0;padding:0}
   /* 결과 3열 그리드 */
   #results-area{padding:16px 24px}
   .video-grid-inner{display:grid;grid-template-columns:repeat(3,1fr);gap:16px}
+/* ===== INLINE ANALYSIS PANEL ===== */
+.rank-badge{position:absolute;top:8px;left:8px;font-size:18px;z-index:2;text-shadow:0 1px 4px rgba(0,0,0,.7);pointer-events:none}
+.trend-score-bar{height:3px;border-radius:2px;margin:0 12px 6px;background:var(--border);overflow:hidden}
+.trend-score-fill{height:100%;border-radius:2px;transition:width .6s ease}
+.video-card{position:relative}
+.inline-panel{
+  display:none;
+  background:#0d0f1a;
+  border-top:2px solid rgba(255,68,68,.35);
+  border-radius:0 0 12px 12px;
+  animation:panelSlide .25s ease;
+  overflow:hidden;
+}
+.inline-panel.open{display:block}
+@keyframes panelSlide{
+  from{opacity:0;transform:translateY(-8px)}
+  to{opacity:1;transform:translateY(0)}
+}
+/* ── 탭 헤더 ─────────────────────────── */
+.panel-tabs{
+  display:flex;
+  background:#111320;
+  border-bottom:1px solid rgba(255,255,255,.07);
+  padding:0 4px;
+}
+.panel-tab{
+  flex:1;
+  padding:10px 2px;
+  font-size:11px;
+  font-weight:700;
+  color:rgba(255,255,255,.45);
+  text-align:center;
+  cursor:pointer;
+  border-bottom:2px solid transparent;
+  transition:color .2s,border-color .2s;
+  letter-spacing:.3px;
+}
+.panel-tab.active{color:#ff4444;border-bottom-color:#ff4444}
+.panel-tab:hover:not(.active){color:rgba(255,255,255,.75)}
+/* ── 탭 본문 ─────────────────────────── */
+.panel-body{padding:14px 16px 16px}
+.panel-section{display:none}
+.panel-section.active{display:block}
+/* ── 행 스타일 ─────────────────────────── */
+.panel-row{
+  display:flex;
+  justify-content:space-between;
+  align-items:center;
+  padding:7px 0;
+  border-bottom:1px solid rgba(255,255,255,.05);
+  font-size:12.5px;
+}
+.panel-row:last-child{border-bottom:none}
+.panel-row .lbl{color:rgba(255,255,255,.5);font-size:11.5px}
+.panel-row .val{font-weight:700;color:#fff;font-size:12.5px}
+.panel-row .val.hot{color:#ff4444}
+.panel-row .val.warm{color:#ff9800}
+.panel-row .val.cool{color:rgba(255,255,255,.45)}
+/* ── 인사이트 카드 ─────────────────────────── */
+.panel-insight{
+  background:rgba(255,68,68,.06);
+  border:1px solid rgba(255,68,68,.18);
+  border-left:3px solid #ff4444;
+  border-radius:8px;
+  padding:10px 13px;
+  margin-bottom:9px;
+}
+.panel-insight .ins-title{
+  font-weight:700;
+  color:#ff6b6b;
+  font-size:10.5px;
+  text-transform:uppercase;
+  letter-spacing:.8px;
+  margin-bottom:5px;
+}
+.panel-insight .ins-body{
+  color:rgba(255,255,255,.82);
+  font-size:12px;
+  line-height:1.8;
+}
+/* ── 채널 탭 로딩 ─────────────────────────── */
+.panel-loading{
+  text-align:center;
+  padding:24px 16px;
+  color:rgba(255,255,255,.4);
+  font-size:12px;
+}
+/* ── 제작 추가 버튼 ─────────────────────────── */
+.btn-create{
+  width:100%;
+  padding:11px;
+  background:linear-gradient(135deg,#ff4444,#cc2222);
+  border:none;
+  border-radius:8px;
+  color:#fff;
+  font-size:13px;
+  font-weight:700;
+  cursor:pointer;
+  margin-top:12px;
+  transition:opacity .2s,transform .1s;
+  letter-spacing:.3px;
+}
+.btn-create:hover{opacity:.9}
+.btn-create:active{transform:scale(.98)}
+/* ── 채널 규모 배지 ─────────────────────────── */
+.panel-ch-badge{
+  display:inline-block;
+  font-size:10px;
+  padding:2px 8px;
+  border-radius:10px;
+  font-weight:600;
+  margin-left:6px;
+  vertical-align:middle;
+}
+.ch-large{background:rgba(255,215,0,.15);color:#ffd700}
+.ch-mid{background:rgba(76,175,80,.15);color:#4caf50}
+.ch-small{background:rgba(33,150,243,.15);color:#2196f3}
+.ch-new{background:rgba(156,39,176,.15);color:#ce93d8}
+
 
   /* 모달 중앙 정렬 */
   .modal-overlay{align-items:center}
@@ -1882,36 +2003,172 @@ async function doSearch() {
 }
 
 // ===== RENDER RESULTS =====
+// ===== TREND SCORE ENGINE =====
+function calcTrendScore(v) {
+  var views   = parseInt(v.stats.viewCount  || 0);
+  var likes   = parseInt(v.stats.likeCount  || 0);
+  var comments= parseInt(v.stats.commentCount || 0);
+  var daysSince = v.publishedAt
+    ? Math.max(1, (Date.now() - new Date(v.publishedAt).getTime()) / 86400000)
+    : 30;
+  var dailyViews  = views / daysSince;
+  var engRate     = views > 0 ? (likes + comments) / views : 0;
+  var freshBonus  = daysSince <= 3 ? 2.0 : daysSince <= 7 ? 1.5 : daysSince <= 30 ? 1.0 : 0.5;
+  return Math.round(dailyViews * (1 + engRate * 10) * freshBonus);
+}
+
+function getRankBadge(rank) {
+  if (rank === 1) return '🥇';
+  if (rank === 2) return '🥈';
+  if (rank === 3) return '🥉';
+  if (rank <= 6)  return '🔥';
+  return '';
+}
+
+function getScoreColor(score, maxScore) {
+  var ratio = maxScore > 0 ? score / maxScore : 0;
+  if (ratio >= 0.7) return '#ff4444';
+  if (ratio >= 0.4) return '#ff9800';
+  return '#4caf50';
+}
+
+function buildInsightWhy(v) {
+  var title = v.title || '';
+  var cat   = v.category || '';
+  var views = parseInt(v.stats.viewCount || 0);
+  var days  = v.publishedAt ? Math.max(1, (Date.now() - new Date(v.publishedAt).getTime()) / 86400000) : 30;
+  var daily = Math.round(views / days);
+
+  var reasons = [];
+  if (days <= 2)  reasons.push('업로드 직후 급상승 중 — 실시간 트렌드');
+  else if (days <= 7) reasons.push('1주일 내 빠른 성장세 유지 중');
+  if (/콜라보|feat|X |×/.test(title)) reasons.push('콜라보/피처링으로 팬덤 결집');
+  if (/시즌|ep|episode|\d+화|\d+회/i.test(title)) reasons.push('시리즈 콘텐츠 — 기존 팬 재방문');
+  if (/챌린지|challenge/i.test(title)) reasons.push('챌린지 포맷 — 소셜 확산 구조');
+  if (/뉴스|속보|단독/.test(title)) reasons.push('시의성 높은 뉴스·이슈 콘텐츠');
+  if (/공식|official|MV|뮤직비디오/i.test(title)) reasons.push('공식 채널 업로드 — 신뢰도·검색 우위');
+  if (reasons.length === 0) reasons.push('높은 참여율과 빠른 조회수 증가');
+  return '· ' + reasons.join('<br>· ');
+}
+
+function buildInsightCreate(v) {
+  var cat  = v.category || '';
+  var title = v.title || '';
+  var ideas = [];
+
+  if (cat.indexOf('음악') > -1 || cat.indexOf('Music') > -1 || /노래|뮤직|MV|가사/i.test(title)) {
+    ideas = ['커버 영상 또는 리액션 영상 제작', '가사 해석 / 비하인드 분석', '"이 노래 들으면 생각나는 것" Vlog 포맷'];
+  } else if (cat.indexOf('게임') > -1 || /게임|Gaming/i.test(title)) {
+    ideas = ['공략/팁 영상 (검색 유입 최강)', '랭킹 도전 / 도전 과제 클리어', '리뷰·첫인상 반응 영상'];
+  } else if (/뉴스|정치|사건|속보/.test(title)) {
+    ideas = ['팩트체크 / 심층 해설 영상', '"이것만 알면 된다" 요약 3분 영상', '찬반 토론 / 인터뷰 포맷'];
+  } else if (/드라마|영화|예능|리뷰/.test(title)) {
+    ideas = ['리뷰·반응·결말 분석 영상', '명장면 모음 / OST 소개', '캐릭터 분석 / 제작진 인터뷰'];
+  } else {
+    ideas = ['이 영상과 같은 주제로 나만의 버전 제작', '관련 주제 심층 분석 영상', '"왜 이게 뜨나?" 해설 Vlog'];
+  }
+  return ideas.map(function(x){ return '· ' + x; }).join('<br>');
+}
+
+function buildInsightTiming(v) {
+  var days = v.publishedAt ? Math.max(0, Math.floor((Date.now() - new Date(v.publishedAt).getTime()) / 86400000)) : 99;
+  if (days <= 1)  return '<span class="val hot">⚡ 지금 즉시 — 트렌드 정점 탑승 가능</span>';
+  if (days <= 3)  return '<span class="val hot">🔥 2~3일 내 업로드 추천</span>';
+  if (days <= 7)  return '<span class="val warm">📅 이번 주 내 업로드 권장</span>';
+  return '<span class="val cool">📌 참고용 — 타이밍 지남</span>';
+}
+
 function renderResults(videos) {
-  const area = document.getElementById('results-area');
-  if(!videos.length) { showEmptyState(); return; }
-  let html = `<div class="results-header">
-    <span class="results-count">검색 결과 ${videos.length}개</span>
-    ${state.isPro ? '<button class="btn-csv" onclick="exportCSV()">📥 CSV</button>' : ''}
-  </div><div class="video-grid-inner">`;
-  videos.forEach((v, i) => {
-    const isFav = state.favorites.some(f => f.id === v.id);
-    html += `
-    <div class="video-card" id="card-${v.id}">
-      ${v.thumbnail 
-        ? `<a href="https://www.youtube.com/watch?v=${v.id}" target="_blank" style="display:block"><img class="video-thumb" src="${v.thumbnail}" alt="${v.title}" loading="lazy" onerror="this.style.display='none'"></a>`
-        : `<div class="video-thumb-placeholder" onclick="window.open('https://www.youtube.com/watch?v=${v.id}','_blank')" style="cursor:pointer">🎬</div>`}
-      <div class="video-info">
-        <div class="video-title">${escHtml(v.title)}</div>
-        <div class="video-channel"><a href="https://www.youtube.com/channel/${v.channelId}" target="_blank" style="color:var(--text2);text-decoration:none">📺 ${escHtml(v.channel)}</a> · ${timeAgo(v.publishedAt)}</div>
-        <div class="video-stats">
-          ${v.stats.viewCount ? `<span class="stat-badge"><span class="icon">👁️</span>${fmtNum(v.stats.viewCount)}</span>` : ''}
-          ${v.stats.likeCount ? `<span class="stat-badge"><span class="icon">👍</span>${fmtNum(v.stats.likeCount)}</span>` : ''}
-          ${v.stats.commentCount ? `<span class="stat-badge"><span class="icon">💬</span>${fmtNum(v.stats.commentCount)}</span>` : ''}
-        </div>
-      </div>
-      <div class="video-actions">
-        <button class="btn-detail" onclick="openVideoModal('${v.id}',${i})">📊 분석 보기</button>
-        <button class="btn-fav ${isFav?'active':''}" onclick="toggleFav('${v.id}',${i})" id="fav-${v.id}">${isFav?'⭐':'☆'}</button>
-      </div>
-      ${(!state.isPro) ? `<div class="pro-lock" onclick="showTab('pro')" style="margin-top:2px;">🔒 PRO로 더 많은 분석 보기 →</div>` : ''}
-    </div>`;
+  var area = document.getElementById('results-area');
+  if (!videos.length) { showEmptyState(); return; }
+
+  // 트렌드 스코어 + 자동 순위
+  var scored = videos.map(function(v, i) {
+    return { v: v, i: i, score: calcTrendScore(v) };
   });
+  scored.sort(function(a, b) { return b.score - a.score; });
+  var maxScore = scored[0] ? scored[0].score : 1;
+  var rankMap = {};
+  scored.forEach(function(s, ri) { rankMap[s.i] = ri + 1; });
+
+  var html = '<div class="results-header">'
+    + '<span class="results-count">검색 결과 ' + videos.length + '개</span>'
+    + (state.isPro ? '<button class="btn-csv" onclick="exportCSV()">📥 CSV</button>' : '')
+    + '</div><div class="video-grid-inner">';
+
+  videos.forEach(function(v, i) {
+    var isFav  = state.favorites.some(function(f){ return f.id === v.id; });
+    var rank   = rankMap[i];
+    var score  = calcTrendScore(v);
+    var badge  = getRankBadge(rank);
+    var fillW  = Math.round(score / maxScore * 100);
+    var fillC  = getScoreColor(score, maxScore);
+    var days   = v.publishedAt ? Math.max(1, (Date.now() - new Date(v.publishedAt).getTime()) / 86400000) : 30;
+    var views  = parseInt(v.stats.viewCount  || 0);
+    var likes  = parseInt(v.stats.likeCount  || 0);
+    var cmts   = parseInt(v.stats.commentCount || 0);
+    var daily  = Math.round(views / days);
+    var eng    = views > 0 ? ((likes + cmts) / views * 100).toFixed(1) : '0';
+
+    // ─── 인라인 패널 성과탭 HTML ───
+    var perfHtml =
+        '<div class="panel-row"><span class="lbl">📅 업로드</span><span class="val">'
+      + (v.publishedAt ? new Date(v.publishedAt).toLocaleDateString('ko-KR',{year:'numeric',month:'short',day:'numeric'}) : '-')
+      + ' (' + Math.floor(days) + '일 전)</span></div>'
+      + '<div class="panel-row"><span class="lbl">👁 총 조회수</span><span class="val">' + fmtNum(views) + '회</span></div>'
+      + '<div class="panel-row"><span class="lbl">📈 일평균 조회수</span><span class="val hot">' + fmtNum(daily) + '회/일</span></div>'
+      + '<div class="panel-row"><span class="lbl">❤️ 참여율</span><span class="val ' + (parseFloat(eng)>=5?'hot':parseFloat(eng)>=2?'warm':'cool') + '">' + eng + '% (좋아요+댓글)</span></div>'
+      + '<div class="panel-row"><span class="lbl">👍 좋아요</span><span class="val">' + fmtNum(likes) + '</span></div>'
+      + '<div class="panel-row"><span class="lbl">💬 댓글</span><span class="val">' + fmtNum(cmts) + '</span></div>'
+      + '<div class="panel-row"><span class="lbl">🏆 트렌드 순위</span><span class="val">' + badge + ' ' + rank + '위 / ' + videos.length + '개</span></div>';
+
+    // ─── 제작탭 HTML ───
+    var guideHtml =
+        '<div class="panel-insight"><div class="ins-title">🎯 왜 뜨는가</div><div class="ins-body">' + buildInsightWhy(v) + '</div></div>'
+      + '<div class="panel-insight"><div class="ins-title">📹 추천 콘텐츠</div><div class="ins-body">' + buildInsightCreate(v) + '</div></div>'
+      + '<div class="panel-insight"><div class="ins-title">⏰ 제작 타이밍</div><div class="ins-body">' + buildInsightTiming(v) + '</div></div>'
+      + '<button class="btn-create" onclick="addToCreateQueue(\'' + v.id + '\',' + i + ')">🎬 오늘 제작 목록에 추가</button>';
+
+    // ─── 카드 전체 HTML ───
+    var thumbHtml = v.thumbnail
+      ? '<a href="https://www.youtube.com/watch?v=' + v.id + '" target="_blank" style="display:block">'
+        + '<img class="video-thumb" src="' + v.thumbnail + '" alt="" loading="lazy" onerror="this.style.display=\'none\'">'
+        + '</a>'
+      : '<div class="video-thumb-placeholder">🎬</div>';
+
+    html += '<div class="video-card" id="card-' + v.id + '" data-idx="' + i + '">'
+      + (badge ? '<div class="rank-badge">' + badge + '</div>' : '')
+      + thumbHtml
+      + '<div class="trend-score-bar"><div class="trend-score-fill" style="width:' + fillW + '%;background:' + fillC + '"></div></div>'
+      + '<div class="video-info">'
+      +   '<div class="video-title">' + escHtml(v.title) + '</div>'
+      +   '<div class="video-channel"><a href="https://www.youtube.com/channel/' + (v.channelId||'') + '" target="_blank" style="color:var(--text2);text-decoration:none">📺 ' + escHtml(v.channel) + '</a> · ' + timeAgo(v.publishedAt) + '</div>'
+      +   '<div class="video-stats">'
+      +     (v.stats.viewCount  ? '<span class="stat-badge"><span class="icon">👁️</span>' + fmtNum(v.stats.viewCount)  + '</span>' : '')
+      +     (v.stats.likeCount  ? '<span class="stat-badge"><span class="icon">👍</span>' + fmtNum(v.stats.likeCount)  + '</span>' : '')
+      +     (v.stats.commentCount ? '<span class="stat-badge"><span class="icon">💬</span>' + fmtNum(v.stats.commentCount) + '</span>' : '')
+      +   '</div>'
+      + '</div>'
+      + '<div class="video-actions">'
+      +   '<button class="btn-detail" id="btn-' + v.id + '" onclick="toggleInlinePanel(\'' + v.id + '\',' + i + ')">📊 분석 열기</button>'
+      +   '<button class="btn-fav ' + (isFav?'active':'') + '" onclick="toggleFav(\'' + v.id + '\',' + i + ')" id="fav-' + v.id + '">' + (isFav?'⭐':'☆') + '</button>'
+      + '</div>'
+      // ─── 인라인 분석 패널 ───
+      + '<div class="inline-panel" id="panel-' + v.id + '">'
+      +   '<div class="panel-tabs">'
+      +     '<div class="panel-tab active" onclick="switchPanelTab(\'' + v.id + '\',0,this)">📊 성과</div>'
+      +     '<div class="panel-tab" onclick="switchPanelTab(\'' + v.id + '\',1,this)">📺 채널</div>'
+      +     '<div class="panel-tab" onclick="switchPanelTab(\'' + v.id + '\',2,this)">🎬 제작</div>'
+      +   '</div>'
+      +   '<div class="panel-body">'
+      +     '<div class="panel-section active" id="ptab-' + v.id + '-0">' + perfHtml + '</div>'
+      +     '<div class="panel-section" id="ptab-' + v.id + '-1"><div class="panel-loading" id="pchl-' + v.id + '">⏳ 채널 정보 불러오는 중...</div></div>'
+      +     '<div class="panel-section" id="ptab-' + v.id + '-2">' + guideHtml + '</div>'
+      +   '</div>'
+      + '</div>'
+      + '</div>'; // video-card
+  });
+
   html += '</div>';
   area.innerHTML = html;
 }
@@ -1944,6 +2201,130 @@ function showErrorState(msg) {
 }
 
 // ===== VIDEO DETAIL MODAL =====
+
+// ===== INLINE PANEL CONTROLS =====
+function toggleInlinePanel(videoId, idx) {
+  var panel = document.getElementById('panel-' + videoId);
+  if (!panel) return;
+  var isOpen = panel.classList.contains('open');
+  // 다른 패널 모두 닫기
+  document.querySelectorAll('.inline-panel.open').forEach(function(p) {
+    p.classList.remove('open');
+    var btn = p.closest('.video-card').querySelector('.btn-detail');
+    if (btn) btn.textContent = '📊 분석 열기';
+  });
+  if (!isOpen) {
+    panel.classList.add('open');
+    var btn = panel.closest('.video-card').querySelector('.btn-detail');
+    if (btn) btn.textContent = '📊 분석 닫기';
+    // 채널 탭이 아직 로드 안됐으면 미리 로드 시작 (백그라운드)
+    loadChannelTab(videoId, idx);
+    // 카드가 화면에 보이도록 스크롤
+    setTimeout(function() {
+      panel.closest('.video-card').scrollIntoView({behavior:'smooth', block:'nearest'});
+    }, 50);
+  }
+}
+
+function switchPanelTab(videoId, tabIdx, el) {
+  // 탭 버튼 active 전환
+  var tabs = el.closest('.panel-tabs').querySelectorAll('.panel-tab');
+  tabs.forEach(function(t){ t.classList.remove('active'); });
+  el.classList.add('active');
+  // 섹션 전환
+  for (var i = 0; i < 3; i++) {
+    var sec = document.getElementById('ptab-' + videoId + '-' + i);
+    if (sec) sec.classList.toggle('active', i === tabIdx);
+  }
+  // 채널 탭 클릭 시 로드
+  if (tabIdx === 1) {
+    var idx = parseInt(el.closest('.video-card').id.replace('card-','') === videoId
+      ? el.closest('[id^="card-"]').dataset.idx || 0 : 0);
+    // idx는 data-idx에서 가져옴 (renderResults에서 저장 필요)
+    loadChannelTabById(videoId);
+  }
+}
+
+// 채널 탭 로드 (videoId로 state.currentResults에서 찾기)
+function loadChannelTabById(videoId) {
+  var idx = state.currentResults.findIndex(function(v){ return v.id === videoId; });
+  if (idx > -1) loadChannelTab(videoId, idx);
+}
+
+async function loadChannelTab(videoId, idx) {
+  var chlEl = document.getElementById('pchl-' + videoId);
+  if (!chlEl) return;
+  // 이미 로드됐으면 스킵
+  if (chlEl.dataset.loaded === '1') return;
+
+  var v = state.currentResults[idx];
+  if (!v) return;
+
+  // channelId 없으면 fallback
+  var chId = v.channelId;
+  if (!chId && v.id && state.apiKey) {
+    try {
+      var vr = await fetch('https://www.googleapis.com/youtube/v3/videos?part=snippet&id=' + encodeURIComponent(v.id) + '&key=' + encodeURIComponent(state.apiKey));
+      if (vr.ok) {
+        var vd = await vr.json();
+        chId = (vd.items && vd.items[0]) ? (vd.items[0].snippet.channelId || '') : '';
+        if (chId) v.channelId = chId;
+        _addUnits(1);
+      }
+    } catch(e) {}
+  }
+
+  if (!chId || !state.apiKey) {
+    chlEl.innerHTML = '<div style="color:var(--text2);font-size:12px;padding:8px 0">채널 정보를 불러올 수 없습니다.<br>API 키를 확인해주세요.</div>';
+    return;
+  }
+
+  var chStats = await fetchChannelStats(chId);
+  if (!chStats) {
+    chlEl.innerHTML = '<div style="color:var(--text2);font-size:12px;">채널 정보 로딩 실패</div>';
+    return;
+  }
+
+  chlEl.dataset.loaded = '1';
+  var subs     = parseInt(chStats.subscriberCount || 0);
+  var totalV   = parseInt(chStats.videoCount || 0);
+  var totalVw  = parseInt(chStats.viewCount || 0);
+  var avgVw    = totalV > 0 ? Math.round(totalVw / totalV) : 0;
+  var chClass  = subs > 5000000 ? 'ch-large' : subs > 500000 ? 'ch-mid' : subs > 50000 ? 'ch-small' : 'ch-new';
+  var chLabel  = subs > 5000000 ? '대형채널' : subs > 500000 ? '중형채널' : subs > 50000 ? '소형채널' : '신흥채널';
+
+  // 구독자 대비 이 영상 조회수 비율 (파급력)
+  var thisViews = parseInt((v.stats && v.stats.viewCount) || 0);
+  var impact = subs > 0 ? (thisViews / subs * 100).toFixed(1) : '—';
+
+  // Topic 채널 여부
+  var isTopic = v.channel && v.channel.toLowerCase().indexOf('topic') > -1;
+
+  chlEl.innerHTML =
+    '<div class="panel-row"><span class="lbl">📺 채널명</span><span class="val">' + escHtml(v.channel) + '<span class="panel-ch-badge ' + chClass + '">' + chLabel + '</span></span></div>'
+    + '<div class="panel-row"><span class="lbl">👥 구독자</span><span class="val">' + fmtNum(subs) + '명</span></div>'
+    + '<div class="panel-row"><span class="lbl">🎞 총 영상 수</span><span class="val">' + fmtNum(totalV) + '개</span></div>'
+    + '<div class="panel-row"><span class="lbl">👁 채널 총 조회수</span><span class="val">' + fmtNum(totalVw) + '회</span></div>'
+    + '<div class="panel-row"><span class="lbl">📊 영상 평균 조회수</span><span class="val">' + fmtNum(avgVw) + '회</span></div>'
+    + '<div class="panel-row"><span class="lbl">⚡ 이 영상 파급력</span><span class="val hot">' + impact + '% (구독자 대비)</span></div>'
+    + (isTopic ? '<div class="panel-row"><span class="lbl">ℹ️ 채널 유형</span><span class="val" style="color:#9c27b0">자동생성 Topic 채널 (공식 배포)</span></div>' : '')
+    + '<a href="https://www.youtube.com/channel/' + chId + '" target="_blank" style="display:block;margin-top:8px;text-align:center;font-size:12px;color:var(--red)">🔗 채널 바로가기 →</a>';
+}
+
+// 제작 큐 추가 (STAGE 3 준비)
+function addToCreateQueue(videoId, idx) {
+  var v = state.currentResults[idx];
+  if (!v) return;
+  var queue = JSON.parse(localStorage.getItem('vidora_create_queue') || '[]');
+  if (queue.find(function(q){ return q.id === videoId; })) {
+    showToast('이미 제작 목록에 있습니다');
+    return;
+  }
+  queue.push({ id: videoId, title: v.title, channel: v.channel, thumbnail: v.thumbnail, addedAt: new Date().toISOString() });
+  localStorage.setItem('vidora_create_queue', JSON.stringify(queue));
+  showToast('🎬 제작 목록에 추가됐습니다! (' + queue.length + '개)');
+}
+
 function openVideoModal(id, idx) {
   const v = state.currentResults[idx];
   if(!v) return;
