@@ -1018,7 +1018,10 @@ html,body{overflow:hidden;height:100%;margin:0;padding:0}
   <div class="modal-sheet" id="videoModalSheet">
     <div class="modal-handle"></div>
     <div class="modal-header">
-      <div class="modal-title" id="modalTitle"></div>
+      <div style="flex:1;margin-right:8px">
+        <div class="modal-title" id="modalTitle"></div>
+        <div id="modalMeta" style="font-size:11px;color:var(--text2);margin-top:3px"></div>
+      </div>
       <button class="btn-modal-close" onclick="closeVideoModal()">✕</button>
     </div>
     <img class="modal-thumb" id="modalThumb" src="" alt="">
@@ -1699,6 +1702,7 @@ async function doHot() {
       id: item.id,
       title: item.snippet?.title || '',
       channel: item.snippet?.channelTitle || '',
+      channelId: item.snippet?.channelId || '',
       thumbnail: item.snippet?.thumbnails?.medium?.url || '',
       publishedAt: item.snippet?.publishedAt || '',
       description: item.snippet?.description || '',
@@ -1862,6 +1866,7 @@ async function doSearch() {
       id: item.id.videoId,
       title: item.snippet.title,
       channel: item.snippet.channelTitle,
+      channelId: item.snippet.channelId || '',
       thumbnail: item.snippet.thumbnails?.medium?.url || '',
       publishedAt: item.snippet.publishedAt,
       description: item.snippet.description,
@@ -1892,7 +1897,7 @@ function renderResults(videos) {
         : `<div class="video-thumb-placeholder" onclick="window.open('https://www.youtube.com/watch?v=${v.id}','_blank')" style="cursor:pointer">🎬</div>`}
       <div class="video-info">
         <div class="video-title">${escHtml(v.title)}</div>
-        <div class="video-channel">📺 ${escHtml(v.channel)} · ${timeAgo(v.publishedAt)}</div>
+        <div class="video-channel"><a href="https://www.youtube.com/channel/${v.channelId}" target="_blank" style="color:var(--text2);text-decoration:none">📺 ${escHtml(v.channel)}</a> · ${timeAgo(v.publishedAt)}</div>
         <div class="video-stats">
           ${v.stats.viewCount ? `<span class="stat-badge"><span class="icon">👁️</span>${fmtNum(v.stats.viewCount)}</span>` : ''}
           ${v.stats.likeCount ? `<span class="stat-badge"><span class="icon">👍</span>${fmtNum(v.stats.likeCount)}</span>` : ''}
@@ -1943,9 +1948,28 @@ function openVideoModal(id, idx) {
   if(!v) return;
   state.currentVideo = v;
   document.getElementById('modalTitle').textContent = v.title;
+  var metaEl = document.getElementById('modalMeta');
+  if (metaEl) {
+    var pubDate = v.publishedAt ? new Date(v.publishedAt).toLocaleDateString('ko-KR', {year:'numeric',month:'short',day:'numeric'}) : '';
+    metaEl.textContent = (v.channel ? '📺 ' + v.channel : '') + (pubDate ? '  ·  ' + pubDate : '');
+  }
   document.getElementById('modalThumb').src = v.thumbnail;
   document.getElementById('modalViews').textContent = fmtNum(v.stats.viewCount || 0);
-  document.getElementById('modalSubs').textContent = '-';
+  document.getElementById('modalSubs').textContent = '⏳';
+  if (v.channelId && state.apiKey) {
+    fetchChannelStats(v.channelId).then(function(chStats) {
+      if (!chStats) { document.getElementById('modalSubs').textContent = '-'; return; }
+      var subEl = document.getElementById('modalSubs');
+      if (subEl) subEl.textContent = fmtNum(chStats.subscriberCount || 0);
+      v.stats.subscriberCount = parseInt(chStats.subscriberCount || 0);
+      v.stats.totalVideoCount  = parseInt(chStats.videoCount || 0);
+      if (state.isPro) {
+        document.getElementById('aiAnalysis').innerHTML = generateAIAnalysis(v);
+      }
+    });
+  } else {
+    document.getElementById('modalSubs').textContent = '-';
+  }
   document.getElementById('modalLikes').textContent = fmtNum(v.stats.likeCount || 0);
   document.getElementById('modalComments').textContent = fmtNum(v.stats.commentCount || 0);
   document.getElementById('watchLink').href = `https://www.youtube.com/watch?v=${id}`;
@@ -2004,6 +2028,25 @@ function generateAIAnalysis(v) {
     '\uD83C\uDFAF <b>콘텐츠 전략:</b> ' + strategy,
     '\u2728 <b>크리에이터 제안:</b> 이 트렌드를 리믹스하여 차별화된 영상 제작을 권장합니다.'
   ].join('<br>');
+}
+
+
+// ===== CHANNEL STATS (실시간 구독자 수) =====
+var _chCache = {};
+
+async function fetchChannelStats(channelId) {
+  if (!channelId || !state.apiKey) return null;
+  if (_chCache[channelId]) return _chCache[channelId];
+  try {
+    var url = 'https://www.googleapis.com/youtube/v3/channels?part=statistics&id=' + encodeURIComponent(channelId) + '&key=' + encodeURIComponent(state.apiKey);
+    var res = await fetch(url);
+    if (!res.ok) return null;
+    var data = await res.json();
+    _addUnits(1); // channels.list = 1유닛
+    var stats = (data.items && data.items[0]) ? data.items[0].statistics : null;
+    if (stats) _chCache[channelId] = stats;
+    return stats;
+  } catch(e) { return null; }
 }
 
 function calcCPM(views) {
