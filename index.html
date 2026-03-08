@@ -251,21 +251,21 @@ html,body{overflow:hidden;height:100%;margin:0;padding:0}
 /* ===== MODAL ===== */
 .modal-overlay{position:fixed;inset:0;background:rgba(0,0,0,.75);z-index:1000;display:none;align-items:flex-end;justify-content:center}
 .modal-overlay.open{display:flex}
-.modal-sheet{background:var(--navy);border-radius:24px 24px 0 0;width:100%;max-height:90vh;overflow-y:auto;padding:0 0 32px;animation:slideUp .3s ease}
+.modal-sheet{background:var(--navy);border-radius:24px 24px 0 0;width:100%;max-height:72vh;overflow-y:auto;padding:0 0 24px;animation:slideUp .3s ease}
 @keyframes slideUp{from{transform:translateY(100%)}to{transform:translateY(0)}}
 .modal-handle{width:40px;height:4px;background:var(--border);border-radius:2px;margin:12px auto}
 .modal-header{display:flex;justify-content:space-between;align-items:flex-start;padding:8px 16px 16px}
 .modal-title{font-size:17px;font-weight:700;line-height:1.4;flex:1;margin-right:8px}
 .btn-modal-close{background:rgba(255,255,255,.1);border:none;border-radius:50%;width:32px;height:32px;color:#fff;font-size:18px;cursor:pointer;display:flex;align-items:center;justify-content:center;flex-shrink:0}
-.modal-thumb{width:100%;aspect-ratio:16/9;object-fit:cover;background:#0d2137}
-.modal-stats-grid{display:grid;grid-template-columns:repeat(2,1fr);gap:10px;padding:16px}
-.modal-stat-box{background:var(--card);border:1px solid var(--border);border-radius:var(--radius-sm);padding:14px;text-align:center}
+.modal-thumb{width:100%;aspect-ratio:16/9;max-height:140px;object-fit:cover;background:#0d2137}
+.modal-stats-grid{display:grid;grid-template-columns:repeat(4,1fr);gap:6px;padding:10px 14px}
+.modal-stat-box{background:var(--card);border:1px solid var(--border);border-radius:var(--radius-sm);padding:8px 4px;text-align:center}
 .modal-stat-icon{font-size:20px;margin-bottom:4px}
-.modal-stat-val{font-size:18px;font-weight:800;color:#fff}
+.modal-stat-val{font-size:14px;font-weight:800;color:#fff}
 .modal-stat-lbl{font-size:11px;color:var(--text2);margin-top:2px}
 .modal-section{padding:0 16px 12px}
 .modal-section-title{font-size:12px;font-weight:700;color:var(--text2);text-transform:uppercase;letter-spacing:.8px;margin-bottom:10px}
-.ai-box{background:var(--card);border:1px solid var(--border);border-left:3px solid var(--purple);border-radius:var(--radius-sm);padding:14px;font-size:13px;line-height:1.6;color:var(--text2)}
+.ai-box{background:var(--card);border:1px solid var(--border);border-left:3px solid var(--purple);border-radius:var(--radius-sm);padding:14px;font-size:13px;line-height:1.6;color:var(--text2);line-height:1.8}
 .cpm-box{background:linear-gradient(135deg,rgba(255,215,0,.1),rgba(255,140,0,.05));border:1px solid rgba(255,215,0,.3);border-radius:var(--radius-sm);padding:14px}
 .cpm-val{font-size:22px;font-weight:800;color:var(--gold)}
 .cpm-sub{font-size:12px;color:var(--text2);margin-top:4px}
@@ -457,8 +457,8 @@ html,body{overflow:hidden;height:100%;margin:0;padding:0}
   .modal-overlay{align-items:center}
   .modal-sheet{
     border-radius:var(--radius);
-    max-width:600px;
-    max-height:85vh;
+    max-width:520px;
+    max-height:75vh;
     width:90%;
     animation:fadeScale .25s ease;
   }
@@ -1952,7 +1952,7 @@ function openVideoModal(id, idx) {
   if(state.isPro) {
     document.getElementById('aiSection').classList.remove('hidden');
     document.getElementById('cpmSection').classList.remove('hidden');
-    document.getElementById('aiAnalysis').textContent = generateAIAnalysis(v);
+    document.getElementById('aiAnalysis').innerHTML = generateAIAnalysis(v);
     document.getElementById('cpmValue').textContent = calcCPM(v.stats.viewCount);
   } else {
     document.getElementById('aiSection').classList.add('hidden');
@@ -1970,8 +1970,47 @@ function closeVideoModal(e) {
 
 function generateAIAnalysis(v) {
   const views = parseInt(v.stats.viewCount || 0);
-  let score = views > 1000000 ? '높음' : views > 100000 ? '중간' : '낮음';
-  return `📊 조회수 잠재력: ${score}\n🎯 콘텐츠 방향성: ${v.category || '트렌드 콘텐츠'}\n✨ 크리에이터 제안: 이 트렌드를 활용한 리믹스 영상 제작을 권장합니다.\n📈 성장 가능성: 현재 트렌드와 높은 연관성이 있습니다.`;
+  const likes = parseInt(v.stats.likeCount || 0);
+  const comments = parseInt(v.stats.commentCount || 0);
+  const subs = parseInt(v.stats.subscriberCount || 0);
+
+  // 참여율 계산
+  const engRate = views > 0 ? ((likes + comments) / views * 100).toFixed(2) : 0;
+  const engLevel = engRate >= 5 ? '매우 높음 🔥' : engRate >= 2 ? '높음 ✅' : engRate >= 0.5 ? '보통 📊' : '낮음 ⚠️';
+
+  // 조회수 잠재력
+  const viewScore = views > 5000000 ? '바이럴급 🚀' : views > 1000000 ? '높음 ⭐⭐⭐' : views > 100000 ? '중간 ⭐⭐' : '성장중 ⭐';
+
+  // 좋아요 비율
+  const likeRate = views > 0 ? (likes / views * 100).toFixed(2) : 0;
+
+  // 채널 규모 판단
+  const chSize = subs > 5000000 ? '대형채널' : subs > 500000 ? '중형채널' : subs > 50000 ? '소형채널' : '신흥채널';
+  
+  // 콘텐츠 카테고리별 전략
+  const cat = v.category || '일반';
+  let strategy = '';
+  if (cat.includes('음악') || cat.includes('Music')) strategy = '커버곡·리믹스·챌린지 포맷 유효';
+  else if (cat.includes('게임') || cat.includes('Gaming')) strategy = '플레이영상·공략·리뷰 포맷 유효';
+  else if (cat.includes('교육') || cat.includes('Education')) strategy = '요약·해설·심화강의 포맷 유효';
+  else if (cat.includes('뉴스') || cat.includes('News')) strategy = '분석·해설·팩트체크 포맷 유효';
+  else strategy = '반응영상·해설·Vlog 포맷 유효';
+
+  // 트렌드 지수
+  const trendIdx = views > 1000000 ? '🔥🔥🔥 HOT' : views > 500000 ? '🔥🔥 RISING' : views > 100000 ? '🔥 WARM' : '❄️ COOL';
+
+  // 경쟁도
+  const compLevel = subs > 1000000 ? '경쟁 치열' : subs > 100000 ? '경쟁 중간' : '경쟁 낮음 (진입 유리)';
+
+  return [
+    \`📊 <b>조회수 잠재력:</b> \${viewScore} (\${views.toLocaleString()}회)\`,
+    \`❤️ <b>참여율:</b> \${engLevel} (\${engRate}%) / 좋아요율 \${likeRate}%\`,
+    \`📡 <b>트렌드 지수:</b> \${trendIdx}\`,
+    \`🏆 <b>채널 규모:</b> \${chSize} (구독자 \${subs.toLocaleString()}명)\`,
+    \`⚔️ <b>경쟁도:</b> \${compLevel}\`,
+    \`🎯 <b>콘텐츠 전략:</b> \${strategy}\`,
+    \`✨ <b>크리에이터 제안:</b> 이 트렌드를 리믹스하여 차별화된 영상 제작을 권장합니다.\`,
+  ].join('<br>');
 }
 
 function calcCPM(views) {
