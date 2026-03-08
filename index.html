@@ -455,7 +455,36 @@ html,body{overflow:hidden;height:100%;margin:0;padding:0}
   #results-area{padding:16px 24px}
   .video-grid-inner{display:grid;grid-template-columns:repeat(3,1fr);gap:16px}
 /* ===== INLINE ANALYSIS PANEL ===== */
-.rank-badge{position:absolute;top:8px;left:8px;font-size:18px;z-index:2;text-shadow:0 1px 4px rgba(0,0,0,.7);pointer-events:none}
+.rank-badge-wrap{position:absolute;top:0;left:0;z-index:3;pointer-events:none}
+.rank-badge.top{
+  display:block;
+  padding:4px 8px 4px 6px;
+  background:rgba(0,0,0,.72);
+  backdrop-filter:blur(4px);
+  border-radius:0 0 10px 0;
+  font-size:22px;
+  line-height:1;
+}
+.rank-badge.mid{
+  display:block;
+  padding:4px 9px;
+  background:rgba(255,68,68,.82);
+  backdrop-filter:blur(4px);
+  border-radius:0 0 10px 0;
+  font-size:11px;
+  font-weight:800;
+  color:#fff;
+  letter-spacing:.3px;
+}
+.rank-badge.low{
+  display:block;
+  padding:3px 8px;
+  background:rgba(0,0,0,.55);
+  border-radius:0 0 8px 0;
+  font-size:10px;
+  font-weight:700;
+  color:rgba(255,255,255,.6);
+}
 .trend-score-bar{height:3px;border-radius:2px;margin:0 12px 6px;background:var(--border);overflow:hidden}
 .trend-score-fill{height:100%;border-radius:2px;transition:width .6s ease}
 .video-card{position:relative}
@@ -2082,35 +2111,35 @@ function renderResults(videos) {
   var area = document.getElementById('results-area');
   if (!videos.length) { showEmptyState(); return; }
 
-  // 트렌드 스코어 + 자동 순위
+  // ── 트렌드 스코어 계산 + 순위 정렬 ──
   var scored = videos.map(function(v, i) {
-    return { v: v, i: i, score: calcTrendScore(v) };
+    return { v: v, origIdx: i, score: calcTrendScore(v) };
   });
   scored.sort(function(a, b) { return b.score - a.score; });
   var maxScore = scored[0] ? scored[0].score : 1;
-  var rankMap = {};
-  scored.forEach(function(s, ri) { rankMap[s.i] = ri + 1; });
 
   var html = '<div class="results-header">'
-    + '<span class="results-count">검색 결과 ' + videos.length + '개</span>'
+    + '<span class="results-count">검색 결과 ' + videos.length + '개 · 트렌드 순위 정렬</span>'
     + (state.isPro ? '<button class="btn-csv" onclick="exportCSV()">📥 CSV</button>' : '')
     + '</div><div class="video-grid-inner">';
 
-  videos.forEach(function(v, i) {
-    var isFav  = state.favorites.some(function(f){ return f.id === v.id; });
-    var rank   = rankMap[i];
-    var score  = calcTrendScore(v);
-    var badge  = getRankBadge(rank);
-    var fillW  = Math.round(score / maxScore * 100);
-    var fillC  = getScoreColor(score, maxScore);
-    var days   = v.publishedAt ? Math.max(1, (Date.now() - new Date(v.publishedAt).getTime()) / 86400000) : 30;
-    var views  = parseInt(v.stats.viewCount  || 0);
-    var likes  = parseInt(v.stats.likeCount  || 0);
-    var cmts   = parseInt(v.stats.commentCount || 0);
-    var daily  = Math.round(views / days);
-    var eng    = views > 0 ? ((likes + cmts) / views * 100).toFixed(1) : '0';
+  // ── 순위 순서대로 렌더링 (scored 배열 사용) ──
+  scored.forEach(function(s, rankIdx) {
+    var v    = s.v;
+    var i    = s.origIdx;   // 원본 인덱스 (채널 탭 로드 등 호환)
+    var rank = rankIdx + 1; // 1위부터
+    var badge = getRankBadge(rank);
+    var fillW = Math.round(s.score / maxScore * 100);
+    var fillC = getScoreColor(s.score, maxScore);
+    var days  = v.publishedAt ? Math.max(1, (Date.now() - new Date(v.publishedAt).getTime()) / 86400000) : 30;
+    var views = parseInt(v.stats.viewCount  || 0);
+    var likes = parseInt(v.stats.likeCount  || 0);
+    var cmts  = parseInt(v.stats.commentCount || 0);
+    var daily = Math.round(views / days);
+    var eng   = views > 0 ? ((likes + cmts) / views * 100).toFixed(1) : '0';
+    var isFav = state.favorites.some(function(f){ return f.id === v.id; });
 
-    // ─── 인라인 패널 성과탭 HTML ───
+    // ── 성과 탭 HTML ──
     var perfHtml =
         '<div class="panel-row"><span class="lbl">📅 업로드</span><span class="val">'
       + (v.publishedAt ? new Date(v.publishedAt).toLocaleDateString('ko-KR',{year:'numeric',month:'short',day:'numeric'}) : '-')
@@ -2122,14 +2151,14 @@ function renderResults(videos) {
       + '<div class="panel-row"><span class="lbl">💬 댓글</span><span class="val">' + fmtNum(cmts) + '</span></div>'
       + '<div class="panel-row"><span class="lbl">🏆 트렌드 순위</span><span class="val">' + badge + ' ' + rank + '위 / ' + videos.length + '개</span></div>';
 
-    // ─── 제작탭 HTML ───
+    // ── 제작 탭 HTML ──
     var guideHtml =
         '<div class="panel-insight"><div class="ins-title">🎯 왜 뜨는가</div><div class="ins-body">' + buildInsightWhy(v) + '</div></div>'
       + '<div class="panel-insight"><div class="ins-title">📹 추천 콘텐츠</div><div class="ins-body">' + buildInsightCreate(v) + '</div></div>'
       + '<div class="panel-insight"><div class="ins-title">⏰ 제작 타이밍</div><div class="ins-body">' + buildInsightTiming(v) + '</div></div>'
       + '<button class="btn-create" onclick="addToCreateQueue(\'' + v.id + '\',' + i + ')">🎬 오늘 제작 목록에 추가</button>';
 
-    // ─── 카드 전체 HTML ───
+    // ── 썸네일 HTML ──
     var thumbHtml = v.thumbnail
       ? '<a href="https://www.youtube.com/watch?v=' + v.id + '" target="_blank" style="display:block">'
         + '<img class="video-thumb" src="' + v.thumbnail + '" alt="" loading="lazy" onerror="this.style.display=\'none\'">'
@@ -2137,23 +2166,30 @@ function renderResults(videos) {
       : '<div class="video-thumb-placeholder">🎬</div>';
 
     html += '<div class="video-card" id="card-' + v.id + '" data-idx="' + i + '">'
-      + (badge ? '<div class="rank-badge">' + badge + '</div>' : '')
+      // ── 순위 배지 (강조) ──
+      + '<div class="rank-badge-wrap">'
+      +   (rank <= 3
+            ? '<span class="rank-badge top">' + badge + '</span>'
+            : rank <= 6
+              ? '<span class="rank-badge mid">🔥 ' + rank + '위</span>'
+              : '<span class="rank-badge low">' + rank + '위</span>')
+      + '</div>'
       + thumbHtml
       + '<div class="trend-score-bar"><div class="trend-score-fill" style="width:' + fillW + '%;background:' + fillC + '"></div></div>'
       + '<div class="video-info">'
       +   '<div class="video-title">' + escHtml(v.title) + '</div>'
       +   '<div class="video-channel"><a href="https://www.youtube.com/channel/' + (v.channelId||'') + '" target="_blank" style="color:var(--text2);text-decoration:none">📺 ' + escHtml(v.channel) + '</a> · ' + timeAgo(v.publishedAt) + '</div>'
       +   '<div class="video-stats">'
-      +     (v.stats.viewCount  ? '<span class="stat-badge"><span class="icon">👁️</span>' + fmtNum(v.stats.viewCount)  + '</span>' : '')
-      +     (v.stats.likeCount  ? '<span class="stat-badge"><span class="icon">👍</span>' + fmtNum(v.stats.likeCount)  + '</span>' : '')
-      +     (v.stats.commentCount ? '<span class="stat-badge"><span class="icon">💬</span>' + fmtNum(v.stats.commentCount) + '</span>' : '')
+      +     (v.stats.viewCount   ? '<span class="stat-badge"><span class="icon">👁️</span>' + fmtNum(v.stats.viewCount)  + '</span>' : '')
+      +     (v.stats.likeCount   ? '<span class="stat-badge"><span class="icon">👍</span>'  + fmtNum(v.stats.likeCount)  + '</span>' : '')
+      +     (v.stats.commentCount? '<span class="stat-badge"><span class="icon">💬</span>'  + fmtNum(v.stats.commentCount) + '</span>' : '')
       +   '</div>'
       + '</div>'
       + '<div class="video-actions">'
       +   '<button class="btn-detail" id="btn-' + v.id + '" onclick="toggleInlinePanel(\'' + v.id + '\',' + i + ')">📊 분석 열기</button>'
       +   '<button class="btn-fav ' + (isFav?'active':'') + '" onclick="toggleFav(\'' + v.id + '\',' + i + ')" id="fav-' + v.id + '">' + (isFav?'⭐':'☆') + '</button>'
       + '</div>'
-      // ─── 인라인 분석 패널 ───
+      // ── 인라인 분석 패널 ──
       + '<div class="inline-panel" id="panel-' + v.id + '">'
       +   '<div class="panel-tabs">'
       +     '<div class="panel-tab active" onclick="switchPanelTab(\'' + v.id + '\',0,this)">📊 성과</div>'
