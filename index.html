@@ -1665,6 +1665,7 @@ async function doHot() {
         id: item.id?.videoId || '',
         title: item.snippet?.title || '',
         channel: item.snippet?.channelTitle || '',
+        channelId: item.snippet?.channelId || '',
         thumbnail: item.snippet?.thumbnails?.medium?.url || '',
         publishedAt: item.snippet?.publishedAt || '',
         description: item.snippet?.description || '',
@@ -1956,20 +1957,34 @@ function openVideoModal(id, idx) {
   document.getElementById('modalThumb').src = v.thumbnail;
   document.getElementById('modalViews').textContent = fmtNum(v.stats.viewCount || 0);
   document.getElementById('modalSubs').textContent = '⏳';
-  if (v.channelId && state.apiKey) {
-    fetchChannelStats(v.channelId).then(function(chStats) {
-      if (!chStats) { document.getElementById('modalSubs').textContent = '-'; return; }
-      var subEl = document.getElementById('modalSubs');
-      if (subEl) subEl.textContent = fmtNum(chStats.subscriberCount || 0);
-      v.stats.subscriberCount = parseInt(chStats.subscriberCount || 0);
-      v.stats.totalVideoCount  = parseInt(chStats.videoCount || 0);
-      if (state.isPro) {
-        document.getElementById('aiAnalysis').innerHTML = generateAIAnalysis(v);
-      }
-    });
-  } else {
-    document.getElementById('modalSubs').textContent = '-';
-  }
+  (async function() {
+    var chId = v.channelId;
+    // channelId 없으면 videos.list snippet으로 fallback 조회
+    if (!chId && v.id && state.apiKey) {
+      try {
+        var vr = await fetch('https://www.googleapis.com/youtube/v3/videos?part=snippet&id=' + encodeURIComponent(v.id) + '&key=' + encodeURIComponent(state.apiKey));
+        if (vr.ok) {
+          var vd = await vr.json();
+          chId = (vd.items && vd.items[0]) ? (vd.items[0].snippet.channelId || '') : '';
+          if (chId) v.channelId = chId;
+          _addUnits(1);
+        }
+      } catch(e) {}
+    }
+    if (!chId || !state.apiKey) {
+      document.getElementById('modalSubs').textContent = '-';
+      return;
+    }
+    var chStats = await fetchChannelStats(chId);
+    if (!chStats) { document.getElementById('modalSubs').textContent = '-'; return; }
+    var subEl = document.getElementById('modalSubs');
+    if (subEl) subEl.textContent = fmtNum(chStats.subscriberCount || 0);
+    v.stats.subscriberCount = parseInt(chStats.subscriberCount || 0);
+    v.stats.totalVideoCount  = parseInt(chStats.videoCount || 0);
+    if (state.isPro) {
+      document.getElementById('aiAnalysis').innerHTML = generateAIAnalysis(v);
+    }
+  })();
   document.getElementById('modalLikes').textContent = fmtNum(v.stats.likeCount || 0);
   document.getElementById('modalComments').textContent = fmtNum(v.stats.commentCount || 0);
   document.getElementById('watchLink').href = `https://www.youtube.com/watch?v=${id}`;
