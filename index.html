@@ -1969,47 +1969,40 @@ function closeVideoModal(e) {
 }
 
 function generateAIAnalysis(v) {
-  const views = parseInt(v.stats.viewCount || 0);
-  const likes = parseInt(v.stats.likeCount || 0);
-  const comments = parseInt(v.stats.commentCount || 0);
-  const subs = parseInt(v.stats.subscriberCount || 0);
+  var views = parseInt(v.stats.viewCount || 0);
+  var likes = parseInt(v.stats.likeCount || 0);
+  var comments = parseInt(v.stats.commentCount || 0);
+  var subs = parseInt(v.stats.subscriberCount || 0);
 
-  // 참여율 계산
-  const engRate = views > 0 ? ((likes + comments) / views * 100).toFixed(2) : 0;
-  const engLevel = engRate >= 5 ? '매우 높음 🔥' : engRate >= 2 ? '높음 ✅' : engRate >= 0.5 ? '보통 📊' : '낮음 ⚠️';
+  var engRate = views > 0 ? ((likes + comments) / views * 100).toFixed(2) : 0;
+  var engLevel = engRate >= 5 ? '매우 높음 \uD83D\uDD25' : engRate >= 2 ? '높음 \u2705' : engRate >= 0.5 ? '보통 \uD83D\uDCCA' : '낮음 \u26A0\uFE0F';
 
-  // 조회수 잠재력
-  const viewScore = views > 5000000 ? '바이럴급 🚀' : views > 1000000 ? '높음 ⭐⭐⭐' : views > 100000 ? '중간 ⭐⭐' : '성장중 ⭐';
+  var viewScore = views > 5000000 ? '바이럴급 \uD83D\uDE80' : views > 1000000 ? '높음 \u2B50\u2B50\u2B50' : views > 100000 ? '중간 \u2B50\u2B50' : '성장중 \u2B50';
 
-  // 좋아요 비율
-  const likeRate = views > 0 ? (likes / views * 100).toFixed(2) : 0;
+  var likeRate = views > 0 ? (likes / views * 100).toFixed(2) : 0;
 
-  // 채널 규모 판단
-  const chSize = subs > 5000000 ? '대형채널' : subs > 500000 ? '중형채널' : subs > 50000 ? '소형채널' : '신흥채널';
-  
-  // 콘텐츠 카테고리별 전략
-  const cat = v.category || '일반';
-  let strategy = '';
-  if (cat.includes('음악') || cat.includes('Music')) strategy = '커버곡·리믹스·챌린지 포맷 유효';
-  else if (cat.includes('게임') || cat.includes('Gaming')) strategy = '플레이영상·공략·리뷰 포맷 유효';
-  else if (cat.includes('교육') || cat.includes('Education')) strategy = '요약·해설·심화강의 포맷 유효';
-  else if (cat.includes('뉴스') || cat.includes('News')) strategy = '분석·해설·팩트체크 포맷 유효';
+  var chSize = subs > 5000000 ? '대형채널' : subs > 500000 ? '중형채널' : subs > 50000 ? '소형채널' : '신흥채널';
+
+  var cat = v.category || '일반';
+  var strategy = '';
+  if (cat.indexOf('음악') > -1 || cat.indexOf('Music') > -1) strategy = '커버곡·리믹스·챌린지 포맷 유효';
+  else if (cat.indexOf('게임') > -1 || cat.indexOf('Gaming') > -1) strategy = '플레이영상·공략·리뷰 포맷 유효';
+  else if (cat.indexOf('교육') > -1 || cat.indexOf('Education') > -1) strategy = '요약·해설·심화강의 포맷 유효';
+  else if (cat.indexOf('뉴스') > -1 || cat.indexOf('News') > -1) strategy = '분석·해설·팩트체크 포맷 유효';
   else strategy = '반응영상·해설·Vlog 포맷 유효';
 
-  // 트렌드 지수
-  const trendIdx = views > 1000000 ? '🔥🔥🔥 HOT' : views > 500000 ? '🔥🔥 RISING' : views > 100000 ? '🔥 WARM' : '❄️ COOL';
+  var trendIdx = views > 1000000 ? '\uD83D\uDD25\uD83D\uDD25\uD83D\uDD25 HOT' : views > 500000 ? '\uD83D\uDD25\uD83D\uDD25 RISING' : views > 100000 ? '\uD83D\uDD25 WARM' : '\u2744\uFE0F COOL';
 
-  // 경쟁도
-  const compLevel = subs > 1000000 ? '경쟁 치열' : subs > 100000 ? '경쟁 중간' : '경쟁 낮음 (진입 유리)';
+  var compLevel = subs > 1000000 ? '경쟁 치열' : subs > 100000 ? '경쟁 중간' : '경쟁 낮음 (진입 유리)';
 
   return [
-    \`📊 <b>조회수 잠재력:</b> \${viewScore} (\${views.toLocaleString()}회)\`,
-    \`❤️ <b>참여율:</b> \${engLevel} (\${engRate}%) / 좋아요율 \${likeRate}%\`,
-    \`📡 <b>트렌드 지수:</b> \${trendIdx}\`,
-    \`🏆 <b>채널 규모:</b> \${chSize} (구독자 \${subs.toLocaleString()}명)\`,
-    \`⚔️ <b>경쟁도:</b> \${compLevel}\`,
-    \`🎯 <b>콘텐츠 전략:</b> \${strategy}\`,
-    \`✨ <b>크리에이터 제안:</b> 이 트렌드를 리믹스하여 차별화된 영상 제작을 권장합니다.\`,
+    '\uD83D\uDCCA <b>조회수 잠재력:</b> ' + viewScore + ' (' + views.toLocaleString() + '회)',
+    '\u2764\uFE0F <b>참여율:</b> ' + engLevel + ' (' + engRate + '%) / 좋아요율 ' + likeRate + '%',
+    '\uD83D\uDCE1 <b>트렌드 지수:</b> ' + trendIdx,
+    '\uD83C\uDFC6 <b>채널 규모:</b> ' + chSize + ' (구독자 ' + subs.toLocaleString() + '명)',
+    '\u2694\uFE0F <b>경쟁도:</b> ' + compLevel,
+    '\uD83C\uDFAF <b>콘텐츠 전략:</b> ' + strategy,
+    '\u2728 <b>크리에이터 제안:</b> 이 트렌드를 리믹스하여 차별화된 영상 제작을 권장합니다.'
   ].join('<br>');
 }
 
