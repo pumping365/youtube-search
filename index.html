@@ -1008,6 +1008,165 @@ html,body{overflow:hidden;height:100%;margin:0;padding:0}
   font-size:13px;color:#8da8c0;
   text-align:center;padding:18px 0 4px;
 }
+
+/* ══ 채널 상세 패널 (우측 슬라이드 드로어) ══ */
+#cq-channel-panel{
+  position:fixed;top:0;right:-100%;width:72%;height:100%;
+  background:#0f1b2d;
+  border-left:2px solid #2a4060;
+  z-index:1100;
+  display:flex;flex-direction:column;
+  transition:right .32s cubic-bezier(.4,0,.2,1);
+  overflow:hidden;
+}
+#cq-channel-panel.open{ right:0; }
+#cq-channel-overlay{
+  position:fixed;inset:0;background:rgba(0,0,0,.55);
+  z-index:1099;display:none;
+}
+#cq-channel-overlay.open{ display:block; }
+
+/* 패널 헤더 */
+.cqch-header{
+  display:flex;justify-content:space-between;align-items:center;
+  padding:14px 16px 12px;
+  border-bottom:1px solid #2a4060;
+  background:#0a1520;
+  flex-shrink:0;
+}
+.cqch-header-title{
+  font-size:13px;font-weight:700;color:#8da8c0;letter-spacing:.5px;
+}
+.cqch-close{
+  background:rgba(255,255,255,.1);border:none;border-radius:50%;
+  width:30px;height:30px;color:#c8d8e8;font-size:16px;
+  cursor:pointer;display:flex;align-items:center;justify-content:center;
+  transition:background .15s;
+}
+.cqch-close:hover{ background:rgba(255,255,255,.2); }
+
+/* 패널 본문 스크롤 */
+.cqch-body{
+  flex:1;overflow-y:auto;padding:0 0 24px;
+}
+
+/* ── 채널 히어로 영역 ── */
+.cqch-hero{
+  display:flex;flex-direction:column;align-items:center;
+  padding:28px 20px 20px;
+  background:linear-gradient(180deg,#132038 0%,#0f1b2d 100%);
+  border-bottom:1px solid #2a4060;
+}
+.cqch-avatar{
+  width:90px;height:90px;border-radius:50%;
+  object-fit:cover;
+  border:3px solid #2a5090;
+  margin-bottom:14px;
+}
+.cqch-avatar-placeholder{
+  width:90px;height:90px;border-radius:50%;
+  background:linear-gradient(135deg,#1e3a5f,#2a5090);
+  display:flex;align-items:center;justify-content:center;
+  font-size:36px;margin-bottom:14px;
+  border:3px solid #2a5090;
+  flex-shrink:0;
+}
+.cqch-name{
+  font-size:18px;font-weight:800;color:#f0f4f8;
+  text-align:center;margin-bottom:6px;line-height:1.3;
+}
+.cqch-sub{
+  font-size:12px;color:#8da8c0;margin-bottom:16px;
+}
+
+/* 채널 바로가기 버튼 */
+.cqch-btn-channel{
+  display:flex;align-items:center;gap:8px;
+  background:var(--red);color:#fff;
+  border:none;border-radius:22px;
+  padding:11px 22px;font-size:14px;font-weight:700;
+  cursor:pointer;text-decoration:none;
+  transition:background .2s,transform .15s;
+  margin-bottom:8px;
+}
+.cqch-btn-channel:hover{
+  background:var(--red2);transform:translateY(-1px);
+}
+
+/* 영상 미리보기 섹션 */
+.cqch-section{
+  padding:16px 16px 0;
+}
+.cqch-section-label{
+  font-size:11px;font-weight:700;color:#8da8c0;
+  letter-spacing:.8px;text-transform:uppercase;
+  margin-bottom:10px;
+}
+
+/* 선택 영상 카드 */
+.cqch-video-card{
+  background:#1a2d45;border:1px solid #2a4060;
+  border-radius:10px;overflow:hidden;
+  margin-bottom:12px;
+}
+.cqch-video-thumb{
+  width:100%;aspect-ratio:16/9;object-fit:cover;display:block;
+}
+.cqch-video-thumb-ph{
+  width:100%;aspect-ratio:16/9;
+  background:linear-gradient(135deg,#162338,#223554);
+  display:flex;align-items:center;justify-content:center;
+  font-size:32px;
+}
+.cqch-video-info{
+  padding:10px 12px 12px;
+}
+.cqch-video-title{
+  font-size:13px;font-weight:700;color:#f0f4f8;
+  line-height:1.4;margin-bottom:6px;
+  display:-webkit-box;-webkit-line-clamp:2;
+  -webkit-box-orient:vertical;overflow:hidden;
+}
+.cqch-video-meta{
+  display:flex;gap:10px;font-size:11px;color:#8da8c0;
+}
+.cqch-video-meta span{ color:#a8c0d8; }
+
+/* 채널 설명 */
+.cqch-desc{
+  font-size:12.5px;color:#a8c0d8;line-height:1.6;
+  padding:0 16px;white-space:pre-line;
+  display:-webkit-box;-webkit-line-clamp:5;
+  -webkit-box-orient:vertical;overflow:hidden;
+}
+.cqch-desc.expanded{ -webkit-line-clamp:unset; }
+.cqch-desc-toggle{
+  background:none;border:none;color:#5b9bd5;
+  font-size:12px;cursor:pointer;padding:4px 16px;
+}
+
+/* 로딩 스피너 */
+.cqch-loading{
+  display:flex;flex-direction:column;align-items:center;
+  padding:40px 20px;gap:14px;
+}
+.cqch-spinner{
+  width:36px;height:36px;border-radius:50%;
+  border:3px solid #2a4060;border-top-color:#5b9bd5;
+  animation:cqchSpin .8s linear infinite;
+}
+@keyframes cqchSpin{ to{transform:rotate(360deg)} }
+
+/* 유튜브 보기 버튼 (하단) */
+.cqch-btn-yt{
+  display:flex;align-items:center;justify-content:center;gap:8px;
+  background:rgba(255,255,255,.07);color:#c8d8e8;
+  border:1px solid #2a4060;border-radius:10px;
+  padding:10px;font-size:13px;font-weight:600;
+  cursor:pointer;text-decoration:none;
+  transition:background .15s;margin:12px 16px 0;
+}
+.cqch-btn-yt:hover{ background:rgba(255,255,255,.12); }
 </style>
 </head>
 <body>
@@ -2809,7 +2968,7 @@ function renderCreateQueue() {
     /* ─ 카드 시작: 카드 클릭 → 분석 모달 오픈 (버튼/링크 영역 제외) ─ */
     html += '<div class="cq-card' + (isDone ? ' done' : '') + '" id="cq-' + q.id + '"'
       + ' onclick="if(event.target.closest(\'.cq-actions\')||event.target.closest(\'a\')) return;'
-      + ' openCqAnalysis(\'' + q.id + '\')"'
+      + ' openCqChannelPanel(\'' + q.id + '\')"'
       + ' title="클릭하면 분석 내용 보기">';
 
     /* ─ 헤더: 썸네일(링크) | 메타(제목/채널/날짜) | 배지 ─ */
@@ -3342,6 +3501,179 @@ function closeCqAnalysis() {
     delete document._cqEsc;
   }
 }
+
+/* ══════════════════════════════════════════════
+   채널 상세 패널 함수들
+   ══════════════════════════════════════════════ */
+
+/* 카드 클릭 → 채널 패널 열기 */
+function openCqChannelPanel(videoId) {
+  var queue;
+  try { queue = JSON.parse(localStorage.getItem('vidora_create_queue') || '[]'); }
+  catch(e) { queue = []; }
+
+  var q = null;
+  for(var i=0;i<queue.length;i++){
+    if(queue[i].id === videoId){ q = queue[i]; break; }
+  }
+  if(!q) return;
+
+  var panel   = document.getElementById('cq-channel-panel');
+  var overlay = document.getElementById('cq-channel-overlay');
+  var body    = document.getElementById('cq-channel-body');
+  if(!panel||!overlay||!body) return;
+
+  /* 로딩 상태 표시 */
+  body.innerHTML =
+    '<div class="cqch-loading">'
+    + '<div class="cqch-spinner"></div>'
+    + '<div style="color:#8da8c0;font-size:13px">채널 정보를 불러오는 중...</div>'
+    + '</div>';
+
+  overlay.classList.add('open');
+  panel.classList.add('open');
+
+  /* ESC 닫기 */
+  document._cqChEsc = function(e){ if(e.key==='Escape') closeCqChannelPanel(); };
+  document.addEventListener('keydown', document._cqChEsc);
+
+  /* YouTube API 채널 정보 요청 */
+  var apiKey = localStorage.getItem('vidora_api_key') || '';
+  if(apiKey && q.channelId) {
+    var url = 'https://www.googleapis.com/youtube/v3/channels'
+      + '?part=snippet,statistics'
+      + '&id=' + encodeURIComponent(q.channelId)
+      + '&key=' + encodeURIComponent(apiKey);
+
+    fetch(url)
+      .then(function(r){ return r.json(); })
+      .then(function(data){
+        var ch = data.items && data.items[0];
+        renderCqChannelPanel(q, ch ? ch.snippet : null, ch ? ch.statistics : null);
+      })
+      .catch(function(){
+        renderCqChannelPanel(q, null, null);
+      });
+  } else {
+    renderCqChannelPanel(q, null, null);
+  }
+}
+
+/* 패널 본문 렌더링 */
+function renderCqChannelPanel(q, snippet, stats) {
+  var body = document.getElementById('cq-channel-body');
+  if(!body) return;
+
+  var ytUrl      = 'https://www.youtube.com/watch?v=' + q.id;
+  var channelUrl = q.channelId
+    ? 'https://www.youtube.com/channel/' + q.channelId
+    : 'https://www.youtube.com/results?search_query=' + encodeURIComponent(q.channel);
+
+  /* 채널 아바타 */
+  var avatarUrl = snippet && snippet.thumbnails
+    ? (snippet.thumbnails.high || snippet.thumbnails.medium || snippet.thumbnails.default || {}).url || ''
+    : '';
+  var avatarHtml = avatarUrl
+    ? '<img class="cqch-avatar" src="' + escHtml(avatarUrl) + '" onerror="cqchAvatarErr(this)">'
+    : '<div class="cqch-avatar-placeholder">📺</div>';
+
+  /* 구독자수 */
+  var subCount = '';
+  if(stats && stats.subscriberCount) {
+    var sc = parseInt(stats.subscriberCount);
+    if(sc >= 10000) subCount = '구독자 ' + (sc/10000).toFixed(sc>=100000?0:1) + '만명';
+    else subCount = '구독자 ' + sc.toLocaleString() + '명';
+  }
+
+  /* 채널 설명 */
+  var desc = snippet && snippet.description ? snippet.description.trim() : '';
+
+  var html = '';
+
+  /* ── 히어로 영역 ── */
+  html += '<div class="cqch-hero">'
+    + avatarHtml
+    + '<div class="cqch-name">' + escHtml(snippet ? snippet.title : q.channel) + '</div>'
+    + (subCount ? '<div class="cqch-sub">' + subCount + '</div>' : '')
+    + '<a href="' + channelUrl + '" target="_blank" class="cqch-btn-channel">'
+    +   '📺 채널 바로가기'
+    + '</a>'
+    + '</div>';
+
+  /* ── 선택 영상 ── */
+  html += '<div class="cqch-section">'
+    + '<div class="cqch-section-label">선택 영상</div>'
+    + '<div class="cqch-video-card">';
+
+  if(q.thumbnail) {
+    html += '<img class="cqch-video-thumb" src="' + escHtml(q.thumbnail) + '"'
+      + ' onerror="cqchVideoErr(this)">';
+  } else {
+    html += '<div class="cqch-video-thumb-ph">🎬</div>';
+  }
+
+  html += '<div class="cqch-video-info">'
+    + '<div class="cqch-video-title">' + escHtml(q.title) + '</div>'
+    + '<div class="cqch-video-meta">'
+    +   '<span>👁 ' + fmtNum(q.views||0) + '회</span>'
+    +   '<span>📈 ' + fmtNum(q.daily||0) + '/일</span>'
+    +   '<span>❤️ ' + (q.eng||0) + '%</span>'
+    + '</div>'
+    + '</div>'
+    + '</div>'
+    + '</div>';
+
+  /* ── 채널 설명 ── */
+  if(desc) {
+    html += '<div class="cqch-section">'
+      + '<div class="cqch-section-label">채널 소개</div>'
+      + '</div>'
+      + '<div class="cqch-desc" id="cqch-desc-text">' + escHtml(desc) + '</div>'
+      + '<button class="cqch-desc-toggle" onclick="toggleCqchDesc()">▼ 더 보기</button>';
+  }
+
+  /* ── 유튜브 영상 바로가기 ── */
+  html += '<a href="' + ytUrl + '" target="_blank" class="cqch-btn-yt">'
+    + '▶ YouTube에서 영상 보기'
+    + '</a>';
+
+  body.innerHTML = html;
+}
+
+/* 더 보기 토글 */
+function toggleCqchDesc() {
+  var el  = document.getElementById('cqch-desc-text');
+  var btn = el && el.nextElementSibling;
+  if(!el) return;
+  if(el.classList.contains('expanded')) {
+    el.classList.remove('expanded');
+    if(btn) btn.textContent = '▼ 더 보기';
+  } else {
+    el.classList.add('expanded');
+    if(btn) btn.textContent = '▲ 접기';
+  }
+}
+
+/* 패널 닫기 */
+
+/* 채널 패널 이미지 onerror 헬퍼 */
+function cqchAvatarErr(el) {
+  el.parentNode.innerHTML = '<div class="cqch-avatar-placeholder">📺</div>';
+}
+function cqchVideoErr(el) {
+  el.parentNode.innerHTML = '<div class="cqch-video-thumb-ph">🎬</div>';
+}
+
+function closeCqChannelPanel() {
+  var panel   = document.getElementById('cq-channel-panel');
+  var overlay = document.getElementById('cq-channel-overlay');
+  if(panel)   panel.classList.remove('open');
+  if(overlay) overlay.classList.remove('open');
+  if(document._cqChEsc) {
+    document.removeEventListener('keydown', document._cqChEsc);
+    delete document._cqChEsc;
+  }
+}
 </script>
 
 <!-- ═══ 제작목록 분석 모달 ═══ -->
@@ -3349,6 +3681,20 @@ function closeCqAnalysis() {
   <div class="cq-analysis-sheet">
     <div class="cq-an-handle"></div>
     <div id="cq-analysis-content"></div>
+  </div>
+</div>
+
+<!-- ══ 채널 상세 패널 오버레이 ══ -->
+<div id="cq-channel-overlay" onclick="closeCqChannelPanel()"></div>
+
+<!-- ══ 채널 상세 패널 (우측 드로어) ══ -->
+<div id="cq-channel-panel">
+  <div class="cqch-header">
+    <span class="cqch-header-title">📺 채널 정보</span>
+    <button class="cqch-close" onclick="closeCqChannelPanel()" title="닫기">✕</button>
+  </div>
+  <div class="cqch-body" id="cq-channel-body">
+    <!-- JS로 채워짐 -->
   </div>
 </div>
 </body>
