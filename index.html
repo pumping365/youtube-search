@@ -3230,15 +3230,28 @@ function timeAgo(dateStr) {
 /* ─────────────────────────────────────────────
    제작목록 분석 모달 열기 / 닫기
 ───────────────────────────────────────────── */
+/* ─────────────────────────────────────────────
+   제작목록 분석 모달 열기 / 닫기
+───────────────────────────────────────────── */
+
+/* 썸네일 onerror 핸들러 (따옴표 충돌 방지용 분리 함수) */
+function cqThumbError(el) {
+  el.parentNode.innerHTML = '<div class="cq-an-thumb-ph">🎬</div>';
+}
+
 function openCqAnalysis(videoId) {
   var queue;
   try { queue = JSON.parse(localStorage.getItem('vidora_create_queue') || '[]'); }
   catch(e) { queue = []; }
 
-  var q = queue.find(function(item){ return item.id === videoId; });
   var overlay = document.getElementById('cq-analysis-overlay');
   var box     = document.getElementById('cq-analysis-content');
   if(!overlay || !box) return;
+
+  var q = null;
+  for(var i=0; i<queue.length; i++) {
+    if(queue[i].id === videoId) { q = queue[i]; break; }
+  }
 
   if(!q) {
     box.innerHTML = '<div class="cq-an-empty">해당 영상 데이터를 찾을 수 없습니다.</div>';
@@ -3246,65 +3259,72 @@ function openCqAnalysis(videoId) {
     return;
   }
 
-  var ytUrl   = 'https://www.youtube.com/watch?v=' + q.id;
-  var thumbEl = q.thumbnail
-    ? '<img class="cq-an-thumb" src="' + q.thumbnail + '" onerror="this.outerHTML='<div class=\"cq-an-thumb-ph\">🎬</div>'">'
-    : '<div class="cq-an-thumb-ph">🎬</div>';
-
+  var ytUrl    = 'https://www.youtube.com/watch?v=' + q.id;
   var addedStr = q.addedAt
     ? new Date(q.addedAt).toLocaleString('ko-KR',{month:'short',day:'numeric',hour:'2-digit',minute:'2-digit'})
     : '';
 
+  /* 썸네일 — onerror는 별도 함수 참조로 따옴표 충돌 완전 회피 */
+  var thumbEl;
+  if(q.thumbnail) {
+    thumbEl = '<a href="' + ytUrl + '" target="_blank" style="flex-shrink:0;display:block">'
+      + '<img class="cq-an-thumb" src="' + escHtml(q.thumbnail) + '"'
+      + ' onerror="cqThumbError(this)">'
+      + '</a>';
+  } else {
+    thumbEl = '<div class="cq-an-thumb-ph">🎬</div>';
+  }
+
   var html = '';
 
-  /* ── 상단 헤더 ── */
+  /* 상단 헤더 */
   html += '<div class="cq-an-header">'
     + thumbEl
     + '<div class="cq-an-meta">'
-    +   '<div class="cq-an-title">' + escHtml(q.title) + '</div>'
+    +   '<div class="cq-an-title">'  + escHtml(q.title)   + '</div>'
     +   '<div class="cq-an-channel">📺 ' + escHtml(q.channel) + '</div>'
     +   '<div class="cq-an-stat">'
-    +     '<span>👁 ' + fmtNum(q.views||0) + '회</span>'
-    +     '<span>📈 ' + fmtNum(q.daily||0) + '/일</span>'
-    +     '<span>❤️ ' + (q.eng||0) + '%</span>'
+    +     '<span>👁 '  + fmtNum(q.views||0) + '회</span>'
+    +     '<span>📈 '  + fmtNum(q.daily||0) + '/일</span>'
+    +     '<span>❤️ '  + (q.eng||0) + '%</span>'
     +   '</div>'
     + '</div>'
-    + '<button class="btn-cq-an-close" onclick="closeCqAnalysis()" title="닫기">✕</button>'
+    + '<button class="btn-cq-an-close" onclick="closeCqAnalysis()">✕</button>'
     + '</div>';
 
-  /* ── 분석 본문 ── */
+  /* 분석 본문 */
   html += '<div class="cq-an-body">';
-
-  var hasContent = false;
+  var hasAny = false;
 
   if(q.why) {
-    hasContent = true;
+    hasAny = true;
     html += '<div class="cq-an-section">'
       + '<div class="cq-an-section-label">🎯 왜 뜨나</div>'
       + '<div class="cq-an-section-text">' + escHtml(q.why) + '</div>'
       + '</div>';
   }
   if(q.create) {
-    hasContent = true;
+    hasAny = true;
     html += '<div class="cq-an-section">'
       + '<div class="cq-an-section-label">📹 추천 콘텐츠</div>'
       + '<div class="cq-an-section-text">' + escHtml(q.create) + '</div>'
       + '</div>';
   }
   if(q.timing) {
-    hasContent = true;
+    hasAny = true;
     html += '<div class="cq-an-section">'
       + '<div class="cq-an-section-label">⏰ 타이밍</div>'
       + '<div class="cq-an-section-text">' + q.timing + '</div>'
       + '</div>';
   }
-  if(!hasContent) {
-    html += '<div class="cq-an-empty">저장된 분석 데이터가 없습니다.<br>영상을 다시 검색해 분석 후 제작목록에 추가해 주세요.</div>';
+  if(!hasAny) {
+    html += '<div class="cq-an-empty">저장된 분석 데이터가 없습니다.<br>'
+      + '영상을 다시 검색해 분석 후 추가해 주세요.</div>';
   }
 
-  html += '</div>';  /* /cq-an-body */
+  html += '</div>';
 
-  /* ── 푸터 버튼 ── */
+  /* 푸터 버튼 */
   html += '<div class="cq-an-footer">'
     + '<a href="' + ytUrl + '" target="_blank" class="btn-cq-yt">▶ YouTube에서 영상 보기</a>'
     + '</div>';
@@ -3313,16 +3333,16 @@ function openCqAnalysis(videoId) {
   overlay.classList.add('open');
 
   /* ESC 키 닫기 */
-  document._cqAnalysisEsc = function(e){ if(e.key==='Escape') closeCqAnalysis(); };
-  document.addEventListener('keydown', document._cqAnalysisEsc);
+  document._cqEsc = function(e){ if(e.key === 'Escape') closeCqAnalysis(); };
+  document.addEventListener('keydown', document._cqEsc);
 }
 
 function closeCqAnalysis() {
   var overlay = document.getElementById('cq-analysis-overlay');
   if(overlay) overlay.classList.remove('open');
-  if(document._cqAnalysisEsc) {
-    document.removeEventListener('keydown', document._cqAnalysisEsc);
-    delete document._cqAnalysisEsc;
+  if(document._cqEsc) {
+    document.removeEventListener('keydown', document._cqEsc);
+    delete document._cqEsc;
   }
 }
 </script>
