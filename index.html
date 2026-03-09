@@ -2658,9 +2658,11 @@ function renderCreateQueue() {
   if(!list) return;
 
   if(!queue.length) {
-    list.innerHTML = '<div class="state-box"><div class="state-icon">🎬</div>'
+    list.innerHTML = '<div class="state-box">'
+      + '<div class="state-icon">🎬</div>'
       + '<div class="state-title">제작 목록이 비어있습니다</div>'
-      + '<div class="state-sub">영상 분석 → 제작 탭 → "오늘 제작 목록에 추가"</div></div>';
+      + '<div class="state-sub">영상 분석 → 제작 탭 → "오늘 제작 목록에 추가"</div>'
+      + '</div>';
     return;
   }
 
@@ -2669,65 +2671,99 @@ function renderCreateQueue() {
   var pct   = total > 0 ? Math.round(done/total*100) : 0;
   var html  = '';
 
-  // 요약 바
+  /* ── 요약 진행 바 ── */
   html += '<div class="cq-summary">'
-    + '<div><div class="cq-summary-num">' + done + ' / ' + total + '</div>'
-    + '<div style="font-size:11px">완료 / 전체</div></div>'
+    + '<div>'
+    +   '<div class="cq-summary-num">' + done + ' / ' + total + '</div>'
+    +   '<div style="font-size:11px;color:rgba(255,255,255,.5);margin-top:2px">완료 / 전체</div>'
+    + '</div>'
     + '<div style="flex:1">'
     +   '<div style="background:rgba(255,255,255,.08);border-radius:6px;height:8px;overflow:hidden;margin-bottom:4px">'
-    +     '<div style="height:100%;border-radius:6px;background:#4caf50;width:' + pct + '%"></div>'
+    +     '<div style="height:100%;border-radius:6px;background:#4caf50;transition:width .4s;width:' + pct + '%"></div>'
     +   '</div>'
-    +   '<div style="font-size:11px">' + pct + '% 완료</div>'
-    + '</div></div>';
+    +   '<div style="font-size:11px;color:rgba(255,255,255,.5)">' + pct + '% 완료</div>'
+    + '</div>'
+    + '</div>';
 
-  // 날짜 헤더
+  /* ── 날짜 헤더 ── */
   var today = new Date().toLocaleDateString('ko-KR',{year:'numeric',month:'long',day:'numeric'});
   html += '<div class="cq-date-bar">📅 ' + today + '</div>';
 
-  // 미완료 먼저, 완료 나중
+  /* ── 미완료 먼저, 완료 나중 정렬 ── */
   var sorted = queue.filter(function(q){return !q.done;})
                .concat(queue.filter(function(q){return q.done;}));
 
   sorted.forEach(function(q, seqIdx) {
-    var isDone  = q.done;
-    var seqNum  = seqIdx + 1;
-    var addedDate = q.addedAt
+    var isDone   = q.done;
+    var seqNum   = seqIdx + 1;
+    var safeId   = encodeURIComponent(q.id);
+    var addedStr = q.addedAt
       ? new Date(q.addedAt).toLocaleString('ko-KR',{month:'short',day:'numeric',hour:'2-digit',minute:'2-digit'})
       : '';
     var thumbHtml = q.thumbnail
-      ? '<img class="cq-thumb" src="' + q.thumbnail + '" onerror="this.style.display=\'none\'">'
+      ? '<img class="cq-thumb" src="' + q.thumbnail + '" onerror="this.parentNode.innerHTML=\'<div class=\\\"cq-thumb-placeholder\\\">🎬</div>\'">'
       : '<div class="cq-thumb-placeholder">🎬</div>';
 
-    // ─── 버튼 onclick (안전한 data-id 방식 사용 불가이므로 함수 인자 전달용 전역변수 방식) ───
-    // encodeURIComponent 사용해서 안전하게 전달
-    var safeId = encodeURIComponent(q.id);
+    /* ─ 카드 시작 ─ */
+    html += '<div class="cq-card' + (isDone ? ' done' : '') + '" id="cq-' + q.id + '">';
 
-    html += '<div class="cq-card' + (isDone ? ' done' : '') + '" id="cq-' + q.id + '">'
-      + '<div class="cq-card-head">'
+    /* ─ 헤더: 썸네일 | 메타(제목/채널/날짜) | 배지 ─ */
+    html += '<div class="cq-card-head">'
       +   thumbHtml
       +   '<div class="cq-meta">'
-      +     '<div class="cq-title">' + escHtml(q.title) + '</div>'
+      +     '<div class="cq-title">'  + escHtml(q.title)   + '</div>'
       +     '<div class="cq-channel">📺 ' + escHtml(q.channel) + '</div>'
-      +     '<div class="cq-added">추가: ' + addedDate + '</div>'
+      +     '<div class="cq-added">추가: ' + addedStr + '</div>'
       +   '</div>'
-      +   (isDone ? '<span class="cq-done-badge">✅ 완료</span>' : '<span class="cq-seq">' + seqNum + '번</span>')
-      + '</div>'
-      + '<div class="cq-insight-row"><b>🎯 왜 뜨나</b>' + (q.why||'-') + '</div>'
-      + '<div class="cq-insight-row"><b>📹 추천 콘텐츠</b>' + (q.create||'-') + '</div>'
-      + '<div class="cq-insight-row"><b>⏰ 타이밍</b>' + (q.timing||'-') + '</div>'
-      + '<div class="cq-insight-row" style="color:rgba(255,255,255,.45);font-size:11px">'
-      +   '👁 ' + fmtNum(q.views||0) + '회 · 📈 ' + fmtNum(q.daily||0) + '/일 · ❤️ ' + (q.eng||0) + '%'
-      + '</div>'
-      + '<div class="cq-actions">'
-      +   '<button class="cq-btn-done" onclick="toggleCreateDone(decodeURIComponent(\'' + safeId + '\'))">'
-      +     (isDone ? '↩️ 미완료로 되돌리기' : '✅ 제작 완료 체크')
-      +   '</button>'
-      +   '<a href="https://www.youtube.com/watch?v=' + q.id + '" target="_blank"'
-      +     ' style="padding:8px 10px;background:rgba(255,255,255,.06);border:1px solid rgba(255,255,255,.12);'
-      +     'border-radius:8px;color:rgba(255,255,255,.6);font-size:12px;text-decoration:none;display:flex;align-items:center">▶ 원본</a>'
-      +   '<button class="cq-btn-remove" onclick="removeFromCreateQueue(decodeURIComponent(\'' + safeId + '\'))">🗑</button>'
-      + '</div>'
+      +   (isDone
+          ? '<span class="cq-done-badge">✅ 완료</span>'
+          : '<span class="cq-seq">' + seqNum + '번</span>')
+      + '</div>';  /* /cq-card-head */
+
+    /* ─ 통계 행 ─ */
+    html += '<div class="cq-stat-row">'
+      + '<span>👁 ' + fmtNum(q.views||0) + '회</span>'
+      + '<span>📈 ' + fmtNum(q.daily||0) + '/일</span>'
+      + '<span>❤️ ' + (q.eng||0) + '%</span>'
       + '</div>';
+
+    /* ─ 인사이트 박스 영역 ─ */
+    html += '<div class="cq-insights">';
+
+    /* 왜 뜨나 */
+    if(q.why) {
+      html += '<div class="cq-insight-box">'
+        + '<div class="cq-insight-label">🎯 왜 뜨나</div>'
+        + '<div class="cq-insight-text">' + escHtml(q.why) + '</div>'
+        + '</div>';
+    }
+    /* 추천 콘텐츠 */
+    if(q.create) {
+      html += '<div class="cq-insight-box">'
+        + '<div class="cq-insight-label">📹 추천 콘텐츠</div>'
+        + '<div class="cq-insight-text">' + escHtml(q.create) + '</div>'
+        + '</div>';
+    }
+    /* 타이밍 */
+    if(q.timing) {
+      html += '<div class="cq-insight-box">'
+        + '<div class="cq-insight-label">⏰ 타이밍</div>'
+        + '<div class="cq-insight-text">' + q.timing + '</div>'
+        + '</div>';
+    }
+
+    html += '</div>';  /* /cq-insights */
+
+    /* ─ 액션 버튼 ─ */
+    html += '<div class="cq-actions">'
+      + '<button class="cq-btn-done" onclick="toggleCreateDone(decodeURIComponent(\'' + safeId + '\'))">'
+      +   (isDone ? '↩️ 미완료로 되돌리기' : '✅ 제작 완료 체크')
+      + '</button>'
+      + '<a href="https://www.youtube.com/watch?v=' + q.id + '" target="_blank" class="cq-btn-play">▶</a>'
+      + '<button class="cq-btn-remove" onclick="removeFromCreateQueue(decodeURIComponent(\'' + safeId + '\'))">🗑</button>'
+      + '</div>';  /* /cq-actions */
+
+    html += '</div>';  /* /cq-card */
   });
 
   list.innerHTML = html;
