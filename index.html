@@ -784,8 +784,8 @@ html,body{overflow:hidden;height:100%;margin:0;padding:0}
   background:#1a2d45;
   border:1px solid #2a4060;
   border-left:4px solid var(--red);
-  border-radius:14px;
-  margin:0 12px 16px;
+  border-radius:12px;
+  margin:0 10px 8px;
   overflow:hidden;
   transition:border-color .2s,box-shadow .2s,transform .15s;
   cursor:pointer;
@@ -802,17 +802,17 @@ html,body{overflow:hidden;height:100%;margin:0;padding:0}
 
 /* ── 카드 헤더 (썸네일 + 메타) ── */
 .cq-card-head{
-  display:flex;align-items:flex-start;gap:14px;
-  padding:14px 14px 14px;
+  display:flex;align-items:center;gap:12px;
+  padding:10px 12px 10px;
 }
 .cq-thumb{
-  width:160px;height:90px;
-  border-radius:9px;object-fit:cover;
+  width:180px;height:101px;
+  border-radius:8px;object-fit:cover;
   flex-shrink:0;background:#0f1b2d;
   border:2px solid #2a4060;
 }
 .cq-thumb-placeholder{
-  width:160px;height:90px;border-radius:9px;
+  width:180px;height:101px;border-radius:8px;
   background:linear-gradient(135deg,#162338,#223554);
   display:flex;align-items:center;justify-content:center;
   font-size:28px;flex-shrink:0;
@@ -820,17 +820,17 @@ html,body{overflow:hidden;height:100%;margin:0;padding:0}
 }
 .cq-meta{flex:1;min-width:0}
 .cq-title{
-  font-size:14.5px;font-weight:700;
-  color:#f0f4f8;line-height:1.5;
+  font-size:13.5px;font-weight:700;
+  color:#f0f4f8;line-height:1.4;
   display:-webkit-box;-webkit-line-clamp:2;
   -webkit-box-orient:vertical;overflow:hidden;
-  margin-bottom:6px;
+  margin-bottom:4px;
 }
 .cq-channel{
-  font-size:12.5px;color:#c8d8e8;
-  font-weight:600;
+  font-size:11.5px;color:#c8d8e8;
+  font-weight:600;margin-bottom:3px;
 }
-.cq-added{font-size:13.5px;color:#c8d8e8;margin-top:5px;font-weight:500}
+.cq-added{font-size:11px;color:#8da8c0;margin-top:2px;font-weight:400}
 
 /* ── 순서 배지 / 완료 배지 ── */
 .cq-seq{
@@ -848,24 +848,23 @@ html,body{overflow:hidden;height:100%;margin:0;padding:0}
 
 /* ── 통계 행 ── */
 .cq-stat-row{
-  display:flex;gap:16px;
-  padding:8px 16px 10px;
-  font-size:12px;color:#8da8c0;
-  background:rgba(0,0,0,.20);
-  border-top:1px solid #2a4060;
-  border-bottom:1px solid #2a4060;
+  display:flex;gap:10px;
+  padding:0;margin-top:4px;
+  font-size:11px;color:#8da8c0;
+  background:transparent;
+  border:none;
 }
 .cq-stat-row span{
-  display:flex;align-items:center;gap:4px;
-  color:#c8d8e8;
+  display:flex;align-items:center;gap:3px;
+  color:#a8c0d8;
 }
 
 /* ── 액션 버튼 영역 ── */
 .cq-actions{
   display:flex;gap:8px;
-  padding:12px 14px 14px;
+  padding:8px 12px 10px;
   border-top:1px solid #2a4060;
-  background:rgba(0,0,0,.20);
+  background:rgba(0,0,0,.15);
 }
 .cq-btn-done{
   flex:1;padding:9px 6px;
@@ -2819,18 +2818,16 @@ function renderCreateQueue() {
       +   '<div class="cq-meta">'
       +     '<div class="cq-title">' + escHtml(q.title) + '</div>'
       +     '<div class="cq-channel">📺 ' + escHtml(q.channel) + '</div>'
+      +     '<div class="cq-stat-row">'
+      +       '<span>👁 ' + fmtNum(q.views||0) + '회</span>'
+      +       '<span>📈 ' + fmtNum(q.daily||0) + '/일</span>'
+      +       '<span>❤️ ' + (q.eng||0) + '%</span>'
+      +     '</div>'
       +     '<div class="cq-added">추가: ' + addedStr + '</div>'
       +   '</div>'
       +   (isDone
           ? '<span class="cq-done-badge">✅ 완료</span>'
           : '<span class="cq-seq">' + seqNum + '번</span>')
-      + '</div>';
-
-    /* ─ 통계 행 ─ */
-    html += '<div class="cq-stat-row">'
-      + '<span>👁 ' + fmtNum(q.views||0) + '회</span>'
-      + '<span>📈 ' + fmtNum(q.daily||0) + '/일</span>'
-      + '<span>❤️ ' + (q.eng||0) + '%</span>'
       + '</div>';
 
     /* ─ 액션 버튼 (왜뜨나/추천/타이밍 모두 제거) ─ */
