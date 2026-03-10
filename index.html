@@ -1536,6 +1536,142 @@ html,body{overflow:hidden;height:100%;margin:0;padding:0}
   color:#a5d6a7;
 }
 
+
+/* ══ STEP 3 소재 생성 스타일 ══ */
+
+/* 소재 카드 그리드 */
+.pg-material-grid{
+  display:grid;
+  grid-template-columns:1fr 1fr;
+  gap:10px;
+  margin-bottom:12px;
+}
+
+/* 소재 카드 */
+.pg-material-card{
+  background:#162338;
+  border:1px solid rgba(255,255,255,.09);
+  border-radius:14px;
+  padding:16px 14px 14px;
+  display:flex;flex-direction:column;
+  gap:8px;
+  transition:.2s;
+}
+.pg-material-card:hover{
+  border-color:rgba(25,118,210,.4);
+  background:#1a2d45;
+}
+
+/* 카드 아이콘 */
+.pg-mat-icon{
+  font-size:28px;
+  line-height:1;
+  margin-bottom:2px;
+}
+
+/* 카드 제목 */
+.pg-mat-title{
+  font-size:13px;font-weight:800;
+  color:#e8f4fd;line-height:1.3;
+}
+
+/* 카드 설명 */
+.pg-mat-desc{
+  font-size:11px;color:#6a8faf;
+  line-height:1.5;flex:1;
+}
+
+/* 생성 버튼 */
+.pg-mat-btn{
+  width:100%;padding:9px 8px;
+  border:none;border-radius:9px;
+  font-size:12px;font-weight:700;
+  cursor:pointer;transition:.2s;
+  display:flex;align-items:center;
+  justify-content:center;gap:5px;
+}
+.pg-mat-btn.music{
+  background:linear-gradient(135deg,#6a1b9a,#4a148c);
+  color:#fff;
+}
+.pg-mat-btn.image{
+  background:linear-gradient(135deg,#1565c0,#0d47a1);
+  color:#fff;
+}
+.pg-mat-btn.script{
+  background:linear-gradient(135deg,#2e7d32,#1b5e20);
+  color:#fff;
+}
+.pg-mat-btn.video{
+  background:linear-gradient(135deg,#b71c1c,#7f0000);
+  color:#fff;
+}
+.pg-mat-btn:hover{ opacity:.85; transform:translateY(-1px); }
+.pg-mat-btn:active{ transform:translateY(0); }
+
+/* 프롬프트 미리보기 박스 */
+.pg-prompt-box{
+  background:rgba(0,0,0,.25);
+  border:1px solid rgba(255,255,255,.07);
+  border-radius:10px;
+  padding:10px 12px;
+  margin-bottom:12px;
+}
+.pg-prompt-label{
+  font-size:10px;color:#4da6ff;font-weight:700;
+  letter-spacing:.4px;text-transform:uppercase;
+  margin-bottom:6px;
+}
+.pg-prompt-text{
+  font-size:11px;color:#8da8c0;line-height:1.6;
+  white-space:pre-wrap;word-break:break-all;
+}
+
+/* 토스트 메시지 */
+#pg-toast{
+  position:fixed;bottom:80px;left:50%;
+  transform:translateX(-50%) translateY(20px);
+  background:#1976d2;color:#fff;
+  padding:10px 20px;border-radius:24px;
+  font-size:13px;font-weight:700;
+  opacity:0;transition:.3s;
+  z-index:9999;pointer-events:none;
+  white-space:nowrap;
+}
+#pg-toast.show{
+  opacity:1;transform:translateX(-50%) translateY(0);
+}
+
+/* 안내 배너 */
+.pg-guide-banner{
+  background:rgba(255,193,7,.06);
+  border:1px solid rgba(255,193,7,.2);
+  border-radius:10px;
+  padding:12px 14px;
+  margin-bottom:12px;
+  font-size:12px;color:#ffd54f;
+  line-height:1.6;
+}
+.pg-guide-banner strong{
+  color:#ffca28;display:block;margin-bottom:3px;
+}
+
+/* Genspark 바로가기 버튼 */
+.pg-genspark-link{
+  display:flex;align-items:center;justify-content:center;gap:8px;
+  width:100%;padding:12px;
+  background:linear-gradient(135deg,#1a237e,#283593);
+  border:1px solid rgba(100,120,255,.3);
+  border-radius:11px;
+  color:#c5cae9;font-size:13px;font-weight:700;
+  text-decoration:none;cursor:pointer;
+  transition:.2s;margin-bottom:8px;
+}
+.pg-genspark-link:hover{
+  background:linear-gradient(135deg,#283593,#303f9f);
+  color:#e8eaf6;
+}
+
 </style>
 </head>
 <body>
@@ -4617,6 +4753,240 @@ function pgCopyScript() {
   }
 }
 
+
+/* ════════════════════════════════════════════
+   STEP 3 — AI 소재 생성 (Genspark 연동)
+════════════════════════════════════════════ */
+function pgRenderStep3(q) {
+  var body = document.getElementById('pg-body-content');
+  if(!body) return;
+
+  var title    = decodeHtmlEntities(q.title   || '');
+  var channel  = decodeHtmlEntities(q.channel || '');
+  var why      = decodeHtmlEntities(q.why     || '');
+  var create   = decodeHtmlEntities(q.create  || '');
+  var kws      = pgExtractKeywords(title);
+  var mainKw   = kws.length > 0 ? kws[0] : '주제';
+  var category = pgDetectCategory(title, channel);
+  var selTitle = window._pgSelectedTitle
+                 ? decodeHtmlEntities(window._pgSelectedTitle)
+                 : title;
+
+  /* ── 프롬프트 4종 생성 ── */
+  var prompts = pgBuildPrompts(selTitle, mainKw, category, why, create, kws);
+
+  var html = '';
+
+  /* ─ 안내 배너 ─ */
+  html += '<div class="pg-guide-banner">'
+    + '<strong>💡 사용 방법</strong>'
+    + '버튼 클릭 시 프롬프트가 자동으로 복사됩니다.<br>'
+    + 'Genspark 채팅창이 열리면 붙여넣기(Ctrl+V)하고 전송하세요.'
+    + '</div>';
+
+  /* ─ 소재 카드 그리드 ─ */
+  html += '<div class="pg-material-grid">';
+
+  /* 카드 1: 배경음악 */
+  html += '<div class="pg-material-card">'
+    + '<div class="pg-mat-icon">🎵</div>'
+    + '<div class="pg-mat-title">배경음악 생성</div>'
+    + '<div class="pg-mat-desc">영상 분위기에 맞는 BGM을 AI로 생성합니다</div>'
+    + '<button class="pg-mat-btn music" onclick="pgOpenGenspark(\'music\')">'
+    +   '🎵 음악 생성하기'
+    + '</button>'
+    + '</div>';
+
+  /* 카드 2: 썸네일 이미지 */
+  html += '<div class="pg-material-card">'
+    + '<div class="pg-mat-icon">🖼</div>'
+    + '<div class="pg-mat-title">썸네일 이미지</div>'
+    + '<div class="pg-mat-desc">클릭률 높은 썸네일을 AI로 디자인합니다</div>'
+    + '<button class="pg-mat-btn image" onclick="pgOpenGenspark(\'image\')">'
+    +   '🖼 이미지 생성하기'
+    + '</button>'
+    + '</div>';
+
+  /* 카드 3: 대본 완성 */
+  html += '<div class="pg-material-card">'
+    + '<div class="pg-mat-icon">📄</div>'
+    + '<div class="pg-mat-title">대본 완성하기</div>'
+    + '<div class="pg-mat-desc">STEP 2 기획안을 바탕으로 완성 대본을 작성합니다</div>'
+    + '<button class="pg-mat-btn script" onclick="pgOpenGenspark(\'script\')">'
+    +   '📄 대본 완성하기'
+    + '</button>'
+    + '</div>';
+
+  /* 카드 4: 영상 클립 */
+  html += '<div class="pg-material-card">'
+    + '<div class="pg-mat-icon">🎞</div>'
+    + '<div class="pg-mat-title">영상 클립 생성</div>'
+    + '<div class="pg-mat-desc">AI로 쇼츠·인트로용 영상 클립을 만듭니다</div>'
+    + '<button class="pg-mat-btn video" onclick="pgOpenGenspark(\'video\')">'
+    +   '🎞 클립 생성하기'
+    + '</button>'
+    + '</div>';
+
+  html += '</div>'; /* /pg-material-grid */
+
+  /* ─ 현재 선택 제목 표시 ─ */
+  html += '<div class="pg-prompt-box">'
+    + '<div class="pg-prompt-label">✏️ 선택된 제목 (STEP 2에서 변경 가능)</div>'
+    + '<div class="pg-prompt-text" id="pg-sel-title-display">' + escHtml(selTitle) + '</div>'
+    + '</div>';
+
+  /* ─ 프롬프트 미리보기 (기본: 음악) ─ */
+  html += '<div class="pg-prompt-box" id="pg-prompt-preview">'
+    + '<div class="pg-prompt-label">📋 자동 생성 프롬프트 미리보기</div>'
+    + '<div class="pg-prompt-text" id="pg-prompt-text-preview">' + escHtml(prompts.music) + '</div>'
+    + '</div>';
+
+  /* ─ Genspark 직접 열기 버튼 ─ */
+  html += '<a href="https://www.genspark.ai" target="_blank" class="pg-genspark-link">'
+    + '⭐ Genspark 채팅 바로가기'
+    + '</a>';
+
+  /* ─ 팁 ─ */
+  html += '<div class="pg-tip">'
+    + '각 버튼을 누르면 해당 프롬프트가 클립보드에 복사됩니다. '
+    + 'Genspark에서 붙여넣기 후 바로 생성 가능합니다.'
+    + '</div>';
+
+  body.innerHTML = html;
+
+  /* 프롬프트 데이터 전역 저장 */
+  window._pgPrompts = prompts;
+}
+
+/* ── 프롬프트 4종 생성 ── */
+function pgBuildPrompts(selTitle, mainKw, category, why, create, kws) {
+
+  /* 카테고리별 음악 분위기 */
+  var moodMap = {
+    'news':       '긴장감 있는 뉴스 배경음악, 중립적, 전문적',
+    'drone':      '웅장하고 탁 트인 자연 풍경 BGM, 시네마틱',
+    'realestate': '신뢰감 있는 기업형 배경음악, 차분하고 전문적',
+    'food':       '경쾌하고 식욕을 돋우는 밝은 배경음악',
+    'game':       '에너지 넘치는 전자음악, 게임 테마',
+    'travel':     '설레고 자유로운 어쿠스틱 여행 BGM',
+    'edu':        '집중력을 높이는 잔잔한 피아노 배경음악',
+    'ai':         '미래적이고 혁신적인 테크 배경음악',
+    'general':    '밝고 긍정적인 유튜브 배경음악'
+  };
+  var mood = moodMap[category] || moodMap['general'];
+
+  /* 카테고리별 썸네일 스타일 */
+  var thumbStyleMap = {
+    'news':       '붉은 긴급 배경, 흰색 굵은 한국어 텍스트, 뉴스 속보 스타일',
+    'drone':      '넓은 항공 풍경 사진, 하늘색 그라디언트, 위치명 텍스트',
+    'realestate': '아파트 또는 건물 이미지, 가격 정보 텍스트 오버레이',
+    'food':       '맛있어 보이는 음식 클로즈업, 따뜻한 색감, 재료 배치',
+    'game':       '게임 캐릭터 또는 스크린샷, 네온 색상, 역동적 구성',
+    'travel':     '아름다운 자연 또는 도시 풍경, 황금시간대 빛',
+    'edu':        '깔끔한 화이트보드 스타일, 핵심 단어 강조 텍스트',
+    'ai':         'AI 인터페이스 화면, 미래적 블루 색감, 데이터 시각화',
+    'general':    '눈길을 끄는 대비 색상, 중앙 제목 텍스트'
+  };
+  var thumbStyle = thumbStyleMap[category] || thumbStyleMap['general'];
+
+  var NL = String.fromCharCode(10);
+
+  /* ① 배경음악 프롬프트 */
+  var musicPrompt = '유튜브 영상 배경음악(BGM)을 생성해 주세요.' + NL + NL
+    + '영상 제목: ' + selTitle + NL
+    + '분위기: ' + mood + NL
+    + '길이: 60~90초 루프 가능한 형태' + NL
+    + '추가 조건: 저작권 없이 사용 가능한 BGM, 목소리 없는 순수 악기';
+
+  /* ② 썸네일 이미지 프롬프트 */
+  var imagePrompt = '유튜브 썸네일 이미지를 생성해 주세요.' + NL + NL
+    + '영상 제목: ' + selTitle + NL
+    + '썸네일 스타일: ' + thumbStyle + NL
+    + '해상도: 1280x720 (16:9)' + NL
+    + '포함 텍스트: "' + mainKw + '"' + NL
+    + '색감: 눈길을 끄는 강렬한 대비, 클릭률 높은 디자인' + NL
+    + '주의: 저작권 없는 이미지, 실제 인물 얼굴 제외';
+
+  /* ③ 대본 완성 프롬프트 */
+  var scriptBody = '';
+  if(why)    scriptBody += '인기 요인: ' + why.substring(0, 80) + NL;
+  if(create) scriptBody += '콘텐츠 방향: ' + create.substring(0, 80) + NL;
+  if(kws && kws.length > 0) scriptBody += '핵심 키워드: ' + kws.slice(0,5).join(', ') + NL;
+
+  var scriptPrompt = '아래 기획안을 바탕으로 유튜브 영상 대본을 완성해 주세요.' + NL + NL
+    + '영상 제목: ' + selTitle + NL
+    + scriptBody
+    + NL
+    + '대본 구조:' + NL
+    + '1. [인트로 0:00~0:30] 강렬한 훅 - 시청자 궁금증 자극' + NL
+    + '2. [본론1] 배경 및 현황 설명' + NL
+    + '3. [본론2] 핵심 내용 + 사례/데이터' + NL
+    + '4. [아웃트로] 핵심 요약 + 구독 유도' + NL + NL
+    + '요청사항: 자연스러운 구어체로 작성, 각 섹션 예상 시간 표기';
+
+  /* ④ 영상 클립 프롬프트 */
+  var videoPrompt = '유튜브 영상의 인트로 클립(5~8초)을 생성해 주세요.' + NL + NL
+    + '영상 제목: ' + selTitle + NL
+    + '클립 내용: ' + mainKw + ' 관련 시각적으로 임팩트 있는 장면' + NL
+    + '스타일: ' + thumbStyle + NL
+    + '길이: 5~8초, 자동 루프 가능' + NL
+    + '추가 조건: 텍스트 오버레이 없이 순수 영상, 영화적 구도';
+
+  return {
+    music:  musicPrompt,
+    image:  imagePrompt,
+    script: scriptPrompt,
+    video:  videoPrompt
+  };
+}
+
+/* ── Genspark 열기 + 프롬프트 복사 ── */
+function pgOpenGenspark(type) {
+  var prompts = window._pgPrompts || {};
+  var prompt  = prompts[type] || '';
+
+  /* 미리보기 업데이트 */
+  var preview = document.getElementById('pg-prompt-text-preview');
+  if(preview) preview.textContent = prompt;
+
+  /* 클립보드 복사 */
+  var doCopy = function() {
+    /* Genspark 채팅 새탭 열기 */
+    window.open('https://www.genspark.ai', '_blank');
+    pgShowToast();
+  };
+
+  if(navigator.clipboard && prompt){
+    navigator.clipboard.writeText(prompt).then(doCopy).catch(function(){
+      pgFallbackCopy(prompt);
+      doCopy();
+    });
+  } else {
+    if(prompt) pgFallbackCopy(prompt);
+    doCopy();
+  }
+}
+
+/* ── 폴백 복사 (구형 브라우저) ── */
+function pgFallbackCopy(text) {
+  var ta = document.createElement('textarea');
+  ta.value = text;
+  ta.style.position = 'fixed';
+  ta.style.top = '-9999px';
+  document.body.appendChild(ta);
+  ta.select();
+  try { document.execCommand('copy'); } catch(e){}
+  document.body.removeChild(ta);
+}
+
+/* ── 토스트 메시지 표시 ── */
+function pgShowToast() {
+  var toast = document.getElementById('pg-toast');
+  if(!toast) return;
+  toast.classList.add('show');
+  setTimeout(function(){ toast.classList.remove('show'); }, 2800);
+}
+
 </script>
 
 <!-- ═══ 제작목록 분석 모달 ═══ -->
@@ -4627,6 +4997,9 @@ function pgCopyScript() {
   </div>
 </div>
 
+
+<!-- 토스트 메시지 -->
+<div id="pg-toast">📋 프롬프트 복사 완료! Genspark에 붙여넣기 하세요</div>
 
 <!-- ══ 제작 가이드 패널 오버레이 (STEP 1~4) ══ -->
 <div id="pg-overlay" onclick="if(event.target===this)closePgPanel()">
