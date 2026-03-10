@@ -1407,6 +1407,135 @@ html,body{overflow:hidden;height:100%;margin:0;padding:0}
 }
 .btn-cq-guide:hover{ opacity:.85; }
 
+
+/* ══ STEP 2 기획안 스타일 ══ */
+
+/* 제목 후보 카드 */
+.pg-title-card{
+  background:rgba(255,255,255,.04);
+  border:1px solid rgba(255,255,255,.1);
+  border-radius:10px;
+  padding:10px 14px;
+  margin-bottom:8px;
+  display:flex;align-items:flex-start;gap:10px;
+  cursor:pointer;transition:.2s;
+}
+.pg-title-card:hover{
+  background:rgba(25,118,210,.12);
+  border-color:rgba(25,118,210,.4);
+}
+.pg-title-card.selected{
+  background:rgba(25,118,210,.18);
+  border-color:#1976d2;
+}
+.pg-title-num{
+  background:linear-gradient(135deg,#1565c0,#0d47a1);
+  color:#fff;font-size:11px;font-weight:800;
+  width:22px;height:22px;border-radius:50%;
+  display:flex;align-items:center;justify-content:center;
+  flex-shrink:0;margin-top:1px;
+}
+.pg-title-text{
+  color:#e8f4fd;font-size:13px;line-height:1.5;flex:1;
+}
+.pg-title-type{
+  font-size:10px;color:#6a8faf;margin-top:2px;
+}
+
+/* 권장 길이 + 썸네일 컨셉 2컬럼 */
+.pg-two-col{
+  display:grid;grid-template-columns:1fr 1fr;gap:10px;
+  margin-bottom:0;
+}
+.pg-info-box{
+  background:rgba(255,255,255,.04);
+  border:1px solid rgba(255,255,255,.08);
+  border-radius:10px;
+  padding:12px 14px;
+}
+.pg-info-box-label{
+  font-size:10px;color:#6a8faf;font-weight:700;
+  letter-spacing:.4px;text-transform:uppercase;
+  margin-bottom:6px;
+}
+.pg-info-box-val{
+  font-size:13px;font-weight:700;color:#e8f4fd;
+  line-height:1.45;
+}
+.pg-info-box-sub{
+  font-size:10px;color:#4da6ff;margin-top:3px;
+}
+
+/* 태그 리스트 */
+.pg-tag-wrap{
+  display:flex;flex-wrap:wrap;gap:5px;
+}
+.pg-tag{
+  background:rgba(76,175,80,.12);
+  border:1px solid rgba(76,175,80,.3);
+  color:#a5d6a7;
+  font-size:11px;padding:3px 9px;
+  border-radius:20px;
+}
+
+/* 대본 구조 */
+.pg-script-block{
+  background:rgba(255,255,255,.03);
+  border:1px solid rgba(255,255,255,.07);
+  border-radius:10px;
+  overflow:hidden;
+  margin-bottom:8px;
+}
+.pg-script-head{
+  display:flex;align-items:center;gap:8px;
+  padding:9px 14px;
+  background:rgba(255,255,255,.05);
+  border-bottom:1px solid rgba(255,255,255,.06);
+}
+.pg-script-time{
+  background:rgba(25,118,210,.25);
+  color:#90caf9;font-size:10px;font-weight:700;
+  padding:2px 7px;border-radius:4px;
+  flex-shrink:0;
+}
+.pg-script-part{
+  color:#e8f4fd;font-size:12px;font-weight:700;flex:1;
+}
+.pg-script-goal{
+  color:#6a8faf;font-size:10px;
+}
+.pg-script-body{
+  padding:10px 14px;
+}
+.pg-script-item{
+  display:flex;align-items:flex-start;gap:6px;
+  font-size:12px;color:#c8ddf0;line-height:1.5;
+  margin-bottom:4px;
+}
+.pg-script-item::before{
+  content:'•';color:#1976d2;flex-shrink:0;margin-top:1px;
+}
+
+/* 복사 버튼 */
+.pg-copy-btn{
+  width:100%;padding:11px;
+  background:rgba(255,255,255,.07);
+  border:1px solid rgba(255,255,255,.15);
+  border-radius:10px;
+  color:#c8ddf0;font-size:12px;font-weight:700;
+  cursor:pointer;transition:.2s;
+  display:flex;align-items:center;justify-content:center;gap:6px;
+}
+.pg-copy-btn:hover{
+  background:rgba(255,255,255,.13);
+  border-color:rgba(255,255,255,.28);
+}
+.pg-copy-btn.copied{
+  background:rgba(76,175,80,.15);
+  border-color:rgba(76,175,80,.4);
+  color:#a5d6a7;
+}
+
 </style>
 </head>
 <body>
@@ -4145,6 +4274,347 @@ function pgExtractKeywords(title) {
   }
   // 최대 10개
   return keywords.slice(0, 10);
+}
+
+
+/* ════════════════════════════════════════════
+   STEP 2 — 새 영상 기획안 자동 생성
+════════════════════════════════════════════ */
+function pgRenderStep2(q) {
+  var body = document.getElementById('pg-body-content');
+  if(!body) return;
+
+  var title   = decodeHtmlEntities(q.title   || '');
+  var channel = decodeHtmlEntities(q.channel || '');
+  var why     = decodeHtmlEntities(q.why     || '');
+  var create  = decodeHtmlEntities(q.create  || '');
+  var views   = q.views || 0;
+  var daily   = q.daily || 0;
+  var eng     = parseFloat(q.eng) || 0;
+
+  /* ── 키워드 추출 ── */
+  var kws = pgExtractKeywords(title);
+  var mainKw  = kws.length > 0 ? kws[0] : '주제';
+  var subKw   = kws.length > 1 ? kws[1] : '';
+  var thirdKw = kws.length > 2 ? kws[2] : '';
+
+  /* ── 콘텐츠 카테고리 자동 감지 ── */
+  var category = pgDetectCategory(title, channel);
+
+  /* ── 추천 제목 3개 생성 ── */
+  var titles = pgGenerateTitles(title, kws, category, why, create);
+
+  /* ── 권장 영상 길이 계산 ── */
+  var duration = pgRecommendDuration(views, daily, eng, category);
+
+  /* ── 썸네일 컨셉 추천 ── */
+  var thumbConcept = pgThumbConcept(category, eng, views);
+
+  /* ── 태그 10개 생성 ── */
+  var tags = pgGenerateTags(kws, category, channel);
+
+  /* ── 대본 구조 ── */
+  var script = pgScriptTemplate(mainKw, subKw, category, duration, why, create);
+
+  var html = '';
+
+  /* ─ 섹션1: 추천 제목 후보 ─ */
+  html += '<div class="pg-section">'
+    + '<div class="pg-section-label">📝 추천 제목 후보 3개</div>';
+  for(var i=0; i<titles.length; i++){
+    html += '<div class="pg-title-card" onclick="pgSelectTitle(this)" data-title="' + escHtml(titles[i].text) + '">'
+      + '<div class="pg-title-num">' + (i+1) + '</div>'
+      + '<div>'
+      +   '<div class="pg-title-text">' + escHtml(titles[i].text) + '</div>'
+      +   '<div class="pg-title-type">' + titles[i].type + '</div>'
+      + '</div>'
+      + '</div>';
+  }
+  html += '</div>';
+
+  /* ─ 섹션2: 권장 영상 길이 + 썸네일 컨셉 (2컬럼) ─ */
+  html += '<div class="pg-two-col">'
+    + '<div class="pg-info-box">'
+    +   '<div class="pg-info-box-label">⏱ 권장 영상 길이</div>'
+    +   '<div class="pg-info-box-val">' + duration.label + '</div>'
+    +   '<div class="pg-info-box-sub">' + duration.reason + '</div>'
+    + '</div>'
+    + '<div class="pg-info-box">'
+    +   '<div class="pg-info-box-label">🖼 썸네일 컨셉</div>'
+    +   '<div class="pg-info-box-val">' + thumbConcept.style + '</div>'
+    +   '<div class="pg-info-box-sub">' + thumbConcept.tip + '</div>'
+    + '</div>'
+    + '</div>';
+
+  /* ─ 섹션3: 핵심 태그 ─ */
+  html += '<div class="pg-section" style="margin-top:12px">'
+    + '<div class="pg-section-label">🏷 핵심 태그 ' + tags.length + '개</div>'
+    + '<div class="pg-tag-wrap">';
+  for(var t=0; t<tags.length; t++){
+    html += '<span class="pg-tag">' + escHtml(tags[t]) + '</span>';
+  }
+  html += '</div></div>';
+
+  /* ─ 섹션4: 대본 구조 ─ */
+  html += '<div class="pg-section">'
+    + '<div class="pg-section-label">📋 대본 구조 템플릿</div>';
+  for(var s=0; s<script.length; s++){
+    var sec = script[s];
+    html += '<div class="pg-script-block">'
+      + '<div class="pg-script-head">'
+      +   '<span class="pg-script-time">' + sec.time + '</span>'
+      +   '<span class="pg-script-part">' + sec.part + '</span>'
+      +   '<span class="pg-script-goal">' + sec.goal + '</span>'
+      + '</div>'
+      + '<div class="pg-script-body">';
+    for(var p=0; p<sec.points.length; p++){
+      html += '<div class="pg-script-item">' + escHtml(sec.points[p]) + '</div>';
+    }
+    html += '</div></div>';
+  }
+  html += '</div>';
+
+  /* ─ 복사 버튼 ─ */
+  html += '<button class="pg-copy-btn" id="pg-copy-script" onclick="pgCopyScript()">'
+    + '📋 대본 템플릿 전체 복사'
+    + '</button>';
+
+  /* ─ 팁 ─ */
+  html += '<div class="pg-tip" style="margin-top:10px">'
+    + '제목 후보를 클릭해서 선택하면 STEP 3에서 해당 제목 기반으로 소재를 생성합니다.'
+    + '</div>';
+
+  body.innerHTML = html;
+
+  /* 선택된 제목 저장 (초기값: 첫 번째) */
+  window._pgSelectedTitle = titles.length > 0 ? titles[0].text : title;
+  /* 대본 데이터 저장 (복사용) */
+  window._pgScriptData    = script;
+  window._pgTagsData      = tags;
+  window._pgTitlesData    = titles;
+}
+
+/* ── 카테고리 감지 ── */
+function pgDetectCategory(title, channel) {
+  var t = (title + ' ' + channel).toLowerCase();
+  if(/뉴스|속보|정치|사건|사고|전쟁|군|경제|주식|부동산/.test(t)) return 'news';
+  if(/드론|비행|촬영|항공/.test(t))                               return 'drone';
+  if(/부동산|아파트|분양|투자|땅|토지/.test(t))                   return 'realestate';
+  if(/요리|레시피|먹방|음식/.test(t))                             return 'food';
+  if(/게임|공략|리뷰/.test(t))                                    return 'game';
+  if(/여행|관광|vlog|브이로그/.test(t))                           return 'travel';
+  if(/교육|공부|강의|학습/.test(t))                               return 'edu';
+  if(/음악|노래|커버/.test(t))                                    return 'music';
+  if(/ai|인공지능|chatgpt|gpt/.test(t))                          return 'ai';
+  return 'general';
+}
+
+/* ── 제목 3개 생성 ── */
+function pgGenerateTitles(origTitle, kws, category, why, create) {
+  var mainKw  = kws.length > 0 ? kws[0] : '주제';
+  var subKw   = kws.length > 1 ? kws[1] : '';
+  var nums    = ['5가지','3가지','7가지','10가지'];
+  var numPick = nums[Math.floor(Math.random()*nums.length)];
+
+  /* 카테고리별 감성어 */
+  var emotionMap = {
+    'news':       ['충격','놀라운','긴급','단독'],
+    'drone':      ['4K','항공','비행','감동'],
+    'realestate': ['핵심','필수','실전','비밀'],
+    'food':       ['맛있는','쉬운','간단한','꿀'],
+    'game':       ['최강','꿀팁','공략','무한'],
+    'travel':     ['아름다운','숨겨진','완벽한','힐링'],
+    'edu':        ['쉽게','완벽','핵심','빠른'],
+    'ai':         ['혁신적','최신','강력한','실용'],
+    'general':    ['놀라운','완벽한','핵심','실전']
+  };
+  var emotions = emotionMap[category] || emotionMap['general'];
+  var emo1 = emotions[0];
+  var emo2 = emotions[1];
+
+  var titles = [
+    {
+      text: emo1 + ' ' + mainKw + (subKw ? ' ' + subKw : '') + ' - 직접 해봤습니다',
+      type: '🔥 감성형 · 직접 경험 강조'
+    },
+    {
+      text: mainKw + ' ' + numPick + ' - ' + emo2 + ' 방법 총정리',
+      type: '📋 정보형 · 숫자 + 정리'
+    },
+    {
+      text: '"' + mainKw + (subKw ? ' ' + subKw : '') + '" 이게 진짜입니다 | ' + emo1 + ' 결과 공개',
+      type: '💬 질문형 · 결과 공개 유도'
+    }
+  ];
+  return titles;
+}
+
+/* ── 권장 영상 길이 ── */
+function pgRecommendDuration(views, daily, eng, category) {
+  var shortCats = ['news','drone'];
+  var longCats  = ['edu','realestate','ai'];
+
+  var label, reason;
+  if(shortCats.indexOf(category) !== -1){
+    label  = '3 ~ 7분';
+    reason = '빠른 소비형 콘텐츠';
+  } else if(longCats.indexOf(category) !== -1){
+    label  = '10 ~ 20분';
+    reason = '정보 심층형 콘텐츠';
+  } else if(eng >= 6){
+    label  = '8 ~ 12분';
+    reason = '참여율 높음 → 길어도 시청 유지';
+  } else {
+    label  = '6 ~ 10분';
+    reason = '일반 정보형 적정 길이';
+  }
+  return { label: label, reason: reason };
+}
+
+/* ── 썸네일 컨셉 ── */
+function pgThumbConcept(category, eng, views) {
+  var conceptMap = {
+    'news':       { style:'텍스트 강조형',  tip:'붉은 배경 + 흰 굵은 글자' },
+    'drone':      { style:'항공 영상 캡처', tip:'4K 풍경 + 위치 텍스트' },
+    'realestate': { style:'비교표 삽입형',  tip:'전후 / 가격 비교 이미지' },
+    'food':       { style:'완성품 클로즈업', tip:'음식 + 재료 배치' },
+    'game':       { style:'캐릭터 강조형',  tip:'표정 + 점수/레벨 표시' },
+    'travel':     { style:'풍경 와이드샷',  tip:'황금시간대 자연광' },
+    'edu':        { style:'칠판/화이트보드', tip:'핵심 키워드 시각화' },
+    'ai':         { style:'UI 스크린샷형',  tip:'화면 캡처 + 결과물 강조' },
+    'general':    { style:'인물 표정 강조', tip:'궁금증 유발 표정 + 텍스트' }
+  };
+  return conceptMap[category] || conceptMap['general'];
+}
+
+/* ── 태그 생성 ── */
+function pgGenerateTags(kws, category, channel) {
+  var catTags = {
+    'news':       ['뉴스','이슈','속보','시사','최신뉴스'],
+    'drone':      ['드론','드론촬영','항공촬영','4K드론','드론영상'],
+    'realestate': ['부동산','아파트','투자','부동산투자','주택'],
+    'food':       ['요리','레시피','먹방','음식','쿠킹'],
+    'game':       ['게임','게임플레이','공략','리뷰','게임방송'],
+    'travel':     ['여행','국내여행','해외여행','여행vlog','관광'],
+    'edu':        ['교육','강의','공부','학습','설명'],
+    'ai':         ['AI','인공지능','ChatGPT','AI활용','GPT'],
+    'general':    ['유튜브','영상','콘텐츠','정보','추천']
+  };
+  var base  = catTags[category] || catTags['general'];
+  var tags  = kws.slice(0, 5);
+  for(var i=0; i<base.length; i++){
+    if(tags.indexOf(base[i]) === -1) tags.push(base[i]);
+    if(tags.length >= 12) break;
+  }
+  if(channel && tags.indexOf(channel) === -1) tags.push(channel);
+  return tags.slice(0, 12);
+}
+
+/* ── 대본 구조 템플릿 ── */
+function pgScriptTemplate(mainKw, subKw, category, duration, why, create) {
+  var totalMin = parseInt(duration.label.split('~')[1]) || 10;
+  var intro  = '0:00 ~ 0:30';
+  var body1  = '0:30 ~ ' + Math.round(totalMin * 0.35) + ':00';
+  var body2  = Math.round(totalMin * 0.35) + ':00 ~ ' + Math.round(totalMin * 0.85) + ':00';
+  var outro  = Math.round(totalMin * 0.85) + ':00 ~ 끝';
+
+  return [
+    {
+      time: intro,
+      part: '🎬 인트로 · 훅',
+      goal: '첫 30초 이탈 방지',
+      points: [
+        '강렬한 질문 또는 충격적 사실로 시작',
+        '"이 영상을 끝까지 보면 ' + mainKw + ' 완벽히 이해합니다"',
+        '오늘 다룰 내용 3가지 미리 예고'
+      ]
+    },
+    {
+      time: body1,
+      part: '📖 본론 1 · 배경 설명',
+      goal: '문제 인식 + 공감',
+      points: [
+        mainKw + (subKw ? ' + ' + subKw : '') + ' 현황 설명',
+        '시청자가 겪는 불편함 / 궁금증 공감',
+        why ? '인기 이유: ' + why.substring(0, 50) + '...' : '핵심 개념 정의'
+      ]
+    },
+    {
+      time: body2,
+      part: '🔍 본론 2 · 핵심 내용',
+      goal: '가치 전달 + 시청 유지',
+      points: [
+        '구체적 방법 / 사례 / 데이터 제시',
+        create ? '콘텐츠 방향: ' + create.substring(0, 50) + '...' : '단계별 설명 (숫자로 구분)',
+        '중간 자막 + B-roll 영상으로 지루함 방지'
+      ]
+    },
+    {
+      time: outro,
+      part: '✅ 아웃트로 · CTA',
+      goal: '구독 유도 + 다음 영상 예고',
+      points: [
+        '핵심 내용 1줄 요약',
+        '"좋아요 + 구독" 자연스럽게 언급',
+        '다음 영상 주제 미리 티저로 공개'
+      ]
+    }
+  ];
+}
+
+/* ── 제목 선택 ── */
+function pgSelectTitle(el) {
+  var cards = document.querySelectorAll('.pg-title-card');
+  for(var i=0; i<cards.length; i++) cards[i].classList.remove('selected');
+  el.classList.add('selected');
+  window._pgSelectedTitle = el.getAttribute('data-title');
+}
+
+/* ── 대본 복사 ── */
+function pgCopyScript() {
+  var script = window._pgScriptData || [];
+  var tags   = window._pgTagsData   || [];
+  var titles = window._pgTitlesData || [];
+  var NL = String.fromCharCode(10);
+
+  var text = '=== VIDORA 영상 제작 기획안 ===' + NL + NL;
+  text += '[ 추천 제목 ]' + NL;
+  for(var i=0; i<titles.length; i++){
+    text += (i+1) + '. ' + titles[i].text + NL;
+  }
+  text += NL + '[ 핵심 태그 ]' + NL + tags.join(', ') + NL + NL;
+  text += '[ 대본 구조 ]' + NL;
+  for(var s=0; s<script.length; s++){
+    var sec = script[s];
+    text += NL + sec.time + '  ' + sec.part + '  (' + sec.goal + ')' + NL;
+    for(var p=0; p<sec.points.length; p++){
+      text += '  - ' + sec.points[p] + NL;
+    }
+  }
+
+  var doCopied = function(){
+    var btn = document.getElementById('pg-copy-script');
+    if(btn){
+      btn.textContent = '✅ 복사 완료!';
+      btn.classList.add('copied');
+      setTimeout(function(){
+        btn.textContent = '📋 대본 템플릿 전체 복사';
+        btn.classList.remove('copied');
+      }, 2000);
+    }
+  };
+
+  if(navigator.clipboard){
+    navigator.clipboard.writeText(text).then(doCopied);
+  } else {
+    var ta = document.createElement('textarea');
+    ta.value = text;
+    document.body.appendChild(ta);
+    ta.select();
+    document.execCommand('copy');
+    document.body.removeChild(ta);
+    doCopied();
+  }
 }
 
 </script>
