@@ -1672,6 +1672,181 @@ html,body{overflow:hidden;height:100%;margin:0;padding:0}
   color:#e8eaf6;
 }
 
+
+/* ══ STEP 4 체크리스트 스타일 ══ */
+
+/* 진행률 바 */
+.pg-progress-wrap{
+  background:#162338;
+  border:1px solid rgba(255,255,255,.08);
+  border-radius:12px;
+  padding:14px 16px;
+  margin-bottom:12px;
+}
+.pg-progress-header{
+  display:flex;justify-content:space-between;
+  align-items:center;margin-bottom:8px;
+}
+.pg-progress-label{
+  font-size:12px;font-weight:700;color:#c8ddf0;
+}
+.pg-progress-pct{
+  font-size:14px;font-weight:800;color:#4caf50;
+}
+.pg-progress-bar-bg{
+  background:rgba(255,255,255,.1);
+  border-radius:6px;height:8px;overflow:hidden;
+}
+.pg-progress-bar-fill{
+  height:100%;border-radius:6px;
+  background:linear-gradient(90deg,#2e7d32,#4caf50);
+  transition:width .5s ease;
+}
+.pg-progress-sub{
+  font-size:11px;color:#6a8faf;margin-top:5px;
+}
+
+/* 체크리스트 섹션 */
+.pg-checklist{
+  background:#162338;
+  border:1px solid rgba(255,255,255,.08);
+  border-radius:14px;
+  overflow:hidden;
+  margin-bottom:12px;
+}
+.pg-checklist-title{
+  font-size:12px;font-weight:700;color:#4da6ff;
+  padding:11px 16px 9px;
+  background:rgba(255,255,255,.04);
+  border-bottom:1px solid rgba(255,255,255,.06);
+  display:flex;align-items:center;gap:6px;
+  letter-spacing:.3px;
+}
+
+/* 체크 아이템 */
+.pg-check-item{
+  display:flex;align-items:flex-start;
+  gap:12px;padding:11px 16px;
+  border-bottom:1px solid rgba(255,255,255,.04);
+  cursor:pointer;transition:.15s;
+  -webkit-user-select:none;user-select:none;
+}
+.pg-check-item:last-child{ border-bottom:none; }
+.pg-check-item:hover{ background:rgba(255,255,255,.04); }
+.pg-check-item.checked{
+  background:rgba(76,175,80,.06);
+}
+
+/* 체크박스 */
+.pg-checkbox{
+  width:20px;height:20px;
+  border:2px solid rgba(255,255,255,.25);
+  border-radius:5px;
+  flex-shrink:0;margin-top:1px;
+  display:flex;align-items:center;justify-content:center;
+  transition:.2s;font-size:12px;
+}
+.pg-check-item.checked .pg-checkbox{
+  background:#4caf50;border-color:#4caf50;
+}
+.pg-check-item.checked .pg-checkbox::after{
+  content:'✓';color:#fff;font-weight:800;font-size:13px;
+}
+
+/* 체크 텍스트 */
+.pg-check-text{
+  font-size:13px;color:#c8ddf0;line-height:1.4;flex:1;
+}
+.pg-check-item.checked .pg-check-text{
+  color:#6a8faf;text-decoration:line-through;
+}
+.pg-check-sub{
+  font-size:11px;color:#4a6a80;margin-top:2px;
+}
+.pg-check-item.checked .pg-check-sub{
+  color:#3a5060;
+}
+
+/* 편집 도구 카드 */
+.pg-tool-list{
+  display:flex;flex-direction:column;gap:6px;
+  margin-bottom:12px;
+}
+.pg-tool-card{
+  display:flex;align-items:center;gap:12px;
+  background:#162338;
+  border:1px solid rgba(255,255,255,.08);
+  border-radius:11px;
+  padding:11px 14px;
+  text-decoration:none;
+  transition:.2s;
+}
+.pg-tool-card:hover{
+  background:#1a2d45;
+  border-color:rgba(25,118,210,.35);
+}
+.pg-tool-icon{
+  font-size:24px;flex-shrink:0;
+}
+.pg-tool-info{ flex:1; }
+.pg-tool-name{
+  font-size:13px;font-weight:700;color:#e8f4fd;
+}
+.pg-tool-desc{
+  font-size:11px;color:#6a8faf;margin-top:2px;
+}
+.pg-tool-badge{
+  font-size:10px;font-weight:700;padding:2px 7px;
+  border-radius:20px;flex-shrink:0;
+}
+.pg-tool-badge.free{
+  background:rgba(76,175,80,.15);
+  border:1px solid rgba(76,175,80,.3);color:#a5d6a7;
+}
+.pg-tool-badge.pro{
+  background:rgba(255,152,0,.12);
+  border:1px solid rgba(255,152,0,.3);color:#ffcc80;
+}
+
+/* 업로드 최적 시간 */
+.pg-upload-time{
+  background:rgba(255,193,7,.06);
+  border:1px solid rgba(255,193,7,.18);
+  border-radius:12px;
+  padding:12px 16px;
+  margin-bottom:12px;
+}
+.pg-upload-time-label{
+  font-size:11px;font-weight:700;color:#ffd54f;
+  letter-spacing:.4px;margin-bottom:8px;
+}
+.pg-time-chips{
+  display:flex;gap:6px;flex-wrap:wrap;
+}
+.pg-time-chip{
+  background:rgba(255,193,7,.1);
+  border:1px solid rgba(255,193,7,.25);
+  color:#ffe082;font-size:11px;font-weight:700;
+  padding:4px 10px;border-radius:8px;
+}
+
+/* 제작 완료 버튼 */
+.pg-complete-btn{
+  width:100%;padding:15px;
+  background:linear-gradient(135deg,#2e7d32,#1b5e20);
+  border:none;border-radius:13px;
+  color:#fff;font-size:15px;font-weight:800;
+  cursor:pointer;transition:.2s;
+  display:flex;align-items:center;justify-content:center;gap:8px;
+  margin-top:4px;
+}
+.pg-complete-btn:hover{ opacity:.88; transform:translateY(-1px); }
+.pg-complete-btn:active{ transform:translateY(0); }
+.pg-complete-btn:disabled{
+  background:rgba(255,255,255,.1);
+  color:#4a6a80;cursor:not-allowed;transform:none;
+}
+
 </style>
 </head>
 <body>
@@ -4985,6 +5160,234 @@ function pgShowToast() {
   if(!toast) return;
   toast.classList.add('show');
   setTimeout(function(){ toast.classList.remove('show'); }, 2800);
+}
+
+
+/* ════════════════════════════════════════════
+   STEP 4 — 편집 & 업로드 체크리스트
+════════════════════════════════════════════ */
+
+/* 체크 상태 전역 저장 */
+window._pgChecked = {};
+
+function pgRenderStep4(q) {
+  var body = document.getElementById('pg-body-content');
+  if(!body) return;
+
+  /* 체크 상태 초기화 (새 영상마다 리셋) */
+  if(!window._pgChecked[q.id]) window._pgChecked[q.id] = {};
+
+  pgDrawStep4(q);
+}
+
+/* ── STEP 4 화면 그리기 ── */
+function pgDrawStep4(q) {
+  var body = document.getElementById('pg-body-content');
+  if(!body) return;
+
+  var checked = window._pgChecked[q.id] || {};
+
+  /* 편집 체크리스트 항목 */
+  var editItems = [
+    { id:'e1', text:'인트로 30초 이내 훅 삽입',       sub:'첫 30초에 시청자 이탈 방지 장치 필수' },
+    { id:'e2', text:'자막 삽입 완료',                  sub:'한국어 자막 + 핵심 키워드 강조' },
+    { id:'e3', text:'배경음악 볼륨 조정',              sub:'목소리 대비 -15dB 권장' },
+    { id:'e4', text:'엔딩 카드 20초 삽입',             sub:'구독·다음 영상 링크 카드 배치' },
+    { id:'e5', text:'불필요한 침묵 구간 제거',          sub:'3초 이상 침묵 구간 컷 편집' },
+    { id:'e6', text:'B-roll 영상 삽입',                sub:'중간 중간 화면 전환으로 지루함 방지' }
+  ];
+
+  /* 업로드 체크리스트 항목 */
+  var uploadItems = [
+    { id:'u1', text:'제목에 핵심 키워드 포함',         sub:'앞 10자 이내 핵심어 배치' },
+    { id:'u2', text:'설명란 첫 3줄 핵심 내용 작성',    sub:'더보기 접힘 전에 핵심 노출' },
+    { id:'u3', text:'태그 10~15개 입력',               sub:'STEP 2에서 생성된 태그 활용' },
+    { id:'u4', text:'맞춤 썸네일 업로드',              sub:'STEP 3에서 생성한 이미지 사용' },
+    { id:'u5', text:'공개 예약 시간 설정',             sub:'화·목 오후 6~8시 권장' }
+  ];
+
+  /* 전체 완료 수 계산 */
+  var total   = editItems.length + uploadItems.length;
+  var doneNum = 0;
+  for(var k in checked){ if(checked[k]) doneNum++; }
+  var pct = total > 0 ? Math.round(doneNum / total * 100) : 0;
+
+  var html = '';
+
+  /* ─ 진행률 바 ─ */
+  html += '<div class="pg-progress-wrap">'
+    + '<div class="pg-progress-header">'
+    +   '<span class="pg-progress-label">📊 제작 진행률</span>'
+    +   '<span class="pg-progress-pct" id="pg-pct-text">' + pct + '%</span>'
+    + '</div>'
+    + '<div class="pg-progress-bar-bg">'
+    +   '<div class="pg-progress-bar-fill" id="pg-pct-bar" style="width:' + pct + '%"></div>'
+    + '</div>'
+    + '<div class="pg-progress-sub" id="pg-pct-sub">' + doneNum + ' / ' + total + ' 항목 완료</div>'
+    + '</div>';
+
+  /* ─ 편집 체크리스트 ─ */
+  html += '<div class="pg-checklist">'
+    + '<div class="pg-checklist-title">✂️ 편집 단계</div>';
+  for(var i=0; i<editItems.length; i++){
+    var item    = editItems[i];
+    var isDone  = !!checked[item.id];
+    html += '<div class="pg-check-item' + (isDone ? ' checked' : '') + '"'
+      + ' id="pgck-' + item.id + '"'
+      + ' onclick="pgToggleCheck(decodeURIComponent(\'' + encodeURIComponent(q.id) + '\'),\'' + item.id + '\')">'  
+      + '<div class="pg-checkbox"></div>'
+      + '<div>'
+      +   '<div class="pg-check-text">' + escHtml(item.text) + '</div>'
+      +   '<div class="pg-check-sub">'  + escHtml(item.sub)  + '</div>'
+      + '</div>'
+      + '</div>';
+  }
+  html += '</div>';
+
+  /* ─ 업로드 체크리스트 ─ */
+  html += '<div class="pg-checklist">'
+    + '<div class="pg-checklist-title">📤 업로드 최적화</div>';
+  for(var j=0; j<uploadItems.length; j++){
+    var uItem   = uploadItems[j];
+    var uDone   = !!checked[uItem.id];
+    html += '<div class="pg-check-item' + (uDone ? ' checked' : '') + '"'
+      + ' id="pgck-' + uItem.id + '"'
+      + ' onclick="pgToggleCheck(decodeURIComponent(\'' + encodeURIComponent(q.id) + '\'),\'' + uItem.id + '\')">'  
+      + '<div class="pg-checkbox"></div>'
+      + '<div>'
+      +   '<div class="pg-check-text">' + escHtml(uItem.text) + '</div>'
+      +   '<div class="pg-check-sub">'  + escHtml(uItem.sub)  + '</div>'
+      + '</div>'
+      + '</div>';
+  }
+  html += '</div>';
+
+  /* ─ 업로드 최적 시간 ─ */
+  html += '<div class="pg-upload-time">'
+    + '<div class="pg-upload-time-label">⏰ 업로드 최적 시간 (한국 기준)</div>'
+    + '<div class="pg-time-chips">'
+    + '<span class="pg-time-chip">화요일 오후 6~8시</span>'
+    + '<span class="pg-time-chip">목요일 오후 6~8시</span>'
+    + '<span class="pg-time-chip">토요일 오전 10~12시</span>'
+    + '</div>'
+    + '</div>';
+
+  /* ─ 추천 편집 도구 ─ */
+  html += '<div class="pg-tool-list">'
+    + '<a href="https://www.capcut.com" target="_blank" class="pg-tool-card">'
+    +   '<div class="pg-tool-icon">✂️</div>'
+    +   '<div class="pg-tool-info">'
+    +     '<div class="pg-tool-name">CapCut</div>'
+    +     '<div class="pg-tool-desc">모바일·PC 모두 가능, 자막·자동편집 강력</div>'
+    +   '</div>'
+    +   '<span class="pg-tool-badge free">무료</span>'
+    + '</a>'
+    + '<a href="https://www.blackmagicdesign.com/products/davinciresolve" target="_blank" class="pg-tool-card">'
+    +   '<div class="pg-tool-icon">🎬</div>'
+    +   '<div class="pg-tool-info">'
+    +     '<div class="pg-tool-name">DaVinci Resolve</div>'
+    +     '<div class="pg-tool-desc">전문가용 색보정·편집, PC 전용</div>'
+    +   '</div>'
+    +   '<span class="pg-tool-badge free">무료</span>'
+    + '</a>'
+    + '<a href="https://studio.youtube.com" target="_blank" class="pg-tool-card">'
+    +   '<div class="pg-tool-icon">▶️</div>'
+    +   '<div class="pg-tool-info">'
+    +     '<div class="pg-tool-name">YouTube Studio</div>'
+    +     '<div class="pg-tool-desc">간단한 컷 편집·자막 업로드 직접 가능</div>'
+    +   '</div>'
+    +   '<span class="pg-tool-badge free">무료</span>'
+    + '</a>'
+    + '</div>';
+
+  /* ─ 제작 완료 버튼 ─ */
+  var allDone = (doneNum === total);
+  html += '<button class="pg-complete-btn"'
+    + ' id="pg-complete-btn"'
+    + ' onclick="pgMarkComplete(decodeURIComponent(\'' + encodeURIComponent(q.id) + '\'))"'
+    + (allDone ? '' : '')
+    + '>'
+    + (allDone ? '🎉 제작 완료 — 목록에서 완료 처리' : '✅ 제작 완료로 표시하기')
+    + '</button>';
+
+  body.innerHTML = html;
+}
+
+/* ── 체크 토글 ── */
+function pgToggleCheck(videoId, itemId) {
+  if(!window._pgChecked[videoId]) window._pgChecked[videoId] = {};
+  var checked = window._pgChecked[videoId];
+  checked[itemId] = !checked[itemId];
+
+  /* 해당 아이템 UI 즉시 업데이트 */
+  var el = document.getElementById('pgck-' + itemId);
+  if(el){
+    if(checked[itemId]) el.classList.add('checked');
+    else                el.classList.remove('checked');
+  }
+
+  /* 진행률 바 업데이트 */
+  pgUpdateProgress(videoId);
+}
+
+/* ── 진행률 업데이트 ── */
+function pgUpdateProgress(videoId) {
+  var checked  = window._pgChecked[videoId] || {};
+  var total    = 11; /* 편집 6 + 업로드 5 */
+  var doneNum  = 0;
+  for(var k in checked){ if(checked[k]) doneNum++; }
+  var pct = Math.round(doneNum / total * 100);
+
+  var barEl  = document.getElementById('pg-pct-bar');
+  var pctEl  = document.getElementById('pg-pct-text');
+  var subEl  = document.getElementById('pg-pct-sub');
+  var btnEl  = document.getElementById('pg-complete-btn');
+
+  if(barEl) barEl.style.width = pct + '%';
+  if(pctEl) pctEl.textContent = pct + '%';
+  if(subEl) subEl.textContent = doneNum + ' / ' + total + ' 항목 완료';
+  if(btnEl && doneNum === total){
+    btnEl.textContent = '🎉 제작 완료 — 목록에서 완료 처리';
+  }
+}
+
+/* ── 제작 완료 처리 ── */
+function pgMarkComplete(videoId) {
+  /* 제작 큐에서 해당 영상 done=true 처리 */
+  var queue;
+  try { queue = JSON.parse(localStorage.getItem('vidora_create_queue') || '[]'); }
+  catch(e) { queue = []; }
+
+  var found = false;
+  for(var i=0; i<queue.length; i++){
+    if(queue[i].id === videoId){
+      queue[i].done = true;
+      found = true;
+      break;
+    }
+  }
+
+  if(found){
+    localStorage.setItem('vidora_create_queue', JSON.stringify(queue));
+    /* 제작 목록 UI 갱신 */
+    if(typeof renderCreateQueue === 'function') renderCreateQueue();
+    /* 뱃지 업데이트 */
+    if(typeof updateCreateBadge === 'function') updateCreateBadge();
+  }
+
+  /* 완료 토스트 메시지 */
+  var toast = document.getElementById('pg-toast');
+  if(toast){
+    toast.textContent = '🎉 제작 완료! 목록에서 완료 처리되었습니다';
+    toast.classList.add('show');
+    setTimeout(function(){
+      toast.classList.remove('show');
+      toast.textContent = '📋 프롬프트 복사 완료! Genspark에 붙여넣기 하세요';
+    }, 3000);
+  }
+
+  /* 패널 닫기 */
+  setTimeout(function(){ closePgPanel(); }, 1200);
 }
 
 </script>
