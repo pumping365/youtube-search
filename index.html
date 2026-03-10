@@ -1199,6 +1199,214 @@ html,body{overflow:hidden;height:100%;margin:0;padding:0}
 .cq-an-footer{
   display:flex;gap:10px;padding:14px 16px 8px;
 }
+
+/* ══════════════════════════════════════════
+   제작 가이드 오버레이 & 패널  (STEP 1~4)
+══════════════════════════════════════════ */
+#pg-overlay{
+  position:fixed;inset:0;
+  background:rgba(0,0,0,.82);
+  z-index:3000;
+  display:none;
+  align-items:flex-end;
+  justify-content:center;
+}
+#pg-overlay.open{ display:flex; }
+
+.pg-sheet{
+  background:#0f1e30;
+  border-radius:22px 22px 0 0;
+  width:100%;max-width:540px;
+  max-height:92vh;
+  overflow:hidden;
+  display:flex;flex-direction:column;
+}
+
+/* 핸들 */
+.pg-handle{
+  width:40px;height:4px;
+  background:rgba(255,255,255,.2);
+  border-radius:4px;
+  margin:10px auto 0;flex-shrink:0;
+}
+
+/* 헤더 */
+.pg-header{
+  padding:14px 18px 10px;
+  border-bottom:1px solid rgba(255,255,255,.08);
+  flex-shrink:0;
+}
+.pg-header-title{
+  font-size:15px;font-weight:800;color:#e8f4fd;
+  display:flex;align-items:center;gap:6px;
+}
+.pg-header-ref{
+  font-size:11px;color:#6a8faf;margin-top:3px;
+  white-space:nowrap;overflow:hidden;text-overflow:ellipsis;
+}
+
+/* 스텝 바 */
+.pg-stepbar{
+  display:flex;gap:0;
+  padding:10px 18px 0;
+  flex-shrink:0;
+}
+.pg-step-btn{
+  flex:1;padding:7px 4px;
+  background:rgba(255,255,255,.05);
+  border:1px solid rgba(255,255,255,.1);
+  border-radius:8px;
+  color:#6a8faf;font-size:11px;font-weight:600;
+  cursor:pointer;transition:.2s;text-align:center;
+  margin:0 2px;
+}
+.pg-step-btn.active{
+  background:linear-gradient(135deg,#1565c0,#0d47a1);
+  border-color:#1976d2;color:#fff;
+}
+.pg-step-btn.done{
+  background:rgba(76,175,80,.15);
+  border-color:rgba(76,175,80,.4);
+  color:#81c784;
+}
+
+/* 본문 스크롤 영역 */
+.pg-body{
+  flex:1;overflow-y:auto;
+  padding:14px 18px 10px;
+  scrollbar-width:thin;
+  scrollbar-color:rgba(255,255,255,.15) transparent;
+}
+
+/* STEP 섹션 공통 */
+.pg-section{
+  background:#162338;
+  border:1px solid rgba(255,255,255,.08);
+  border-radius:14px;
+  padding:14px 16px;
+  margin-bottom:12px;
+}
+.pg-section-label{
+  font-size:11px;font-weight:700;
+  color:#4da6ff;letter-spacing:.5px;
+  text-transform:uppercase;margin-bottom:10px;
+  display:flex;align-items:center;gap:5px;
+}
+.pg-section-label::before{
+  content:'';display:inline-block;
+  width:3px;height:14px;
+  background:#1976d2;border-radius:2px;
+}
+
+/* 분석 결과 행 */
+.pg-row{
+  display:flex;align-items:flex-start;
+  gap:10px;padding:8px 0;
+  border-bottom:1px solid rgba(255,255,255,.05);
+  font-size:13px;
+}
+.pg-row:last-child{ border-bottom:none; }
+.pg-row-key{
+  color:#6a8faf;font-size:11px;font-weight:600;
+  min-width:70px;flex-shrink:0;padding-top:1px;
+}
+.pg-row-val{
+  color:#c8ddf0;line-height:1.5;flex:1;
+}
+.pg-row-val.highlight{
+  color:#e8f4fd;font-weight:700;
+}
+
+/* 키워드 태그 */
+.pg-keyword-wrap{
+  display:flex;flex-wrap:wrap;gap:5px;margin-top:2px;
+}
+.pg-keyword{
+  background:rgba(25,118,210,.2);
+  border:1px solid rgba(25,118,210,.4);
+  color:#90caf9;
+  font-size:11px;padding:3px 8px;
+  border-radius:20px;cursor:default;
+}
+
+/* 인기 요인 텍스트 */
+.pg-why-text{
+  background:rgba(255,255,255,.04);
+  border-left:3px solid #1976d2;
+  border-radius:0 8px 8px 0;
+  padding:10px 12px;
+  color:#c8ddf0;font-size:12px;line-height:1.65;
+  margin-top:4px;
+}
+
+/* 통계 칩 그룹 */
+.pg-stat-chips{
+  display:flex;gap:8px;flex-wrap:wrap;margin-top:2px;
+}
+.pg-stat-chip{
+  background:rgba(255,255,255,.07);
+  border:1px solid rgba(255,255,255,.12);
+  border-radius:8px;
+  padding:6px 12px;
+  font-size:12px;color:#c8ddf0;
+  display:flex;flex-direction:column;align-items:center;gap:1px;
+}
+.pg-stat-chip span:first-child{
+  font-size:14px;font-weight:800;color:#e8f4fd;
+}
+.pg-stat-chip span:last-child{
+  font-size:10px;color:#6a8faf;
+}
+
+/* 팁 박스 */
+.pg-tip{
+  background:rgba(255,193,7,.06);
+  border:1px solid rgba(255,193,7,.2);
+  border-radius:10px;
+  padding:10px 12px;
+  color:#ffd54f;font-size:12px;line-height:1.6;
+  margin-top:4px;
+}
+.pg-tip::before{ content:'💡 '; }
+
+/* 하단 네비 */
+.pg-footer{
+  display:flex;gap:8px;
+  padding:10px 18px 16px;
+  flex-shrink:0;
+  border-top:1px solid rgba(255,255,255,.06);
+}
+.pg-btn-prev{
+  flex:1;padding:12px;
+  background:rgba(255,255,255,.07);
+  border:1px solid rgba(255,255,255,.12);
+  border-radius:11px;
+  color:#8da8c0;font-size:13px;font-weight:700;
+  cursor:pointer;transition:.2s;
+}
+.pg-btn-next{
+  flex:2;padding:12px;
+  background:linear-gradient(135deg,#1565c0,#0d47a1);
+  border:none;border-radius:11px;
+  color:#fff;font-size:13px;font-weight:800;
+  cursor:pointer;transition:.2s;
+  display:flex;align-items:center;justify-content:center;gap:6px;
+}
+.pg-btn-next:hover{ opacity:.88; }
+.pg-btn-prev:hover{ background:rgba(255,255,255,.12); }
+
+/* 분석 팝업 → 제작 가이드 열기 버튼 */
+.btn-cq-guide{
+  flex:1.4;padding:13px 10px;
+  background:linear-gradient(135deg,#e65100,#bf360c);
+  color:#fff;border:none;border-radius:11px;
+  font-size:13px;font-weight:800;
+  cursor:pointer;text-decoration:none;
+  transition:opacity .2s;
+  display:flex;align-items:center;justify-content:center;gap:5px;
+}
+.btn-cq-guide:hover{ opacity:.85; }
+
 </style>
 </head>
 <body>
@@ -3512,7 +3720,7 @@ function openCqAnalysis(videoId) {
 
   /* 푸터 버튼 */
   html += '<div class="cq-an-footer">'
-    + '<a href="https://studio.youtube.com/" target="_blank" class="btn-cq-create">🎬 제작하기 (Studio)</a>'
+    + '<button class="btn-cq-guide" onclick="openPgPanel(\'' + q.id + '\')">🎬 제작 가이드</button>'
     + '<a href="' + ytUrl + '" target="_blank" class="btn-cq-yt">▶ YouTube 영상 보기</a>'
     + '</div>';
 
@@ -3705,6 +3913,223 @@ function closeCqChannelPanel() {
     delete document._cqChEsc;
   }
 }
+
+/* ════════════════════════════════════════════
+   제작 가이드 패널 JS  (STEP 1~4 공통 + STEP 1)
+════════════════════════════════════════════ */
+var _pgCurrentStep = 1;
+var _pgVideoId     = null;
+var _pgQueue       = [];
+
+/* ── 패널 열기 ── */
+function openPgPanel(videoId) {
+  _pgVideoId = videoId;
+  _pgCurrentStep = 1;
+
+  // 큐에서 해당 영상 데이터 로드
+  try { _pgQueue = JSON.parse(localStorage.getItem('vidora_create_queue') || '[]'); }
+  catch(e) { _pgQueue = []; }
+
+  var q = null;
+  for(var i=0; i<_pgQueue.length; i++){
+    if(_pgQueue[i].id === videoId){ q = _pgQueue[i]; break; }
+  }
+  if(!q) { alert('영상 데이터를 찾을 수 없습니다.'); return; }
+
+  // 헤더 참조 제목
+  var refTitle = document.getElementById('pg-ref-title');
+  if(refTitle) refTitle.textContent = '참조: ' + (q.title ? q.title.substring(0,30)+'...' : videoId);
+
+  // 분석 팝업 닫기
+  closeCqAnalysis();
+
+  // 패널 열기
+  var overlay = document.getElementById('pg-overlay');
+  if(overlay) overlay.classList.add('open');
+
+  // STEP 1 렌더링
+  pgRenderStep1(q);
+  pgUpdateStepBar(1);
+  pgUpdateFooterNav(1);
+
+  // ESC 닫기
+  document._pgEsc = function(e){ if(e.key==='Escape') closePgPanel(); };
+  document.addEventListener('keydown', document._pgEsc);
+}
+
+/* ── 패널 닫기 ── */
+function closePgPanel() {
+  var overlay = document.getElementById('pg-overlay');
+  if(overlay) overlay.classList.remove('open');
+  if(document._pgEsc){
+    document.removeEventListener('keydown', document._pgEsc);
+    delete document._pgEsc;
+  }
+}
+
+/* ── 스텝 이동 ── */
+function pgGoStep(step) {
+  _pgCurrentStep = step;
+  var q = null;
+  for(var i=0; i<_pgQueue.length; i++){
+    if(_pgQueue[i].id === _pgVideoId){ q = _pgQueue[i]; break; }
+  }
+  if(!q) return;
+  if(step===1) pgRenderStep1(q);
+  else if(step===2) pgRenderStep2(q);
+  else if(step===3) pgRenderStep3(q);
+  else if(step===4) pgRenderStep4(q);
+  pgUpdateStepBar(step);
+  pgUpdateFooterNav(step);
+  // 스크롤 상단
+  var body = document.getElementById('pg-body-content');
+  if(body) body.scrollTop = 0;
+}
+
+function pgNextStep(){ if(_pgCurrentStep < 4) pgGoStep(_pgCurrentStep + 1); }
+function pgPrevStep(){ if(_pgCurrentStep > 1) pgGoStep(_pgCurrentStep - 1); }
+
+/* ── 스텝 바 상태 업데이트 ── */
+function pgUpdateStepBar(step) {
+  var labels = ['①분석','②기획','③소재','④체크'];
+  for(var i=1; i<=4; i++){
+    var btn = document.getElementById('pg-sb-'+i);
+    if(!btn) continue;
+    btn.className = 'pg-step-btn';
+    if(i < step)  btn.className += ' done';
+    if(i === step) btn.className += ' active';
+    btn.textContent = (i < step ? '✅' : labels[i-1]);
+  }
+}
+
+/* ── 하단 네비 버튼 텍스트 ── */
+function pgUpdateFooterNav(step) {
+  var prevBtn = document.getElementById('pg-btn-prev');
+  var nextBtn = document.getElementById('pg-btn-next');
+  var nextLabels = ['','STEP 2 기획 →','STEP 3 소재 →','STEP 4 체크 →','✅ 완료'];
+  if(prevBtn) prevBtn.style.visibility = step===1 ? 'hidden' : 'visible';
+  if(nextBtn) nextBtn.textContent = nextLabels[step] || '완료';
+  if(step===4 && nextBtn){
+    nextBtn.textContent = '✅ 목록으로';
+    nextBtn.onclick = function(){ closePgPanel(); };
+  } else if(nextBtn){
+    nextBtn.onclick = pgNextStep;
+  }
+}
+
+/* ══════════════════════════════════════════
+   STEP 1 — 참조 영상 분석
+══════════════════════════════════════════ */
+function pgRenderStep1(q) {
+  var body = document.getElementById('pg-body-content');
+  if(!body) return;
+
+  /* 핵심 키워드 추출 (제목 파싱) */
+  var keywords = pgExtractKeywords(q.title || '');
+
+  /* 영상 참여율 등급 */
+  var engGrade = '보통';
+  var eng = parseFloat(q.eng) || 0;
+  if(eng >= 8)      engGrade = '🔥 매우 높음';
+  else if(eng >= 5) engGrade = '✅ 높음';
+  else if(eng >= 3) engGrade = '보통';
+  else              engGrade = '⚠️ 낮음';
+
+  /* 조회수 성장 평가 */
+  var views = q.views || 0;
+  var daily = q.daily || 0;
+  var growthRate = views > 0 ? Math.round((daily / views) * 100 * 100) / 100 : 0;
+  var growthLabel = growthRate >= 1 ? '🚀 급성장' : growthRate >= 0.3 ? '📈 성장중' : '📊 안정';
+
+  var html = '';
+
+  /* ─ 섹션1: 기본 정보 ─ */
+  html += '<div class="pg-section">'
+    + '<div class="pg-section-label">📹 참조 영상 기본 정보</div>'
+    + '<div class="pg-row">'
+    +   '<div class="pg-row-key">제목</div>'
+    +   '<div class="pg-row-val highlight">' + escHtml(q.title || '-') + '</div>'
+    + '</div>'
+    + '<div class="pg-row">'
+    +   '<div class="pg-row-key">채널</div>'
+    +   '<div class="pg-row-val">📺 ' + escHtml(q.channel || '-') + '</div>'
+    + '</div>'
+    + '<div class="pg-row">'
+    +   '<div class="pg-row-key">추가일</div>'
+    +   '<div class="pg-row-val">' + (q.addedAt ? new Date(q.addedAt).toLocaleDateString('ko-KR') : '-') + '</div>'
+    + '</div>'
+    + '</div>';
+
+  /* ─ 섹션2: 성과 통계 ─ */
+  html += '<div class="pg-section">'
+    + '<div class="pg-section-label">📊 성과 통계</div>'
+    + '<div class="pg-stat-chips">'
+    + '<div class="pg-stat-chip"><span>👁 ' + fmtNum(views) + '</span><span>총 조회수</span></div>'
+    + '<div class="pg-stat-chip"><span>📈 ' + fmtNum(daily) + '</span><span>일평균 조회</span></div>'
+    + '<div class="pg-stat-chip"><span>❤️ ' + eng + '%</span><span>참여율 ' + engGrade + '</span></div>'
+    + '<div class="pg-stat-chip"><span>' + growthLabel + '</span><span>성장 상태</span></div>'
+    + '</div>'
+    + '</div>';
+
+  /* ─ 섹션3: 핵심 키워드 ─ */
+  html += '<div class="pg-section">'
+    + '<div class="pg-section-label">🔑 핵심 키워드 (제목 분석)</div>'
+    + '<div class="pg-keyword-wrap">';
+  for(var i=0; i<keywords.length; i++){
+    html += '<span class="pg-keyword">' + escHtml(keywords[i]) + '</span>';
+  }
+  if(keywords.length === 0){
+    html += '<span style="color:#6a8faf;font-size:12px">키워드를 추출할 수 없습니다</span>';
+  }
+  html += '</div></div>';
+
+  /* ─ 섹션4: 인기 요인 ─ */
+  if(q.why){
+    html += '<div class="pg-section">'
+      + '<div class="pg-section-label">🎯 왜 뜨는 영상인가</div>'
+      + '<div class="pg-why-text">' + escHtml(q.why) + '</div>'
+      + '</div>';
+  }
+
+  /* ─ 섹션5: AI 제작 추천 ─ */
+  if(q.create){
+    html += '<div class="pg-section">'
+      + '<div class="pg-section-label">📹 AI 추천 콘텐츠 방향</div>'
+      + '<div class="pg-why-text">' + escHtml(q.create) + '</div>'
+      + '</div>';
+  }
+
+  /* ─ 팁 ─ */
+  html += '<div class="pg-tip">'
+    + '이 영상의 인기 요인과 키워드를 참고해서 STEP 2에서 새 영상 기획안을 자동 생성합니다.'
+    + '</div>';
+
+  body.innerHTML = html;
+}
+
+/* ── 키워드 추출 함수 ── */
+function pgExtractKeywords(title) {
+  if(!title) return [];
+  // 불용어 제거
+  var stopwords = ['이','그','저','것','수','를','을','에','의','가','은','는','도','로','으로',
+                   '하다','있다','없다','되다','하는','하고','하여','해서','그리고','또는',
+                   'the','a','an','is','are','was','were','and','or','in','on','at','to',
+                   '|','[',']','(',')','-','ㅣ','!','?','#'];
+  // 특수문자 제거 후 단어 분리
+  var cleaned = title.replace(/[^\w\sㄱ-힣]/g, ' ');
+  var words = cleaned.split(/\s+/).filter(function(w){ return w.length >= 2; });
+  // 불용어 필터
+  var keywords = [];
+  for(var i=0; i<words.length; i++){
+    var w = words[i].trim();
+    if(w.length < 2) continue;
+    if(stopwords.indexOf(w.toLowerCase()) !== -1) continue;
+    if(keywords.indexOf(w) === -1) keywords.push(w);
+  }
+  // 최대 10개
+  return keywords.slice(0, 10);
+}
+
 </script>
 
 <!-- ═══ 제작목록 분석 모달 ═══ -->
@@ -3712,6 +4137,39 @@ function closeCqChannelPanel() {
   <div class="cq-analysis-sheet">
     <div class="cq-an-handle"></div>
     <div id="cq-analysis-content"></div>
+  </div>
+</div>
+
+
+<!-- ══ 제작 가이드 패널 오버레이 (STEP 1~4) ══ -->
+<div id="pg-overlay" onclick="if(event.target===this)closePgPanel()">
+  <div class="pg-sheet">
+    <div class="pg-handle"></div>
+
+    <!-- 헤더 -->
+    <div class="pg-header">
+      <div class="pg-header-title">🎬 제작 가이드</div>
+      <div class="pg-header-ref" id="pg-ref-title">참조 영상: 로딩 중...</div>
+    </div>
+
+    <!-- 스텝 바 -->
+    <div class="pg-stepbar">
+      <button class="pg-step-btn active" id="pg-sb-1" onclick="pgGoStep(1)">①분석</button>
+      <button class="pg-step-btn" id="pg-sb-2" onclick="pgGoStep(2)">②기획</button>
+      <button class="pg-step-btn" id="pg-sb-3" onclick="pgGoStep(3)">③소재</button>
+      <button class="pg-step-btn" id="pg-sb-4" onclick="pgGoStep(4)">④체크</button>
+    </div>
+
+    <!-- 본문 -->
+    <div class="pg-body" id="pg-body-content">
+      <!-- JS로 채워짐 -->
+    </div>
+
+    <!-- 하단 네비 -->
+    <div class="pg-footer">
+      <button class="pg-btn-prev" id="pg-btn-prev" onclick="pgPrevStep()">← 이전</button>
+      <button class="pg-btn-next" id="pg-btn-next" onclick="pgNextStep()">STEP 2 기획 →</button>
+    </div>
   </div>
 </div>
 
