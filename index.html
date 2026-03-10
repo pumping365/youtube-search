@@ -53,6 +53,7 @@ html,body{height:100%;overflow:hidden;background:#0f1b2d;color:#f0f4f8;font-fami
 html,body{overflow:hidden;height:100%;margin:0;padding:0}
 .screen{position:absolute;inset:0;overflow-y:auto;overflow-x:hidden;-webkit-overflow-scrolling:touch;padding-bottom:calc(var(--tab-h) + 8px);display:none;opacity:0;transform:translateY(8px);transition:opacity .25s,transform .25s}
 .screen.active{display:block;opacity:1;transform:translateY(0)}
+#screen-home.active{display:flex;flex-direction:column}
 .bottom-nav{height:var(--tab-h);background:linear-gradient(180deg,#0c1e30 0%,var(--navy) 100%);display:flex;border-top:1px solid var(--border);flex-shrink:0;position:relative;z-index:100}
 
 /* ===== HEADER ===== */
@@ -1295,23 +1296,23 @@ html,body{overflow:hidden;height:100%;margin:0;padding:0}
       <!-- Trending Chips: removed (replaced by quick-btns grid above) -->
 
       <!-- Feature Cards -->
-      <div class="section-pad" style="padding-top:8px;padding-bottom:12px">
+      <div class="section-pad" style="padding-top:8px;padding-bottom:12px;flex:1;display:flex;flex-direction:column">
         <div class="section-title" style="margin-bottom:8px">핵심 기능</div>
-        <div style="display:grid;grid-template-columns:1fr 1fr;gap:7px">
-          <div style="background:var(--card);border:1px solid var(--border);border-radius:var(--radius-sm);padding:10px 10px;display:flex;align-items:center;gap:9px">
-            <span style="font-size:20px;flex-shrink:0">🎯</span>
+        <div style="display:grid;grid-template-columns:1fr 1fr;gap:8px;flex:1;grid-auto-rows:1fr">
+          <div style="background:var(--card);border:1px solid var(--border);border-radius:var(--radius-sm);padding:14px 12px;display:flex;align-items:center;gap:10px;align-content:center">
+            <span style="font-size:22px;flex-shrink:0">🎯</span>
             <div><div style="font-size:12.5px;font-weight:700;margin-bottom:2px">전문 분석</div><div style="font-size:10.5px;color:var(--text2);line-height:1.3">11가지 지표 정밀 분석</div></div>
           </div>
-          <div style="background:var(--card);border:1px solid var(--border);border-radius:var(--radius-sm);padding:10px 10px;display:flex;align-items:center;gap:9px">
-            <span style="font-size:20px;flex-shrink:0">📊</span>
+          <div style="background:var(--card);border:1px solid var(--border);border-radius:var(--radius-sm);padding:14px 12px;display:flex;align-items:center;gap:10px;align-content:center">
+            <span style="font-size:22px;flex-shrink:0">📊</span>
             <div><div style="font-size:12.5px;font-weight:700;margin-bottom:2px">실시간 차트</div><div style="font-size:10.5px;color:var(--text2);line-height:1.3">조회수·구독자·CPM 추적</div></div>
           </div>
-          <div style="background:var(--card);border:1px solid var(--border);border-radius:var(--radius-sm);padding:10px 10px;display:flex;align-items:center;gap:9px">
-            <span style="font-size:20px;flex-shrink:0">🤖</span>
+          <div style="background:var(--card);border:1px solid var(--border);border-radius:var(--radius-sm);padding:14px 12px;display:flex;align-items:center;gap:10px;align-content:center">
+            <span style="font-size:22px;flex-shrink:0">🤖</span>
             <div><div style="font-size:12.5px;font-weight:700;margin-bottom:2px">AI 평가</div><div style="font-size:10.5px;color:var(--text2);line-height:1.3">콘텐츠 잠재력 자동 분석</div></div>
           </div>
-          <div style="background:var(--card);border:1px solid var(--border);border-radius:var(--radius-sm);padding:10px 10px;display:flex;align-items:center;gap:9px">
-            <span style="font-size:20px;flex-shrink:0">🎬</span>
+          <div style="background:var(--card);border:1px solid var(--border);border-radius:var(--radius-sm);padding:14px 12px;display:flex;align-items:center;gap:10px;align-content:center">
+            <span style="font-size:22px;flex-shrink:0">🎬</span>
             <div><div style="font-size:12.5px;font-weight:700;margin-bottom:2px">영상 리믹스</div><div style="font-size:10.5px;color:var(--text2);line-height:1.3">영상을 업그레이드 작품으로</div></div>
           </div>
         </div>
