@@ -3597,6 +3597,22 @@ function escHtml(s) {
   return String(s||'').replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;').replace(/"/g,'&quot;');
 }
 
+/* HTML 엔티티 디코딩 (이중인코딩 방지) */
+function decodeHtmlEntities(str) {
+  if(!str) return '';
+  return String(str)
+    .replace(/&amp;/g, '&')
+    .replace(/&#39;/g, "'")
+    .replace(/&quot;/g, '"')
+    .replace(/&lt;/g, '<')
+    .replace(/&gt;/g, '>');
+}
+
+/* 안전 텍스트: 엔티티 디코딩 후 HTML 이스케이프 */
+function pgSafeText(s) {
+  return escHtml(decodeHtmlEntities(s));
+}
+
 function fmtNum(n) {
   n = parseInt(n||0);
   if(n >= 100000000) return (n/100000000).toFixed(1)+'억';
@@ -3938,7 +3954,7 @@ function openPgPanel(videoId) {
 
   // 헤더 참조 제목
   var refTitle = document.getElementById('pg-ref-title');
-  if(refTitle) refTitle.textContent = '참조: ' + (q.title ? q.title.substring(0,30)+'...' : videoId);
+  if(refTitle) refTitle.textContent = '참조: ' + (q.title ? decodeHtmlEntities(q.title).substring(0,30)+'...' : videoId);
 
   // 분석 팝업 닫기
   closeCqAnalysis();
@@ -4048,11 +4064,11 @@ function pgRenderStep1(q) {
     + '<div class="pg-section-label">📹 참조 영상 기본 정보</div>'
     + '<div class="pg-row">'
     +   '<div class="pg-row-key">제목</div>'
-    +   '<div class="pg-row-val highlight">' + escHtml(q.title || '-') + '</div>'
+    +   '<div class="pg-row-val highlight">' + pgSafeText(q.title || '-') + '</div>'
     + '</div>'
     + '<div class="pg-row">'
     +   '<div class="pg-row-key">채널</div>'
-    +   '<div class="pg-row-val">📺 ' + escHtml(q.channel || '-') + '</div>'
+    +   '<div class="pg-row-val">📺 ' + pgSafeText(q.channel || '-') + '</div>'
     + '</div>'
     + '<div class="pg-row">'
     +   '<div class="pg-row-key">추가일</div>'
@@ -4076,7 +4092,7 @@ function pgRenderStep1(q) {
     + '<div class="pg-section-label">🔑 핵심 키워드 (제목 분석)</div>'
     + '<div class="pg-keyword-wrap">';
   for(var i=0; i<keywords.length; i++){
-    html += '<span class="pg-keyword">' + escHtml(keywords[i]) + '</span>';
+    html += '<span class="pg-keyword">' + pgSafeText(keywords[i]) + '</span>';
   }
   if(keywords.length === 0){
     html += '<span style="color:#6a8faf;font-size:12px">키워드를 추출할 수 없습니다</span>';
@@ -4087,7 +4103,7 @@ function pgRenderStep1(q) {
   if(q.why){
     html += '<div class="pg-section">'
       + '<div class="pg-section-label">🎯 왜 뜨는 영상인가</div>'
-      + '<div class="pg-why-text">' + escHtml(q.why) + '</div>'
+      + '<div class="pg-why-text">' + pgSafeText(q.why) + '</div>'
       + '</div>';
   }
 
@@ -4095,7 +4111,7 @@ function pgRenderStep1(q) {
   if(q.create){
     html += '<div class="pg-section">'
       + '<div class="pg-section-label">📹 AI 추천 콘텐츠 방향</div>'
-      + '<div class="pg-why-text">' + escHtml(q.create) + '</div>'
+      + '<div class="pg-why-text">' + pgSafeText(q.create) + '</div>'
       + '</div>';
   }
 
@@ -4110,6 +4126,7 @@ function pgRenderStep1(q) {
 /* ── 키워드 추출 함수 ── */
 function pgExtractKeywords(title) {
   if(!title) return [];
+  title = decodeHtmlEntities(title);  // 엔티티 디코딩 후 파싱
   // 불용어 제거
   var stopwords = ['이','그','저','것','수','를','을','에','의','가','은','는','도','로','으로',
                    '하다','있다','없다','되다','하는','하고','하여','해서','그리고','또는',
