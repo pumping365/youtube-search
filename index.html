@@ -1167,6 +1167,37 @@ html,body{overflow:hidden;height:100%;margin:0;padding:0}
   transition:background .15s;margin:12px 16px 0;
 }
 .cqch-btn-yt:hover{ background:rgba(255,255,255,.12); }
+
+/* 분석 모달 제작하기 버튼 */
+.btn-cq-create{
+  display:flex;align-items:center;justify-content:center;
+  flex:1;padding:13px 10px;
+  background:linear-gradient(135deg,#1565c0,#0d47a1);
+  color:#fff;border:none;border-radius:11px;
+  font-size:13px;font-weight:700;
+  cursor:pointer;text-decoration:none;
+  transition:opacity .2s,transform .15s;
+}
+.btn-cq-create:hover{ opacity:.85;transform:translateY(-1px); }
+
+/* 카드 분석 열기 버튼 */
+.cq-btn-analysis{
+  flex:2;padding:9px 8px;
+  background:linear-gradient(135deg,#c62828,#b71c1c);
+  border:none;
+  border-radius:9px;
+  color:#fff;font-size:12.5px;font-weight:800;
+  cursor:pointer;transition:opacity .2s,transform .15s;
+  letter-spacing:.3px;
+}
+.cq-btn-analysis:hover{
+  opacity:.85;transform:translateY(-1px);
+}
+
+/* 분석 모달 푸터 2버튼 레이아웃 */
+.cq-an-footer{
+  display:flex;gap:10px;padding:14px 16px 8px;
+}
 </style>
 </head>
 <body>
@@ -2955,20 +2986,16 @@ function renderCreateQueue() {
     /* ─ 썸네일: 클릭 시 YouTube 이동 ─ */
     var thumbHtml;
     if(q.thumbnail) {
-      thumbHtml = '<a href="' + ytUrl + '" target="_blank" title="YouTube에서 보기" style="flex-shrink:0;display:block">'
-        + '<img class="cq-thumb" src="' + q.thumbnail + '"'
-        + ' onerror="this.parentNode.outerHTML=\'<div class=\\\"cq-thumb-placeholder\\\">🎬</div>\'">'
-        + '</a>';
+      thumbHtml = '<img class="cq-thumb" src="' + q.thumbnail
+        + '" style="flex-shrink:0;cursor:default" onerror="cqThumbError(this)">';
     } else {
-      thumbHtml = '<a href="' + ytUrl + '" target="_blank" title="YouTube에서 보기" style="flex-shrink:0;display:block">'
-        + '<div class="cq-thumb-placeholder">🎬</div>'
-        + '</a>';
+      thumbHtml = '<div class="cq-thumb-placeholder">🎬</div>';
     }
 
     /* ─ 카드 시작: 카드 클릭 → 분석 모달 오픈 (버튼/링크 영역 제외) ─ */
     html += '<div class="cq-card' + (isDone ? ' done' : '') + '" id="cq-' + q.id + '"'
-      + ' onclick="if(event.target.closest(\'.cq-actions\')||event.target.closest(\'a\')) return;'
-      + ' openCqChannelPanel(\'' + q.id + '\')"'
+      + ' onclick="if(event.target.closest(\'.cq-actions\')) return;'
+      + ' openCqAnalysis(\'' + q.id + '\')"'
       + ' title="클릭하면 분석 내용 보기">';
 
     /* ─ 헤더: 썸네일(링크) | 메타(제목/채널/날짜) | 배지 ─ */
@@ -2991,10 +3018,12 @@ function renderCreateQueue() {
 
     /* ─ 액션 버튼 (왜뜨나/추천/타이밍 모두 제거) ─ */
     html += '<div class="cq-actions">'
-      + '<button class="cq-btn-done" onclick="toggleCreateDone(decodeURIComponent(\'' + safeId + '\'))">'
-      +   (isDone ? '↩️ 미완료로' : '✅ 제작 완료')
+      + '<button class="cq-btn-analysis" onclick="event.stopPropagation();openCqAnalysis(decodeURIComponent(\'' + safeId + '\'))">'
+      +   '📊 분석 열기'
       + '</button>'
-      + '<a href="' + ytUrl + '" target="_blank" class="cq-btn-play" title="YouTube 바로가기">▶ 보기</a>'
+      + '<button class="cq-btn-done" onclick="toggleCreateDone(decodeURIComponent(\'' + safeId + '\'))">'
+      +   (isDone ? '↩️ 미완료로' : '✅ 완료')
+      + '</button>'
       + '<button class="cq-btn-remove" onclick="removeFromCreateQueue(decodeURIComponent(\'' + safeId + '\'))">🗑</button>'
       + '</div>';
 
@@ -3482,7 +3511,8 @@ function openCqAnalysis(videoId) {
 
   /* 푸터 버튼 */
   html += '<div class="cq-an-footer">'
-    + '<a href="' + ytUrl + '" target="_blank" class="btn-cq-yt">▶ YouTube에서 영상 보기</a>'
+    + '<a href="https://studio.youtube.com/" target="_blank" class="btn-cq-create">🎬 제작하기 (Studio)</a>'
+    + '<a href="' + ytUrl + '" target="_blank" class="btn-cq-yt">▶ YouTube 영상 보기</a>'
     + '</div>';
 
   box.innerHTML = html;
