@@ -3867,26 +3867,35 @@ function showErrorState(msg) {
 function toggleInlinePanel(videoId, idx) {
   var panel = document.getElementById('panel-' + videoId);
   if (!panel) return;
+  var card = panel.closest('.video-card');
+  var btn  = card ? card.querySelector('.btn-detail') : null;
   var isOpen = panel.classList.contains('open');
-  // 다른 패널 모두 닫기
-  document.querySelectorAll('.inline-panel.open').forEach(function(p) {
-    p.classList.remove('open');
-    var btn = p.closest('.video-card').querySelector('.btn-detail');
-    if (btn) btn.textContent = '📊 분석 열기';
-  });
-  if (!isOpen) {
-    panel.classList.add('open');
-    var btn = panel.closest('.video-card').querySelector('.btn-detail');
-    if (btn) btn.textContent = '📊 분석 닫기';
-    // 채널 탭이 아직 로드 안됐으면 미리 로드 시작 (백그라운드)
-    loadChannelTab(videoId, idx);
-    // 카드가 화면에 보이도록 스크롤
-    setTimeout(function() {
-      panel.closest('.video-card').scrollIntoView({behavior:'smooth', block:'nearest'});
-    }, 50);
-  }
-}
 
+  // 다른 패널 모두 닫기 (현재 패널 제외)
+  document.querySelectorAll('.inline-panel.open').forEach(function(p) {
+    if (p === panel) return;
+    p.classList.remove('open');
+    var b = p.closest('.video-card') ? p.closest('.video-card').querySelector('.btn-detail') : null;
+    if (b) b.textContent = "📊 분석 열기";
+  });
+
+  // 토글: 열려있으면 닫기 / 닫혀있으면 열기
+  if (isOpen) {
+    panel.classList.remove('open');
+    if (btn) btn.textContent = "📊 분석 열기";
+    return;
+  }
+
+  panel.classList.add('open');
+  if (btn) btn.textContent = "📊 분석 닫기";
+  // 채널 탭이 아직 로드 안됐으면 미리 로드 시작 (백그라운드)
+  loadChannelTab(videoId, idx);
+  // 카드가 화면에 보이도록 스크롤
+  setTimeout(function() {
+    var c = panel.closest('.video-card');
+    if (c) c.scrollIntoView({behavior:'smooth', block:'nearest'});
+  }, 50);
+}
 function switchPanelTab(videoId, tabIdx, el) {
   // 탭 버튼 active 전환
   var tabs = el.closest('.panel-tabs').querySelectorAll('.panel-tab');
