@@ -2,7 +2,7 @@
 <html lang="ko">
 <head>
 
-  <!-- VIDORA BUILD: 2026-03-15 / A2-hotfix / toggleInlinePanel-close + PG responsive -->
+  <!-- VIDORA BUILD: 2026-03-15 / mobile-dom-failsafe-v1 (inline-panel hidden + tab sections hidden) -->
 <meta charset="UTF-8">
   <meta http-equiv="Cache-Control" content="no-cache, no-store, must-revalidate">
   <meta http-equiv="Pragma" content="no-cache">
@@ -3817,7 +3817,7 @@ function renderResults(videos) {
       +   '<button class="btn-fav ' + (isFav?'active':'') + '" onclick="toggleFav(\'' + v.id + '\',' + i + ')" id="fav-' + v.id + '">' + (isFav?'⭐':'☆') + '</button>'
       + '</div>'
       // ── 인라인 분석 패널 ──
-      + '<div class="inline-panel" id="panel-' + v.id + '">'
+      + '<div class="inline-panel" id="panel-' + v.id + '" hidden>'
       +   '<div class="panel-tabs">'
       +     '<div class="panel-tab active" onclick="switchPanelTab(\'' + v.id + '\',0,this)">📊 성과</div>'
       +     '<div class="panel-tab" onclick="switchPanelTab(\'' + v.id + '\',1,this)">📺 채널</div>'
@@ -3825,8 +3825,8 @@ function renderResults(videos) {
       +   '</div>'
       +   '<div class="panel-body">'
       +     '<div class="panel-section active" id="ptab-' + v.id + '-0">' + perfHtml + '</div>'
-      +     '<div class="panel-section" id="ptab-' + v.id + '-1"><div class="panel-loading" id="pchl-' + v.id + '">⏳ 채널 정보 불러오는 중...</div></div>'
-      +     '<div class="panel-section" id="ptab-' + v.id + '-2">' + guideHtml + '</div>'
+      +     '<div class="panel-section" id="ptab-' + v.id + '-1" hidden><div class="panel-loading" id="pchl-' + v.id + '">⏳ 채널 정보 불러오는 중...</div></div>'
+      +     '<div class="panel-section" id="ptab-' + v.id + '-2" hidden>' + guideHtml + '</div>'
       +   '</div>'
       + '</div>'
       + '</div>'; // video-card
@@ -3884,12 +3884,26 @@ function toggleInlinePanel(videoId, idx) {
   // 토글: 열려있으면 닫기 / 닫혀있으면 열기
   if (isOpen) {
     panel.classList.remove('open');
+    panel.hidden = true; // ✅ CSS가 깨져도 무조건 숨김
     if (btn) btn.textContent = "📊 분석 열기";
     return;
   }
 
+  panel.hidden = false;  // ✅ CSS가 깨져도 무조건 표시
   panel.classList.add('open');
   if (btn) btn.textContent = "📊 분석 닫기";
+
+  // ✅ 열 때는 항상 '성과' 탭만 보이게 강제 (모바일에서 섹션이 한꺼번에 펼쳐지는 현상 방지)
+  try {
+    for (var ti = 0; ti < 3; ti++) {
+      var sec = document.getElementById('ptab-' + videoId + '-' + ti);
+      if (sec) {
+        sec.classList.toggle('active', ti === 0);
+        sec.hidden = (ti !== 0);
+      }
+    }
+  } catch(e) {}
+
   // 채널 탭이 아직 로드 안됐으면 미리 로드 시작 (백그라운드)
   loadChannelTab(videoId, idx);
   // 카드가 화면에 보이도록 스크롤
@@ -3906,7 +3920,7 @@ function switchPanelTab(videoId, tabIdx, el) {
   // 섹션 전환
   for (var i = 0; i < 3; i++) {
     var sec = document.getElementById('ptab-' + videoId + '-' + i);
-    if (sec) sec.classList.toggle('active', i === tabIdx);
+    if (sec) { sec.classList.toggle('active', i === tabIdx); sec.hidden = (i !== tabIdx); }
   }
   // 채널 탭 클릭 시 로드
   if (tabIdx === 1) {
