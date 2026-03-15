@@ -726,7 +726,39 @@ html,body{overflow:hidden;height:100%;margin:0;padding:0}
   #apiCallCount{white-space:nowrap;overflow:hidden;max-width:200px}
   .header-actions{gap:6px}
   .top-header{padding:0 10px}
+
+  /* ── 인라인 분석 탭(성과/채널/제작): 모바일 알약(pill) 버튼 UI ── */
+  .panel-tabs{
+    display:grid;
+    grid-template-columns:repeat(3,1fr);
+    gap:8px;
+    padding:10px 12px 10px;
+    background:rgba(10,13,24,.92);
+    border-bottom:1px solid rgba(255,255,255,.08);
+  }
+  .panel-tab{
+    padding:11px 0;
+    min-height:42px;
+    border:1px solid rgba(255,255,255,.14);
+    border-radius:12px;
+    font-size:12px;
+    font-weight:800;
+    letter-spacing:.2px;
+    color:rgba(255,255,255,.62);
+    background:rgba(255,255,255,.03);
+    transition:transform .08s ease, background .18s ease, color .18s ease, box-shadow .18s ease;
+    -webkit-tap-highlight-color:transparent;
+    touch-action:manipulation;
+  }
+  .panel-tab:active{transform:scale(.98)}
+  .panel-tab.active{
+    color:#fff;
+    border-color:transparent;
+    background:linear-gradient(135deg,#ff4444 0%,#ff2d2d 100%);
+    box-shadow:0 6px 18px rgba(255,68,68,.25);
+  }
 }
+
 
 /* ═══ STAGE 3: 제작목록 스크린 CSS ═══ */
 
